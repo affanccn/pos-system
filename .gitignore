@@ -1,0 +1,24 @@
+# Flutter
+pos_mobile/.dart_tool/
+pos_mobile/build/
+pos_mobile/.flutter-plugins
+pos_mobile/.flutter-plugins-dependencies
+
+# Android
+pos_mobile/android/.gradle/
+pos_mobile/android/local.properties
+
+# Node.js
+backend/node_modules/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log

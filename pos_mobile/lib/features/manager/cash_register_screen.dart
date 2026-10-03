@@ -1,0 +1,259 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import '../auth/auth_controller.dart';
+
+class CashRegisterScreen extends ConsumerStatefulWidget {
+  const CashRegisterScreen({super.key});
+
+  @override
+  ConsumerState<CashRegisterScreen> createState() => _CashRegisterScreenState();
+}
+
+class _CashRegisterScreenState extends ConsumerState<CashRegisterScreen> {
+  Map<String, dynamic>? _summary;
+  bool _isLoading = false;
+
+  final Map<String, String> _typeLabels = {
+    'OPENING': 'Kasa Acilis',
+    'CASH_IN': 'Nakit Giris',
+    'CASH_OUT': 'Nakit Cikis',
+    'EXPENSE': 'Gider',
+    'CLOSING': 'Kasa Kapanis',
+  };
+
+  final Map<String, Color> _typeColors = {
+    'OPENING': Colors.blue,
+    'CASH_IN': Colors.green,
+    'CASH_OUT': Colors.orange,
+    'EXPENSE': Colors.red,
+    'CLOSING': Colors.purple,
+  };
+
+  final Map<String, IconData> _typeIcons = {
+    'OPENING': Icons.lock_open,
+    'CASH_IN': Icons.arrow_downward,
+    'CASH_OUT': Icons.arrow_upward,
+    'EXPENSE': Icons.money_off,
+    'CLOSING': Icons.lock,
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSummary();
+  }
+
+  Future<void> _fetchSummary() async {
+    setState(() => _isLoading = true);
+    final apiClient = ref.read(apiClientProvider);
+    try {
+      final res = await apiClient.dio.get('/cash/summary');
+      setState(() {
+        _summary = res.data['data'];
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _showAddMovementDialog() {
+    final amountCtrl = TextEditingController();
+    final descCtrl = TextEditingController();
+    String selectedType = 'CASH_IN';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (_, setStateDialog) => AlertDialog(
+          backgroundColor: const Color(0xFF1E293B),
+          title: const Text('Kasa Hareketi', style: TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              DropdownButton<String>(
+                value: selectedType,
+                dropdownColor: const Color(0xFF334155),
+                isExpanded: true,
+                style: const TextStyle(color: Colors.white),
+                items: _typeLabels.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
+                onChanged: (val) => setStateDialog(() => selectedType = val!),
+              ),
+              TextField(controller: amountCtrl, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Tutar (TL)', labelStyle: TextStyle(color: Colors.white70)), keyboardType: TextInputType.number),
+              TextField(controller: descCtrl, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Aciklama', labelStyle: TextStyle(color: Colors.white70))),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Iptal')),
+            ElevatedButton(
+              onPressed: () async {
+                final amount = double.tryParse(amountCtrl.text) ?? 0;
+                if (amount <= 0) return;
+                final apiClient = ref.read(apiClientProvider);
+                try {
+                  await apiClient.dio.post('/cash', data: {
+                    'type': selectedType,
+                    'amountCents': (amount * 100).toInt(),
+                    'description': descCtrl.text,
+                  });
+                  if (ctx.mounted) Navigator.pop(ctx);
+                  _fetchSummary();
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
+                  }
+                }
+              },
+              child: const Text('Kaydet'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSummaryCard(String label, int cents, Color color, IconData icon) {
+    return Card(
+      color: const Color(0xFF334155),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: color.withValues(alpha: 0.2),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(color: Colors.white70, fontSize: 11),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${(cents / 100).toStringAsFixed(2)} TL',
+                      style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final dateFormat = DateFormat('dd.MM.yyyy HH:mm');
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F172A),
+      appBar: AppBar(
+        title: const Text('Kasa Yonetimi', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF1E293B),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _fetchSummary),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddMovementDialog,
+        backgroundColor: const Color(0xFF38BDF8),
+        child: const Icon(Icons.add),
+      ),
+      body: _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : _summary == null
+          ? const Center(child: Text('Veri yok', style: TextStyle(color: Colors.white54)))
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Gunluk Kasa Ozeti', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                    childAspectRatio: 2.1,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      _buildSummaryCard('Acilis', _summary!['openingAmountCents'] ?? 0, Colors.blue, Icons.lock_open),
+                      _buildSummaryCard('Nakit Giris', _summary!['cashInCents'] ?? 0, Colors.green, Icons.arrow_downward),
+                      _buildSummaryCard('Satis (Nakit)', _summary!['cashFromSalesCents'] ?? 0, Colors.teal, Icons.point_of_sale),
+                      _buildSummaryCard('Nakit Cikis', _summary!['cashOutCents'] ?? 0, Colors.orange, Icons.arrow_upward),
+                      _buildSummaryCard('Giderler', _summary!['totalExpensesCents'] ?? 0, Colors.red, Icons.money_off),
+                      _buildSummaryCard('Beklenen Kasa', _summary!['expectedCashCents'] ?? 0, Colors.cyan, Icons.calculate),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  if ((_summary!['closingAmountCents'] ?? 0) > 0) ...[
+                    Card(
+                      color: const Color(0xFF1E293B),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Kapanis / Sayim', style: TextStyle(color: Colors.white, fontSize: 16)),
+                            Text('${((_summary!['closingAmountCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.bold, fontSize: 18)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Card(
+                      color: (_summary!['differenceCents'] ?? 0) >= 0 ? Colors.green.shade900 : Colors.red.shade900,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Kasa Farki', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text('${((_summary!['differenceCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 24),
+                  const Text('Hareketler', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  ...(_summary!['movements'] as List<dynamic>? ?? []).map((m) {
+                    final type = m['type'] as String;
+                    final date = DateTime.tryParse(m['createdAt'] ?? '') ?? DateTime.now();
+                    return Card(
+                      color: const Color(0xFF334155),
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: (_typeColors[type] ?? Colors.grey).withValues(alpha: 0.2),
+                          child: Icon(_typeIcons[type] ?? Icons.help, color: _typeColors[type] ?? Colors.grey),
+                        ),
+                        title: Text(_typeLabels[type] ?? type, style: const TextStyle(color: Colors.white)),
+                        subtitle: Text('${m['description'] ?? ''}\n${dateFormat.format(date)} - ${m['user']?['fullName'] ?? ''}', style: const TextStyle(color: Colors.white70)),
+                        trailing: Text('${((m['amountCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: TextStyle(color: _typeColors[type] ?? Colors.grey, fontWeight: FontWeight.bold)),
+                        isThreeLine: true,
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+    );
+  }
+}
