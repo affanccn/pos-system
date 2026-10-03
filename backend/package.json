@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate && tsc",
+    "build": "npx prisma generate && tsc",
     "start": "node dist/server.js",
-    "postinstall": "prisma generate || exit 0"
+    "postinstall": "npx prisma generate || exit 0"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
