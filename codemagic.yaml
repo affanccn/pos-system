@@ -18,3 +18,38 @@ workflows:
 
     artifacts:
       - pos_mobile/build/app/outputs/flutter-apk/app-release.apk
+
+  # Yeni eklediğimiz iOS kurgusu
+  ios-unsigned-release:
+    name: iOS Unsigned Release (Sideloadly için)
+    
+    # iOS derlemeleri için macOS sunucusu gerektiğini belirtiyoruz
+    instance_type: mac_mini_m1
+    
+    environment:
+      flutter: stable
+      xcode: latest
+
+    scripts:
+      - name: Get Flutter packages
+        script: |
+          cd pos_mobile
+          flutter pub get
+
+      - name: Build iOS (Unsigned)
+        script: |
+          cd pos_mobile
+          # Kod imzalama yapmadan (no-codesign) iOS projesini derliyoruz
+          flutter build ios --release --no-codesign
+
+      - name: Package .app into .ipa
+        script: |
+          cd pos_mobile/build/ios/iphoneos
+          # .app dosyasını .ipa formatına çevirmek için Payload klasörüne alıp zipliyoruz
+          mkdir -p Payload
+          mv Runner.app Payload/
+          zip -qr app-unsigned.ipa Payload
+
+    artifacts:
+      # Sideloadly'e yükleyeceğimiz ipa dosyasının konumu
+      - pos_mobile/build/ios/iphoneos/app-unsigned.ipa
