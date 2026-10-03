@@ -15,7 +15,7 @@ class AppConstants {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return 'http://http://192.168.1.27:$defaultPort';
+        return 'http://192.168.1.27:$defaultPort';
       case TargetPlatform.iOS:
       case TargetPlatform.windows:
       case TargetPlatform.macOS:

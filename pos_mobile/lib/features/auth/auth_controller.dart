@@ -1,8 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:dio/dio.dart';
+
 import '../../core/network/api_client.dart';
 import '../../core/constants/app_constants.dart';
 
@@ -25,8 +27,6 @@ class UserState {
     this.isLoading = false,
   });
 
-  /// Kullanıcının ilgili izne sahip olup olmadığını denetler
-  /// OWNER rolündeki patronlar tüm yetkilere doğrudan sahiptir.
   bool hasPermission(String perm) {
     if (role?.toUpperCase() == 'OWNER') return true;
     return permissions.contains(perm);
@@ -37,10 +37,15 @@ class UserState {
     return perms.any((p) => permissions.contains(p));
   }
 
-  bool hasRole(String targetRole) => role?.toUpperCase() == targetRole.toUpperCase();
+  bool hasRole(String targetRole) =>
+      role?.toUpperCase() == targetRole.toUpperCase();
+
   bool get isOwner => hasRole('OWNER');
+
   bool get isManager => hasRole('MANAGER') || isOwner;
+
   bool get isWaiter => hasRole('WAITER');
+
   bool get isKitchen => hasRole('KITCHEN');
 
   UserState copyWith({
@@ -64,6 +69,7 @@ class UserState {
 
 class AuthController extends ChangeNotifier {
   final ApiClient _apiClient;
+
   UserState _state = UserState();
 
   AuthController(this._apiClient) {
@@ -72,18 +78,22 @@ class AuthController extends ChangeNotifier {
 
   UserState get state => _state;
 
-  /// Cihaz hafızasındaki oturumu geri yükler
   Future<void> restoreSession() async {
     try {
       final token = await _apiClient.storage.read(key: 'jwt_token');
+
       if (token != null && token.isNotEmpty) {
         final role = await _apiClient.storage.read(key: 'user_role');
         final name = await _apiClient.storage.read(key: 'user_name');
-        final permsJson = await _apiClient.storage.read(key: 'user_permissions');
+        final permsJson = await _apiClient.storage.read(
+          key: 'user_permissions',
+        );
 
         List<String> permissions = [];
+
         if (permsJson != null) {
           final decoded = jsonDecode(permsJson);
+
           if (decoded is List) {
             permissions = decoded.map((e) => e.toString()).toList();
           }
@@ -96,6 +106,7 @@ class AuthController extends ChangeNotifier {
           permissions: permissions,
           isLoading: false,
         );
+
         notifyListeners();
       }
     } catch (e) {
@@ -103,39 +114,53 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  Future<bool> loginWithPin(String pin, {String businessSlug = AppConstants.defaultBusinessSlug}) async {
+  Future<bool> loginWithPin(
+    String pin, {
+    String businessSlug = AppConstants.defaultBusinessSlug,
+  }) async {
     _state = _state.copyWith(isLoading: true, errorMessage: null);
-    notifyListeners();
 
-    debugPrint('--> PIN Giriş İsteği Gönderiliyor: $pin');
+    notifyListeners();
 
     try {
       final response = await _apiClient.dio.post(
         '/auth/login-pin',
-        data: {
-          'businessSlug': businessSlug,
-          'pinCode': pin,
-        },
+        data: {'businessSlug': businessSlug, 'pinCode': pin},
       );
 
       debugPrint('--> Backend Yanıtı Geldi: ${response.statusCode}');
 
       final resData = response.data;
+
       final data = resData['data'] ?? {};
+
       final token = data['token'];
+
       final user = data['user'] ?? {};
 
       final rawPerms = (user['permissions'] as List<dynamic>?) ?? [];
+
       final permissions = rawPerms.map((p) => p.toString()).toList();
+
       final userRole = user['role']?.toString() ?? 'WAITER';
+
       final userName = user['fullName']?.toString() ?? 'Personel';
 
       if (token != null) {
-        await _apiClient.storage.write(key: 'jwt_token', value: token.toString());
+        await _apiClient.storage.write(
+          key: 'jwt_token',
+          value: token.toString(),
+        );
       }
+
       await _apiClient.storage.write(key: 'user_role', value: userRole);
+
       await _apiClient.storage.write(key: 'user_name', value: userName);
-      await _apiClient.storage.write(key: 'user_permissions', value: jsonEncode(permissions));
+
+      await _apiClient.storage.write(
+        key: 'user_permissions',
+        value: jsonEncode(permissions),
+      );
 
       _state = UserState(
         isAuthenticated: true,
@@ -144,33 +169,61 @@ class AuthController extends ChangeNotifier {
         permissions: permissions,
         isLoading: false,
       );
+
       notifyListeners();
+
       return true;
     } on DioException catch (e) {
-      debugPrint('--> Dio Hatası: ${e.type} - ${e.message}');
-      final errorMsg = e.response?.data?['error'] ?? 
-                       e.response?.data?['message'] ?? 
-                       'Giriş başarısız. PIN kontrol edin.';
-      
-      _state = _state.copyWith(isLoading: false, errorMessage: errorMsg.toString());
+      debugPrint('================ LOGIN HATASI ================');
+      debugPrint('Dio Type: ${e.type}');
+      debugPrint('Message: ${e.message}');
+      debugPrint('URL: ${e.requestOptions.uri}');
+      debugPrint('Method: ${e.requestOptions.method}');
+      debugPrint('Status Code: ${e.response?.statusCode}');
+      debugPrint('Response Data: ${e.response?.data}');
+      debugPrint('================================================');
+
+      final responseData = e.response?.data;
+
+      String errorMsg = 'Giriş başarısız. PIN kontrol edin.';
+
+      if (responseData is Map) {
+        errorMsg =
+            responseData['error']?.toString() ??
+            responseData['message']?.toString() ??
+            errorMsg;
+      }
+
+      _state = _state.copyWith(isLoading: false, errorMessage: errorMsg);
+
       notifyListeners();
+
       return false;
     } catch (e) {
       debugPrint('--> Beklenmeyen Hata: $e');
-      _state = _state.copyWith(isLoading: false, errorMessage: 'Bağlantı hatası: $e');
+
+      _state = _state.copyWith(
+        isLoading: false,
+        errorMessage: 'Bağlantı hatası: $e',
+      );
+
       notifyListeners();
+
       return false;
     }
   }
 
   Future<void> logout() async {
     await _apiClient.storage.deleteAll();
+
     _state = UserState();
+
     notifyListeners();
   }
 }
 
 final authProvider = ChangeNotifierProvider<AuthController>((ref) {
   final client = ref.watch(apiClientProvider);
+
   return AuthController(client);
 });
