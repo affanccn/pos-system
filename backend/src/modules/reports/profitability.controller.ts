@@ -1,6 +1,23 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../config/prisma.js';
 
+function getLogicalDayBounds(dateParam?: string) {
+  const targetDate = dateParam ? new Date(dateParam) : new Date();
+  
+  if (targetDate.getHours() < 5) {
+    targetDate.setDate(targetDate.getDate() - 1);
+  }
+
+  const startOfDay = new Date(targetDate);
+  startOfDay.setHours(5, 0, 0, 0);
+
+  const endOfDay = new Date(targetDate);
+  endOfDay.setDate(endOfDay.getDate() + 1);
+  endOfDay.setHours(4, 59, 59, 999);
+
+  return { startOfDay, endOfDay };
+}
+
 export async function getProfitabilityReport(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -11,8 +28,8 @@ export async function getProfitabilityReport(req: Request, res: Response): Promi
       return;
     }
 
-    const start = startDate ? new Date(startDate) : new Date(new Date().setHours(0, 0, 0, 0));
-    const end = endDate ? new Date(endDate) : new Date(new Date().setHours(23, 59, 59, 999));
+    const start = startDate ? getLogicalDayBounds(startDate).startOfDay : getLogicalDayBounds().startOfDay;
+    const end = endDate ? getLogicalDayBounds(endDate).endOfDay : getLogicalDayBounds().endOfDay;
 
     // Tüm ürünleri reçete ve kategori bilgisiyle getir
     const products = await prisma.product.findMany({

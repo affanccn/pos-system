@@ -575,8 +575,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     try {
       final apiClient = ref.read(apiClientProvider);
       final response = await apiClient.dio.delete(
-        '/orders/items/$orderItemId',
-        data: {'quantityToCancel': cancelQuantity},
+        '/orders/items/$orderItemId?quantityToCancel=$cancelQuantity',
       );
 
       if (response.statusCode == 200 && mounted) {
@@ -833,7 +832,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
   }
 
   // 6. Masa Taşıma / Aktarma Modal Fonksiyonu
-  void _showTransferDialog() {
+  void _showTransferDialog(List<dynamic> orderItems) {
     final userState = ref.read(authProvider).state;
     if (!userState.hasPermission(AppPermissions.tableTransfer)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -931,9 +930,9 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           color: Colors.white54,
                           size: 16,
                         ),
-                        onTap: () async {
+                        onTap: () {
                           Navigator.of(ctx).pop();
-                          await _executeTransfer(target.id, target.name);
+                          _showTransferItemsSelectionDialog(target, orderItems);
                         },
                       );
                     },
@@ -945,6 +944,243 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
         },
       );
     });
+  }
+
+  void _showTransferItemsSelectionDialog(RestaurantTable targetTable, List<dynamic> items) {
+    if (items.isEmpty) return;
+
+    final Map<String, int> selectedItems = {};
+    for (var item in items) {
+      selectedItems[item['id']] = 0;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: const Color(0xFF1E293B),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            bool isAllSelected = selectedItems.values.every((qty) => qty > 0);
+            
+            return FractionallySizedBox(
+              heightFactor: 0.85,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '${widget.table.name} ➔ ${targetTable.name}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white70),
+                          onPressed: () => Navigator.of(ctx).pop(),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(color: Color(0xFF334155), height: 1),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Aktarılacak Ürünleri Seçin',
+                          style: TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setModalState(() {
+                              if (isAllSelected) {
+                                for (var item in items) {
+                                  selectedItems[item['id']] = 0;
+                                }
+                              } else {
+                                for (var item in items) {
+                                  selectedItems[item['id']] = item['quantity'] ?? 1;
+                                }
+                              }
+                            });
+                          },
+                          child: Text(
+                            isAllSelected ? 'Tümünü Kaldır' : 'Tümünü Seç',
+                            style: const TextStyle(color: Color(0xFF38BDF8)),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        final itemId = item['id'];
+                        final name = item['productNameSnapshot'] ?? 'Ürün';
+                        final maxQty = item['quantity'] ?? 1;
+                        final currentQty = selectedItems[itemId]!;
+                        final isSelected = currentQty > 0;
+
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: isSelected 
+                                ? const Color(0xFF10B981).withValues(alpha: 0.1) 
+                                : const Color(0xFF0F172A),
+                            border: Border.all(
+                              color: isSelected ? const Color(0xFF10B981) : const Color(0xFF334155),
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Theme(
+                            data: Theme.of(context).copyWith(
+                              unselectedWidgetColor: const Color(0xFF94A3B8),
+                            ),
+                            child: CheckboxListTile(
+                              value: isSelected,
+                              activeColor: const Color(0xFF10B981),
+                              checkColor: Colors.white,
+                              side: const BorderSide(color: Color(0xFF94A3B8)),
+                              onChanged: (val) {
+                                setModalState(() {
+                                  if (val == true) {
+                                    selectedItems[itemId] = maxQty;
+                                  } else {
+                                    selectedItems[itemId] = 0;
+                                  }
+                                });
+                              },
+                              title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                              subtitle: Text('Adisyonda: $maxQty adet', style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
+                              secondary: isSelected && maxQty > 1
+                                  ? Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(Icons.remove_circle_outline, color: Color(0xFFEF4444)),
+                                          onPressed: currentQty > 1
+                                              ? () => setModalState(() => selectedItems[itemId] = currentQty - 1)
+                                              : null,
+                                        ),
+                                        Text('$currentQty', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                        IconButton(
+                                          icon: const Icon(Icons.add_circle_outline, color: Color(0xFF10B981)),
+                                          onPressed: currentQty < maxQty
+                                              ? () => setModalState(() => selectedItems[itemId] = currentQty + 1)
+                                              : null,
+                                        ),
+                                      ],
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF1E293B),
+                      border: Border(top: BorderSide(color: Color(0xFF334155))),
+                    ),
+                    child: SafeArea(
+                      child: SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF38BDF8),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          onPressed: selectedItems.values.any((q) => q > 0)
+                              ? () {
+                                  Navigator.of(ctx).pop();
+                                  
+                                  bool allSelected = true;
+                                  final transferList = <Map<String, dynamic>>[];
+                                  for (var item in items) {
+                                    int q = selectedItems[item['id']]!;
+                                    if (q > 0) {
+                                      transferList.add({'orderItemId': item['id'], 'quantity': q});
+                                    }
+                                    if (q != item['quantity']) allSelected = false;
+                                  }
+
+                                  if (allSelected) {
+                                    _executeTransfer(targetTable.id, targetTable.name);
+                                  } else {
+                                    _executePartialTransfer(targetTable.id, targetTable.name, transferList);
+                                  }
+                                }
+                              : null,
+                          child: const Text('Seçili Ürünleri Aktar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _executePartialTransfer(String targetTableId, String targetTableName, List<Map<String, dynamic>> items) async {
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _isProcessing = true);
+    try {
+      final apiClient = ref.read(apiClientProvider);
+      final response = await apiClient.dio.post(
+        '/orders/transfer-items',
+        data: {
+          'fromTableId': widget.table.id,
+          'toTableId': targetTableId,
+          'items': items,
+        },
+      );
+
+      if (response.statusCode == 200 && mounted) {
+        ref.invalidate(tablesFutureProvider);
+        ref.invalidate(tableActiveOrderProvider(widget.table.id));
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              'Seçili ürünler $targetTableName masasına başarıyla aktarıldı!',
+            ),
+            backgroundColor: const Color(0xFF10B981),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('Ürün aktarımı başarısız: $e'),
+            backgroundColor: const Color(0xFFEF4444),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
   }
 
   Future<void> _executeTransfer(
@@ -1204,7 +1440,13 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                 color: Color(0xFF38BDF8),
                 size: 26,
               ),
-              onPressed: _isProcessing ? null : _showTransferDialog,
+              onPressed: _isProcessing
+                  ? null
+                  : () {
+                      final order = orderAsync.value;
+                      final items = order != null ? (order['items'] as List<dynamic>?) ?? [] : [];
+                      _showTransferDialog(items);
+                    },
             ),
           IconButton(
             tooltip: 'Yenile',
@@ -1224,7 +1466,8 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
             return _buildEmptyOrderView(context);
           }
 
-          final items = (order['items'] as List<dynamic>?) ?? [];
+          final allItems = (order['items'] as List<dynamic>?) ?? [];
+          final items = allItems.where((item) => item['status'] != 'VOID' && item['status'] != 'CANCELLED').toList();
 
           final waiter = order['waiter']?['fullName'] ?? 'Bilinmiyor';
           final orderNumber = order['orderNumber'] ?? '-';

@@ -1,6 +1,30 @@
 import { Request, Response } from 'express';
 import { prisma } from '../../config/prisma.js';
 
+function getLogicalDayBounds(dateParam?: string) {
+  const targetDate = dateParam ? new Date(dateParam) : new Date();
+  
+  // Eğer saat sabah 5'ten önceyse, mantıksal olarak "önceki gün" olarak kabul et
+  if (targetDate.getHours() < 5) {
+    targetDate.setDate(targetDate.getDate() - 1);
+  }
+
+  // İş günü sabah 05:00'te başlar
+  const startOfDay = new Date(targetDate);
+  startOfDay.setHours(5, 0, 0, 0);
+
+  // İş günü ertesi sabah 04:59:59'da biter
+  const endOfDay = new Date(targetDate);
+  endOfDay.setDate(endOfDay.getDate() + 1);
+  endOfDay.setHours(4, 59, 59, 999);
+
+  // Raporun "tarihi" olarak kullanılacak tarih (saat 00:00)
+  const reportDate = new Date(targetDate);
+  reportDate.setHours(0, 0, 0, 0);
+
+  return { startOfDay, endOfDay, reportDate };
+}
+
 export async function previewEndOfDay(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -11,15 +35,13 @@ export async function previewEndOfDay(req: Request, res: Response): Promise<void
       return;
     }
 
-    const targetDate = date ? new Date(date) : new Date();
-    const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
-    const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+    const { startOfDay, endOfDay, reportDate } = getLogicalDayBounds(date);
 
     // Zaten gün kapanmış mı kontrol et
     const existingReport = await prisma.endOfDayReport.findFirst({
       where: {
         businessId,
-        reportDate: startOfDay,
+        reportDate,
       }
     });
 
@@ -99,7 +121,7 @@ export async function previewEndOfDay(req: Request, res: Response): Promise<void
       success: true,
       data: {
         isAlreadyClosed: false,
-        reportDate: startOfDay,
+        reportDate,
         totalSalesCents,
         cashCents,
         cardCents,
@@ -130,12 +152,16 @@ export async function closeDay(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const { reportDate, actualCashCents, data } = req.body;
-    const startOfDay = new Date(new Date(reportDate).setHours(0, 0, 0, 0));
+    const reqReportDate = req.body.reportDate;
+    const actualCashCents = req.body.actualCashCents;
+    const data = req.body.data;
+    
+    // Client has the 'reportDate' which is at 00:00:00 for the logical day.
+    const { startOfDay, reportDate } = getLogicalDayBounds(reqReportDate);
 
     // Kontrol et, zaten kapanmış mı?
     const existing = await prisma.endOfDayReport.findFirst({
-      where: { businessId, reportDate: startOfDay }
+      where: { businessId, reportDate }
     });
 
     if (existing) {
@@ -152,7 +178,7 @@ export async function closeDay(req: Request, res: Response): Promise<void> {
         data: {
           businessId,
           closedById: userId,
-          reportDate: startOfDay,
+          reportDate: reportDate,
           totalSalesCents: data.totalSalesCents,
           cashCents: data.cashCents,
           cardCents: data.cardCents,

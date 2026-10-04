@@ -1,4 +1,4 @@
-﻿import { Router } from 'express';
+import { Router } from 'express';
 import { 
   createOrder, 
   getActiveOrderByTable, 
@@ -12,6 +12,7 @@ import {
   getKitchenOrders,
   updateOrderItemStatus,
   readyAllOrderItems,
+  transferOrderItems,
 } from './orders.controller.js';
 import { authMiddleware, requirePermission } from '../../middleware/auth.js';
 import { PERMISSIONS } from '../../constants/permissions.js';
@@ -22,6 +23,7 @@ ordersRouter.use(authMiddleware);
 
 // 1. Statik ve Genel Rotalar
 ordersRouter.post('/transfer', requirePermission(PERMISSIONS.TABLE_TRANSFER), transferTable);
+ordersRouter.post('/transfer-items', requirePermission(PERMISSIONS.TABLE_TRANSFER), transferOrderItems);
 ordersRouter.post('/merge', requirePermission(PERMISSIONS.TABLE_MERGE), mergeTables);
 ordersRouter.get('/kitchen', requirePermission(PERMISSIONS.KITCHEN_VIEW), getKitchenOrders);
 
