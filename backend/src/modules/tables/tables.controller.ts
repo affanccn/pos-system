@@ -408,21 +408,29 @@ export async function mergeTables(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // fromOrder'daki tüm item'ları toOrder'a geçir
+    // fromOrder'daki tüm item'ları ve ödemeleri toOrder'a geçir
     await prisma.$transaction([
       prisma.orderItem.updateMany({
         where: { orderId: fromOrder.id },
         data: { orderId: toOrder.id },
       }),
+      prisma.payment.updateMany({
+        where: { orderId: fromOrder.id },
+        data: { orderId: toOrder.id },
+      }),
       prisma.order.update({
         where: { id: toOrder.id },
-        data: { totalAmountCents: toOrder.totalAmountCents + fromOrder.totalAmountCents },
+        data: { 
+          totalAmountCents: toOrder.totalAmountCents + fromOrder.totalAmountCents,
+          paidAmountCents: toOrder.paidAmountCents + fromOrder.paidAmountCents,
+          discountAmountCents: toOrder.discountAmountCents + fromOrder.discountAmountCents
+        },
       }),
       prisma.restaurantTable.update({
         where: { id: fromTable.id },
         data: { currentOrderId: null, status: 'AVAILABLE' },
       }),
-      // Kaynak siparişi sil (veya iptal et/arşivle, burada siliyoruz çünkü ürünleri taşıdık)
+      // Kaynak siparişi sil
       prisma.order.delete({
         where: { id: fromOrder.id },
       }),

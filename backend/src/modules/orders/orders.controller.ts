@@ -325,8 +325,80 @@ export async function transferTable(req: Request, res: Response): Promise<void> 
 }
 
 export async function mergeTables(req: Request, res: Response): Promise<void> {
-  // Not fully implemented yet
-  res.json({ success: true, message: 'Masalar birleştirildi.' });
+  try {
+    const businessId = req.user?.businessId;
+    const { fromTableId, toTableId } = req.body;
+
+    if (!businessId || !fromTableId || !toTableId || fromTableId === toTableId) {
+      res.status(400).json({ success: false, error: 'Geçersiz masa bilgileri.' });
+      return;
+    }
+
+    const fromTable = await prisma.restaurantTable.findUnique({ where: { id: fromTableId } });
+    const toTable = await prisma.restaurantTable.findUnique({ where: { id: toTableId } });
+
+    if (!fromTable?.currentOrderId || !toTable?.currentOrderId) {
+      res.status(400).json({ success: false, error: 'Her iki masada da aktif sipariş olmalıdır.' });
+      return;
+    }
+
+    const fromOrder = await prisma.order.findUnique({ where: { id: fromTable.currentOrderId } });
+    const toOrder = await prisma.order.findUnique({ where: { id: toTable.currentOrderId } });
+
+    if (!fromOrder || !toOrder) {
+      res.status(404).json({ success: false, error: 'Sipariş bulunamadı.' });
+      return;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      // 1. Move all items from fromOrder to toOrder
+      await tx.orderItem.updateMany({
+        where: { orderId: fromOrder.id },
+        data: { orderId: toOrder.id }
+      });
+
+      // 2. Move all payments
+      await tx.payment.updateMany({
+        where: { orderId: fromOrder.id },
+        data: { orderId: toOrder.id }
+      });
+
+      // 3. Update toOrder totals
+      await tx.order.update({
+        where: { id: toOrder.id },
+        data: {
+          totalAmountCents: toOrder.totalAmountCents + fromOrder.totalAmountCents,
+          paidAmountCents: toOrder.paidAmountCents + fromOrder.paidAmountCents,
+          discountAmountCents: toOrder.discountAmountCents + fromOrder.discountAmountCents
+        }
+      });
+
+      // 4. Mark fromOrder as MERGED/CANCELLED and fromTable as AVAILABLE
+      await tx.order.update({
+        where: { id: fromOrder.id },
+        data: { 
+          status: 'CANCELLED',
+          totalAmountCents: 0,
+          paidAmountCents: 0,
+          notes: 'Başka masaya birleştirildi' 
+        }
+      });
+
+      await tx.restaurantTable.update({
+        where: { id: fromTableId },
+        data: { status: 'AVAILABLE', currentOrderId: null }
+      });
+    });
+
+    const io = getIO();
+    io.to(`business:${businessId}:waiters`).emit('table:updated', { tableId: fromTableId, status: 'AVAILABLE' });
+    io.to(`business:${businessId}:waiters`).emit('table:updated', { tableId: toTableId, status: 'OCCUPIED' });
+
+    res.json({ success: true, message: 'Masalar başarıyla birleştirildi.' });
+  } catch (error) {
+    console.error('Masa birleştirme hatası:', error);
+    res.status(500).json({ success: false, error: 'Masa birleştirilemedi.' });
+  }
 }
 
 export async function voidOrderItem(req: Request, res: Response): Promise<void> {

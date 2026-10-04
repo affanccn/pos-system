@@ -177,6 +177,129 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     }
   }
 
+  Future<void> _executeItemComplimentary(String orderItemId) async {
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _isProcessing = true);
+    try {
+      final apiClient = ref.read(apiClientProvider);
+      final response = await apiClient.dio.post(
+        '/orders/items/$orderItemId/complimentary',
+      );
+
+      if (response.statusCode == 200 && mounted) {
+        ref.invalidate(tablesFutureProvider);
+        ref.invalidate(tableActiveOrderProvider(widget.table.id));
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('Ürün başarıyla ikram edildi.'),
+            backgroundColor: Color(0xFF10B981),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('İkram işlemi başarısız: $e'),
+            backgroundColor: const Color(0xFFEF4444),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
+  void _showDiscountDialog(String orderId, int currentRemainingCents) {
+    final discountController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E293B),
+          title: const Text('İndirim Uygula', style: TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Kalan Tutar: ${(currentRemainingCents / 100).toStringAsFixed(2)} ₺', style: const TextStyle(color: Colors.white70)),
+              const SizedBox(height: 12),
+              TextField(
+                controller: discountController,
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                style: const TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  labelText: 'İndirim Tutarı (₺)',
+                  labelStyle: TextStyle(color: Colors.white54),
+                  enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
+                  focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF38BDF8))),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('İptal', style: TextStyle(color: Colors.white70)),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final amountStr = discountController.text.replaceAll(',', '.');
+                final amount = double.tryParse(amountStr);
+                if (amount == null || amount <= 0) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Geçerli bir tutar girin.')));
+                  return;
+                }
+                final discountCents = (amount * 100).toInt();
+                if (discountCents > currentRemainingCents) {
+                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('İndirim tutarı kalan tutardan büyük olamaz.')));
+                   return;
+                }
+                Navigator.pop(ctx);
+                await _executeOrderDiscount(orderId, discountCents);
+              },
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF8B5CF6)),
+              child: const Text('Uygula', style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _executeOrderDiscount(String orderId, int discountAmountCents) async {
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _isProcessing = true);
+    try {
+      final apiClient = ref.read(apiClientProvider);
+      final response = await apiClient.dio.post(
+        '/orders/$orderId/discount',
+        data: {'discountAmountCents': discountAmountCents},
+      );
+
+      if (response.statusCode == 200 && mounted) {
+        ref.invalidate(tablesFutureProvider);
+        ref.invalidate(tableActiveOrderProvider(widget.table.id));
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('${(discountAmountCents / 100).toStringAsFixed(2)} ₺ indirim uygulandı.'),
+            backgroundColor: const Color(0xFF10B981),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('İndirim başarısız: $e'),
+            backgroundColor: const Color(0xFFEF4444),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
   // 3. Ödeme Modalı (Split Payment BottomSheet)
   void _showPaymentModal({required String orderId, required int totalCents, required int paidCents}) {
     final userState = ref.read(authProvider).state;
@@ -1221,8 +1344,131 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
       if (mounted) setState(() => _isProcessing = false);
     }
   }
+  // 7. Gerçek Masa Birleştirme Fonksiyonu
+  Future<void> _executeTableMerge(String targetTableId, String targetTableName) async {
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _isProcessing = true);
+    try {
+      final apiClient = ref.read(apiClientProvider);
+      final response = await apiClient.dio.post(
+        '/tables/merge',
+        data: {'fromTableId': widget.table.id, 'toTableId': targetTableId},
+      );
 
-  // 7. Masa Birleştirme Modal Fonksiyonu
+      if (response.statusCode == 200 && mounted) {
+        ref.invalidate(tablesFutureProvider);
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('${widget.table.name} masası $targetTableName ile birleştirildi!'),
+            backgroundColor: const Color(0xFFF59E0B),
+          ),
+        );
+        Navigator.pop(context); // Go back to table grid since this table is now empty
+      }
+    } catch (e) {
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('Birleştirme başarısız: $e'),
+            backgroundColor: const Color(0xFFEF4444),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
+    }
+  }
+
+  void _showTableMergeDialog() {
+    final userState = ref.read(authProvider).state;
+    if (!userState.hasPermission(AppPermissions.tableMerge)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Masa birleştirme yetkiniz bulunmamaktadır.'),
+          backgroundColor: Color(0xFFEF4444),
+        ),
+      );
+      return;
+    }
+
+    final tablesState = ref.read(tablesFutureProvider);
+    tablesState.whenData((allTables) {
+      final candidateTables = allTables
+          .where((t) => t.status == 'OCCUPIED' && t.id != widget.table.id)
+          .toList();
+
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: const Color(0xFF1E293B),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        builder: (ctx) {
+          if (candidateTables.isEmpty) {
+            return Container(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.info_outline, color: Color(0xFFF59E0B), size: 40),
+                  SizedBox(height: 12),
+                  Text(
+                    'Birleştirilebilecek dolu masa bulunmuyor.',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                ],
+              ),
+            );
+          }
+          return Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Hangi Masayla Birleştirilsin?',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: candidateTables.length,
+                    itemBuilder: (ctx, index) {
+                      final targetTable = candidateTables[index];
+                      return ListTile(
+                        leading: const CircleAvatar(
+                          backgroundColor: Color(0xFFF59E0B),
+                          child: Icon(Icons.table_restaurant, color: Colors.white),
+                        ),
+                        title: Text(
+                          targetTable.name,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        subtitle: Text(
+                          'Bölüm: ${targetTable.section}',
+                          style: const TextStyle(color: Colors.white70),
+                        ),
+                        onTap: () {
+                          Navigator.pop(ctx);
+                          _executeTableMerge(targetTable.id, targetTable.name);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    });
+  }
+
+  // 7. Parçalı Ürün Aktarma Modal Fonksiyonu (Yanlışlıkla Merge denmiş)
   void _showMergeDialog() {
     final userState = ref.read(authProvider).state;
     if (!userState.hasPermission(AppPermissions.tableMerge)) {
@@ -1424,9 +1670,19 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
         actions: [
           if (userState.hasPermission(AppPermissions.tableMerge))
             IconButton(
+              tooltip: 'Masayı Birleştir',
+              icon: const Icon(
+                Icons.merge_type,
+                color: Color(0xFFEF4444),
+                size: 26,
+              ),
+              onPressed: _isProcessing ? null : _showTableMergeDialog,
+            ),
+          if (userState.hasPermission(AppPermissions.tableMerge))
+            IconButton(
               tooltip: 'Ürünleri Aktar',
               icon: const Icon(
-                Icons.call_merge,
+                Icons.call_split,
                 color: Color(0xFFF59E0B),
                 size: 24,
               ),
@@ -1685,6 +1941,17 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           const SizedBox(width: 8),
                           IconButton(
                             icon: const Icon(
+                              Icons.card_giftcard,
+                              color: Color(0xFF10B981),
+                              size: 22,
+                            ),
+                            tooltip: 'İkram Et',
+                            onPressed: _isProcessing
+                                ? null
+                                : () => _executeItemComplimentary(itemId),
+                          ),
+                          IconButton(
+                            icon: const Icon(
                               Icons.remove_circle_outline,
                               color: Color(0xFFEF4444),
                               size: 22,
@@ -1774,6 +2041,27 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                               icon: const Icon(Icons.receipt, size: 20),
                               label: const Text(
                                 'Hesap İste',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _isProcessing ? null : () => _showDiscountDialog(orderId, remainingAmountCents),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF8B5CF6), // Purple
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              icon: const Icon(Icons.discount, size: 20),
+                              label: const Text(
+                                'İndirim',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),

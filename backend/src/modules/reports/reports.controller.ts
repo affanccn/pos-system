@@ -114,7 +114,10 @@ export async function getAdvancedReport(req: Request, res: Response): Promise<vo
     const orders = await prisma.order.findMany({
       where: {
         businessId,
-        createdAt: { gte: start, lte: end },
+        OR: [
+          { createdAt: { gte: start, lte: end } },
+          { updatedAt: { gte: start, lte: end } }
+        ]
       },
       include: {
         table: { select: { name: true } },
@@ -155,51 +158,63 @@ export async function getAdvancedReport(req: Request, res: Response): Promise<vo
         totalOrderTimeMs += (o.updatedAt.getTime() - o.createdAt.getTime());
       }
 
-      discount += o.discountAmountCents;
+      if (o.updatedAt >= start && o.updatedAt <= end) {
+        discount += o.discountAmountCents;
+      }
       
-      const waiterName = o.waiter.fullName;
+      const waiterName = o.waiter?.fullName || 'Bilinmeyen Garson';
       const waiterData = waiterMap.get(waiterName) || { orders: 0, rev: 0 };
       waiterData.orders += 1;
-      waiterData.rev += o.totalAmountCents;
+      // We'll update waiter rev below
       waiterMap.set(waiterName, waiterData);
 
       const tableName = o.table?.name || 'Bilinmeyen Masa';
       const tableData = tableMap.get(tableName) || { orders: 0, rev: 0 };
       tableData.orders += 1;
-      tableData.rev += o.totalAmountCents;
+      // We'll update table rev below
       tableMap.set(tableName, tableData);
 
+      let orderRevenueInInterval = 0;
+
       for (const p of o.payments) {
-        totalRevenue += p.amountCents;
-        netSales += p.amountCents; // Basitlestirilmis net satis hesaplamasi
-        if (p.method === 'CASH') cash += p.amountCents;
-        else if (p.method === 'CARD') card += p.amountCents;
-        else if (p.method === 'MIXED') {
-          cash += p.cashAmountCents;
-          card += p.cardAmountCents;
+        if (p.createdAt >= start && p.createdAt <= end) {
+          orderRevenueInInterval += p.amountCents;
+          totalRevenue += p.amountCents;
+          netSales += p.amountCents; // Basitlestirilmis net satis hesaplamasi
+          if (p.method === 'CASH') cash += p.amountCents;
+          else if (p.method === 'CARD') card += p.amountCents;
+          else if (p.method === 'MIXED') {
+            cash += p.cashAmountCents;
+            card += p.cardAmountCents;
+          }
         }
       }
 
+      waiterData.rev += orderRevenueInInterval;
+      tableData.rev += orderRevenueInInterval;
+
       for (const item of o.items) {
-        if (item.status === 'COMPLIMENTARY') {
-          complimentary += item.unitPriceCents * item.quantity;
-        } else if (item.status === 'RETURNED') {
-          refund += item.totalPriceCents;
-        } else if (item.status !== 'CANCELLED' && item.status !== 'VOID') {
-          const pName = item.productNameSnapshot;
-          const cName = item.product?.category?.name || 'Diger';
+        if (item.updatedAt >= start && item.updatedAt <= end) {
+          if (item.status === 'COMPLIMENTARY') {
+            complimentary += item.unitPriceCents * item.quantity;
+          } else if (item.status === 'RETURNED') {
+            refund += item.totalPriceCents;
+          } else if (item.status !== 'CANCELLED' && item.status !== 'VOID') {
+            const pName = item.productNameSnapshot;
+            const cName = item.product?.category?.name || 'Diger';
 
-          const pData = productMap.get(pName) || { qty: 0, rev: 0 };
-          pData.qty += item.quantity;
-          pData.rev += item.totalPriceCents;
-          productMap.set(pName, pData);
+            const pData = productMap.get(pName) || { qty: 0, rev: 0 };
+            pData.qty += item.quantity;
+            pData.rev += item.totalPriceCents;
+            productMap.set(pName, pData);
 
-          const cData = categoryMap.get(cName) || { qty: 0, rev: 0 };
-          cData.qty += item.quantity;
-          cData.rev += item.totalPriceCents;
-          categoryMap.set(cName, cData);
-          
-          discount += item.discountAmountCents;
+            const cData = categoryMap.get(cName) || { qty: 0, rev: 0 };
+            cData.qty += item.quantity;
+            cData.rev += item.totalPriceCents;
+            categoryMap.set(cName, cData);
+            
+            discount += item.discountAmountCents;
+          }
         }
       }
     }

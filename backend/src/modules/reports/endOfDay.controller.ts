@@ -54,41 +54,55 @@ export async function previewEndOfDay(req: Request, res: Response): Promise<void
     }
 
     // --- Satış ve Ödemeler ---
+    const payments = await prisma.payment.findMany({
+      where: { businessId, createdAt: { gte: startOfDay, lte: endOfDay } }
+    });
+
     const orders = await prisma.order.findMany({
-      where: { businessId, createdAt: { gte: startOfDay, lte: endOfDay } },
-      include: {
-        items: true,
-        payments: true
-      }
+      where: { 
+        businessId, 
+        OR: [
+          { createdAt: { gte: startOfDay, lte: endOfDay } },
+          { updatedAt: { gte: startOfDay, lte: endOfDay } }
+        ]
+      },
+      include: { items: true }
     });
 
     let totalSalesCents = 0;
     let cashCents = 0;
     let cardCents = 0;
+    
+    for (const p of payments) {
+      totalSalesCents += p.amountCents;
+      if (p.method === 'CASH') cashCents += p.amountCents;
+      else if (p.method === 'CARD') cardCents += p.amountCents;
+      else if (p.method === 'MIXED') {
+        cashCents += p.cashAmountCents;
+        cardCents += p.cardAmountCents;
+      }
+    }
+
     let discountCents = 0;
     let complimentaryCents = 0;
     let returnedCents = 0;
 
     for (const o of orders) {
-      discountCents += o.discountAmountCents;
-      
-      for (const p of o.payments) {
-        totalSalesCents += p.amountCents;
-        if (p.method === 'CASH') cashCents += p.amountCents;
-        else if (p.method === 'CARD') cardCents += p.amountCents;
-        else if (p.method === 'MIXED') {
-          cashCents += p.cashAmountCents;
-          cardCents += p.cardAmountCents;
-        }
+      // Sadece bu aralıkta güncellenmiş/kapatılmış siparişlerin indirimlerini alıyoruz
+      // (Eğer dünden kalan sipariş bugün kapatıldıysa, indirimler bugünün raporuna yansır)
+      if (o.updatedAt >= startOfDay && o.updatedAt <= endOfDay) {
+        discountCents += o.discountAmountCents;
       }
 
       for (const item of o.items) {
-        if (item.status === 'COMPLIMENTARY') {
-          complimentaryCents += item.unitPriceCents * item.quantity;
-        } else if (item.status === 'RETURNED') {
-          returnedCents += item.totalPriceCents;
-        } else if (item.status !== 'CANCELLED' && item.status !== 'VOID') {
-          discountCents += item.discountAmountCents;
+        if (item.updatedAt >= startOfDay && item.updatedAt <= endOfDay) {
+          if (item.status === 'COMPLIMENTARY') {
+            complimentaryCents += item.unitPriceCents * item.quantity;
+          } else if (item.status === 'RETURNED') {
+            returnedCents += item.totalPriceCents;
+          } else if (item.status !== 'CANCELLED' && item.status !== 'VOID') {
+            discountCents += item.discountAmountCents;
+          }
         }
       }
     }
