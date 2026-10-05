@@ -1,12 +1,15 @@
 import { Router } from 'express';
-import { getCatalog, createCategory, createProduct } from './catalog.controller.js';
-import { authMiddleware } from '../../middleware/auth.js';
+import { getCatalog, createCategory, createProduct, updateProduct, deleteProduct, createModifierGroup, createModifierItem, deleteModifierGroup, deleteModifierItem } from './catalog.controller.js';
+import { authMiddleware, requirePermission } from '../../middleware/auth.js';
+import { PERMISSIONS } from '../../constants/permissions.js';
 export const catalogRouter = Router();
-// Tüm katalog rotaları için JWT zorunlu
 catalogRouter.use(authMiddleware);
-// Menüyü (Kategoriler + Ürünler) listele
-catalogRouter.get('/', getCatalog);
-// Yeni kategori oluştur
-catalogRouter.post('/categories', createCategory);
-// Yeni ürün oluştur
-catalogRouter.post('/products', createProduct);
+catalogRouter.get('/', requirePermission(PERMISSIONS.PRODUCT_VIEW), getCatalog);
+catalogRouter.post('/categories', requirePermission(PERMISSIONS.PRODUCT_CREATE), createCategory);
+catalogRouter.post('/products', requirePermission(PERMISSIONS.PRODUCT_CREATE), createProduct);
+catalogRouter.put('/products/:id', requirePermission(PERMISSIONS.PRODUCT_EDIT), updateProduct);
+catalogRouter.delete('/products/:id', requirePermission(PERMISSIONS.PRODUCT_DELETE), deleteProduct);
+catalogRouter.post('/modifier-groups', requirePermission(PERMISSIONS.PRODUCT_EDIT), createModifierGroup);
+catalogRouter.post('/modifier-items', requirePermission(PERMISSIONS.PRODUCT_EDIT), createModifierItem);
+catalogRouter.delete('/modifier-groups/:id', requirePermission(PERMISSIONS.PRODUCT_EDIT), deleteModifierGroup);
+catalogRouter.delete('/modifier-items/:id', requirePermission(PERMISSIONS.PRODUCT_EDIT), deleteModifierItem);

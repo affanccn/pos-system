@@ -4,7 +4,7 @@ import { signToken } from '../../utils/jwt.js';
 import { getPermissionsForUser } from '../../constants/permissions.js';
 export async function loginWithPin(req, res) {
     try {
-        const { businessSlug, pinCode } = req.body;
+        const { businessSlug, pinCode, isWindowsDevice } = req.body;
         if (!businessSlug || !pinCode) {
             res.status(400).json({
                 success: false,
@@ -12,7 +12,6 @@ export async function loginWithPin(req, res) {
             });
             return;
         }
-        // 1. Önce işletmeyi bul
         const business = await prisma.business.findUnique({
             where: { slug: businessSlug, isActive: true },
         });
@@ -23,11 +22,9 @@ export async function loginWithPin(req, res) {
             });
             return;
         }
-        // 2. İşletmeye bağlı aktif personelleri getir
         const users = await prisma.user.findMany({
             where: { businessId: business.id, isActive: true },
         });
-        // 3. Girilen PIN kodunu personellerin hash'li PIN'leriyle eşleştir
         let matchedUser = null;
         for (const u of users) {
             const isMatch = await bcrypt.compare(pinCode, u.pinCodeHash);
@@ -43,9 +40,19 @@ export async function loginWithPin(req, res) {
             });
             return;
         }
-        // 4. Role ve kullanıcıya ait yetkileri hesapla
+        const isBossOrManager = matchedUser.role === 'OWNER' ||
+            matchedUser.role === 'MANAGER' ||
+            pinCode === '1111' ||
+            pinCode === '2222';
+        // KURAL 1: Windows Ana Kasa uygulamasına sadece Patron (1111 / OWNER) ve Müdür (2222 / MANAGER) girebilir!
+        if (isWindowsDevice && !isBossOrManager) {
+            res.status(403).json({
+                success: false,
+                error: 'Windows Ana Kasa paneline sadece Patron veya Müdür giriş yapabilir!',
+            });
+            return;
+        }
         const permissions = getPermissionsForUser(matchedUser.role, matchedUser.customPermissions);
-        // 5. JWT Token üret (yetkiler token içine de gömülür)
         const token = signToken({
             userId: matchedUser.id,
             businessId: business.id,
@@ -53,7 +60,6 @@ export async function loginWithPin(req, res) {
             fullName: matchedUser.fullName,
             permissions,
         });
-        // 6. Mobil uygulamanın ihtiyaç duyacağı kullanıcı profilini ve yetkilerini dön
         res.json({
             success: true,
             data: {
@@ -64,12 +70,16 @@ export async function loginWithPin(req, res) {
                     role: matchedUser.role,
                     email: matchedUser.email,
                     permissions,
+                    isBossOrManager,
                 },
                 business: {
                     id: business.id,
                     name: business.name,
                     slug: business.slug,
                     currency: business.currency,
+                    isWindowsOnline: business.isWindowsOnline,
+                    isDayOpen: business.isDayOpen,
+                    canWaiterWork: business.isWindowsOnline && business.isDayOpen,
                 },
             },
         });
@@ -82,7 +92,6 @@ export async function loginWithPin(req, res) {
         });
     }
 }
-// Token doğrulama ve mevcut kullanıcı profilini getirme rotası
 export async function getProfile(req, res) {
     if (!req.user) {
         res.status(401).json({ success: false, error: 'Oturum bulunamadı.' });

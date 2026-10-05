@@ -1,75 +1,55 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
-// Gün Sonu / Kasa Özeti Raporu
+import { prisma } from '../../config/prisma.js';
+function getLogicalDayBounds(dateParam) {
+    const targetDate = dateParam ? new Date(dateParam) : new Date();
+    if (targetDate.getHours() < 5) {
+        targetDate.setDate(targetDate.getDate() - 1);
+    }
+    const startOfDay = new Date(targetDate);
+    startOfDay.setHours(5, 0, 0, 0);
+    const endOfDay = new Date(targetDate);
+    endOfDay.setDate(endOfDay.getDate() + 1);
+    endOfDay.setHours(4, 59, 59, 999);
+    return { startOfDay, endOfDay };
+}
 export async function getDailyReport(req, res) {
     try {
         const businessId = req.user?.businessId;
         const { date } = req.query;
         if (!businessId) {
-            res.status(401).json({ success: false, error: 'Oturum bilgisi doğrulanamadı.' });
+            res.status(401).json({ success: false, error: 'Oturum bilgisi bulunamadi.' });
             return;
         }
-        // Tarih aralığı: Verilen tarih (varsayılan bugün 00:00 - 23:59:59)
-        const targetDate = date ? new Date(date) : new Date();
-        const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
-        const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
-        // 1. O gün yapılan tüm tahsilatlar
+        const { startOfDay, endOfDay } = getLogicalDayBounds(date);
         const payments = await prisma.payment.findMany({
             where: {
                 businessId,
-                createdAt: {
-                    gte: startOfDay,
-                    lte: endOfDay,
-                },
+                createdAt: { gte: startOfDay, lte: endOfDay },
             },
-            include: {
-                cashier: { select: { fullName: true } },
-            },
+            include: { cashier: { select: { fullName: true } } },
         });
         let totalRevenueCents = 0;
         let cashTotalCents = 0;
         let cardTotalCents = 0;
         for (const p of payments) {
             totalRevenueCents += p.amountCents;
-            if (p.method === 'CASH') {
+            if (p.method === 'CASH')
                 cashTotalCents += p.amountCents;
-            }
-            else if (p.method === 'CARD') {
+            else if (p.method === 'CARD')
                 cardTotalCents += p.amountCents;
-            }
             else if (p.method === 'MIXED') {
                 cashTotalCents += p.cashAmountCents;
                 cardTotalCents += p.cardAmountCents;
             }
         }
-        // 2. O gün tamamlanan (ödenen) sipariş sayısı
         const completedOrdersCount = await prisma.order.count({
-            where: {
-                businessId,
-                status: 'PAID',
-                updatedAt: {
-                    gte: startOfDay,
-                    lte: endOfDay,
-                },
-            },
+            where: { businessId, status: 'PAID', updatedAt: { gte: startOfDay, lte: endOfDay } },
         });
-        // 3. Günün en çok satan ürünleri
         const orderItems = await prisma.orderItem.findMany({
             where: {
-                order: {
-                    businessId,
-                    createdAt: {
-                        gte: startOfDay,
-                        lte: endOfDay,
-                    },
-                },
+                order: { businessId, createdAt: { gte: startOfDay, lte: endOfDay } },
                 status: { not: 'CANCELLED' },
             },
-            select: {
-                productNameSnapshot: true,
-                quantity: true,
-                totalPriceCents: true,
-            },
+            select: { productNameSnapshot: true, quantity: true, totalPriceCents: true },
         });
         const productSalesMap = new Map();
         for (const item of orderItems) {
@@ -80,11 +60,7 @@ export async function getDailyReport(req, res) {
             });
         }
         const topSellingProducts = Array.from(productSalesMap.entries())
-            .map(([name, data]) => ({
-            productName: name,
-            quantity: data.quantity,
-            revenueCents: data.revenueCents,
-        }))
+            .map(([name, data]) => ({ productName: name, quantity: data.quantity, revenueCents: data.revenueCents }))
             .sort((a, b) => b.quantity - a.quantity)
             .slice(0, 5);
         res.json({
@@ -101,7 +77,156 @@ export async function getDailyReport(req, res) {
         });
     }
     catch (error) {
-        console.error('Gün sonu raporu alınırken hata:', error);
-        res.status(500).json({ success: false, error: 'Rapor oluşturulamadı.' });
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Rapor olusturulamadi.' });
+    }
+}
+export async function getAdvancedReport(req, res) {
+    try {
+        const businessId = req.user?.businessId;
+        const { startDate, endDate } = req.query;
+        if (!businessId) {
+            res.status(401).json({ success: false, error: 'Oturum bilgisi bulunamadi.' });
+            return;
+        }
+        const start = startDate ? getLogicalDayBounds(startDate).startOfDay : getLogicalDayBounds().startOfDay;
+        const end = endDate ? getLogicalDayBounds(endDate).endOfDay : getLogicalDayBounds().endOfDay;
+        const orders = await prisma.order.findMany({
+            where: {
+                businessId,
+                OR: [
+                    { createdAt: { gte: start, lte: end } },
+                    { updatedAt: { gte: start, lte: end } }
+                ]
+            },
+            include: {
+                table: { select: { name: true } },
+                waiter: { select: { fullName: true } },
+                items: {
+                    include: {
+                        product: { include: { category: true } }
+                    }
+                },
+                payments: true
+            }
+        });
+        let totalRevenue = 0;
+        let netSales = 0;
+        let cash = 0;
+        let card = 0;
+        let discount = 0;
+        let complimentary = 0;
+        let refund = 0;
+        let completedOrders = 0;
+        let totalOrderTimeMs = 0;
+        const peakHoursMap = new Map();
+        const productMap = new Map();
+        const categoryMap = new Map();
+        const waiterMap = new Map();
+        const tableMap = new Map();
+        for (const o of orders) {
+            const hour = o.createdAt.getHours();
+            peakHoursMap.set(hour, (peakHoursMap.get(hour) || 0) + 1);
+            if (o.status === 'PAID') {
+                completedOrders++;
+                totalOrderTimeMs += (o.updatedAt.getTime() - o.createdAt.getTime());
+            }
+            if (o.updatedAt >= start && o.updatedAt <= end) {
+                discount += o.discountAmountCents;
+            }
+            const waiterName = o.waiter?.fullName || 'Bilinmeyen Garson';
+            const waiterData = waiterMap.get(waiterName) || { orders: 0, rev: 0 };
+            waiterData.orders += 1;
+            waiterMap.set(waiterName, waiterData);
+            const tableName = o.table?.name || 'Bilinmeyen Masa';
+            const tableData = tableMap.get(tableName) || { orders: 0, rev: 0 };
+            tableData.orders += 1;
+            tableMap.set(tableName, tableData);
+            let orderRevenueInInterval = 0;
+            for (const p of o.payments) {
+                if (p.createdAt >= start && p.createdAt <= end) {
+                    orderRevenueInInterval += p.amountCents;
+                    totalRevenue += p.amountCents;
+                    netSales += p.amountCents;
+                    if (p.method === 'CASH')
+                        cash += p.amountCents;
+                    else if (p.method === 'CARD')
+                        card += p.amountCents;
+                    else if (p.method === 'MIXED') {
+                        cash += p.cashAmountCents;
+                        card += p.cardAmountCents;
+                    }
+                }
+            }
+            waiterData.rev += orderRevenueInInterval;
+            tableData.rev += orderRevenueInInterval;
+            for (const item of o.items) {
+                if (item.updatedAt >= start && item.updatedAt <= end) {
+                    if (item.status === 'COMPLIMENTARY') {
+                        complimentary += item.unitPriceCents * item.quantity;
+                    }
+                    else if (item.status === 'RETURNED') {
+                        refund += item.totalPriceCents;
+                    }
+                    else if (item.status !== 'CANCELLED' && item.status !== 'VOID') {
+                        const pName = item.productNameSnapshot;
+                        const cName = item.product?.category?.name || 'Diger';
+                        const pData = productMap.get(pName) || { qty: 0, rev: 0 };
+                        pData.qty += item.quantity;
+                        pData.rev += item.totalPriceCents;
+                        productMap.set(pName, pData);
+                        const cData = categoryMap.get(cName) || { qty: 0, rev: 0 };
+                        cData.qty += item.quantity;
+                        cData.rev += item.totalPriceCents;
+                        categoryMap.set(cName, cData);
+                        discount += item.discountAmountCents;
+                    }
+                }
+            }
+        }
+        const productArr = Array.from(productMap.entries()).map(([name, d]) => ({ name, qty: d.qty, rev: d.rev })).sort((a, b) => b.qty - a.qty);
+        const bestSellers = productArr.slice(0, 5);
+        const categorySales = Array.from(categoryMap.entries()).map(([name, d]) => ({ name, qty: d.qty, rev: d.rev })).sort((a, b) => b.rev - a.rev);
+        const waiterSales = Array.from(waiterMap.entries()).map(([name, d]) => ({ name, orders: d.orders, rev: d.rev })).sort((a, b) => b.rev - a.rev);
+        const topTables = Array.from(tableMap.entries()).map(([name, d]) => ({ name, orders: d.orders, rev: d.rev })).sort((a, b) => b.orders - a.orders).slice(0, 5);
+        const peakHours = Array.from(peakHoursMap.entries()).map(([hour, count]) => ({ hour, count })).sort((a, b) => a.hour - b.hour);
+        const avgOrderTimeMin = completedOrders > 0 ? (totalOrderTimeMs / completedOrders) / 60000 : 0;
+        const avgTicketCents = completedOrders > 0 ? (totalRevenue / completedOrders) : 0;
+        res.json({
+            success: true,
+            data: {
+                financials: {
+                    totalRevenueCents: totalRevenue,
+                    netSalesCents: netSales,
+                    cashTotalCents: cash,
+                    cardTotalCents: card,
+                    discountCents: discount,
+                    complimentaryCents: complimentary,
+                    refundCents: refund,
+                },
+                products: {
+                    bestSellers,
+                    categorySales
+                },
+                tables: {
+                    topTables
+                },
+                staff: {
+                    waiterSales,
+                    orderCount: orders.length,
+                    avgTicketCents
+                },
+                operations: {
+                    avgOrderTimeMin,
+                    avgTableTimeMin: avgOrderTimeMin,
+                    kitchenPrepTimeMin: avgOrderTimeMin * 0.8,
+                    peakHours
+                }
+            }
+        });
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, error: 'Rapor olusturulamadi.' });
     }
 }

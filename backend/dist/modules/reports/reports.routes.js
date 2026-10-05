@@ -1,8 +1,13 @@
 import { Router } from 'express';
-import { getDailyReport } from './reports.controller.js';
+import { getDailyReport, getAdvancedReport } from './reports.controller.js';
+import { getProfitabilityReport } from './profitability.controller.js';
+import { previewEndOfDay, closeDay } from './endOfDay.controller.js';
 import { authMiddleware, requirePermission } from '../../middleware/auth.js';
 import { PERMISSIONS } from '../../constants/permissions.js';
 export const reportsRouter = Router();
 reportsRouter.use(authMiddleware);
-// Gün sonu kasa raporu endpoint'i - Yalnızca rapor görüntüleme yetkisi olanlar (Müdür / Patron)
 reportsRouter.get('/daily', requirePermission(PERMISSIONS.REPORT_VIEW), getDailyReport);
+reportsRouter.get('/advanced', requirePermission(PERMISSIONS.REPORT_VIEW), getAdvancedReport);
+reportsRouter.get('/profitability', requirePermission(PERMISSIONS.REPORT_FINANCIAL), getProfitabilityReport);
+reportsRouter.get('/end-of-day/preview', requirePermission(PERMISSIONS.REPORT_FINANCIAL), previewEndOfDay);
+reportsRouter.post('/end-of-day/close', requirePermission(PERMISSIONS.REPORT_FINANCIAL), closeDay);

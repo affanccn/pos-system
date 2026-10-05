@@ -6,7 +6,7 @@ import { getPermissionsForUser } from '../../constants/permissions.js';
 
 export async function loginWithPin(req: Request, res: Response): Promise<void> {
   try {
-    const { businessSlug, pinCode } = req.body;
+    const { businessSlug, pinCode, isWindowsDevice } = req.body;
 
     if (!businessSlug || !pinCode) {
       res.status(400).json({
@@ -49,6 +49,21 @@ export async function loginWithPin(req: Request, res: Response): Promise<void> {
       return;
     }
 
+    const isBossOrManager =
+      matchedUser.role === 'OWNER' ||
+      matchedUser.role === 'MANAGER' ||
+      pinCode === '1111' ||
+      pinCode === '2222';
+
+    // KURAL 1: Windows Ana Kasa uygulamasına sadece Patron (1111 / OWNER) ve Müdür (2222 / MANAGER) girebilir!
+    if (isWindowsDevice && !isBossOrManager) {
+      res.status(403).json({
+        success: false,
+        error: 'Windows Ana Kasa paneline sadece Patron veya Müdür giriş yapabilir!',
+      });
+      return;
+    }
+
     const permissions = getPermissionsForUser(matchedUser.role, matchedUser.customPermissions);
 
     const token = signToken({
@@ -69,12 +84,16 @@ export async function loginWithPin(req: Request, res: Response): Promise<void> {
           role: matchedUser.role,
           email: matchedUser.email,
           permissions,
+          isBossOrManager,
         },
         business: {
           id: business.id,
           name: business.name,
           slug: business.slug,
           currency: business.currency,
+          isWindowsOnline: business.isWindowsOnline,
+          isDayOpen: business.isDayOpen,
+          canWaiterWork: business.isWindowsOnline && business.isDayOpen,
         },
       },
     });

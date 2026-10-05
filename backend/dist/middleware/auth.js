@@ -11,7 +11,7 @@ export function authMiddleware(req, res, next) {
     const token = authHeader.split(' ')[1];
     try {
         const decoded = verifyToken(token);
-        req.user = decoded; // Artık controller katmanında req.user.businessId ve permissions kullanılabilir!
+        req.user = decoded;
         next();
     }
     catch (error) {
@@ -59,7 +59,6 @@ export function requirePermission(permission) {
             });
             return;
         }
-        // OWNER her zaman tüm yetkilere sahiptir
         if (req.user.role.toUpperCase() === 'OWNER') {
             return next();
         }

@@ -1,7 +1,7 @@
 import { prisma } from '../../config/prisma.js';
 import { TableStatus } from '@prisma/client';
 import { getIO } from '../../realtime/socket.js';
-// 1. İşletmeye ait tüm masaları getir (Garson & Yönetici)
+import { createAuditLog } from '../../utils/auditLog.js';
 export async function getTables(req, res) {
     try {
         const businessId = req.user?.businessId;
@@ -39,6 +39,7 @@ export async function getTables(req, res) {
             data: tables.map((t) => ({
                 id: t.id,
                 name: t.name,
+                section: t.section,
                 capacity: t.capacity,
                 status: t.status,
                 sortOrder: t.sortOrder,
@@ -60,11 +61,10 @@ export async function getTables(req, res) {
         res.status(500).json({ success: false, error: 'Masalar listelenemedi.' });
     }
 }
-// 2. Yeni masa ekle (OWNER ve MANAGER)
 export async function createTable(req, res) {
     try {
         const businessId = req.user?.businessId;
-        const { name, capacity, sortOrder } = req.body;
+        const { name, capacity, sortOrder, section } = req.body;
         if (!businessId) {
             res.status(401).json({ success: false, error: 'Oturum bilgisi bulunamadı.' });
             return;
@@ -74,7 +74,6 @@ export async function createTable(req, res) {
             return;
         }
         const trimmedName = name.trim();
-        // Aynı isimde aktif masa var mı kontrol et
         const existing = await prisma.restaurantTable.findFirst({
             where: { businessId, name: trimmedName, isActive: true },
         });
@@ -86,6 +85,7 @@ export async function createTable(req, res) {
             data: {
                 businessId,
                 name: trimmedName,
+                section: section?.trim() || 'Salon',
                 capacity: capacity ? Number(capacity) : 4,
                 sortOrder: sortOrder ? Number(sortOrder) : 0,
                 status: TableStatus.AVAILABLE,
@@ -111,12 +111,11 @@ export async function createTable(req, res) {
         res.status(500).json({ success: false, error: 'Masa oluşturulamadı.' });
     }
 }
-// 3. Masa bilgilerini güncelle (OWNER ve MANAGER)
 export async function updateTable(req, res) {
     try {
         const businessId = req.user?.businessId;
         const id = String(req.params.id);
-        const { name, capacity, sortOrder } = req.body;
+        const { name, capacity, sortOrder, section } = req.body;
         if (!businessId) {
             res.status(401).json({ success: false, error: 'Oturum bilgisi bulunamadı.' });
             return;
@@ -131,6 +130,9 @@ export async function updateTable(req, res) {
         const updateData = {};
         if (name && typeof name === 'string' && name.trim().length > 0) {
             updateData.name = name.trim();
+        }
+        if (section && typeof section === 'string' && section.trim().length > 0) {
+            updateData.section = section.trim();
         }
         if (capacity !== undefined) {
             updateData.capacity = Number(capacity);
@@ -161,7 +163,6 @@ export async function updateTable(req, res) {
         res.status(500).json({ success: false, error: 'Masa güncellenemedi.' });
     }
 }
-// 4. Masa sil / pasife al (OWNER ve MANAGER)
 export async function deleteTable(req, res) {
     try {
         const businessId = req.user?.businessId;
@@ -206,7 +207,6 @@ export async function deleteTable(req, res) {
         res.status(500).json({ success: false, error: 'Masa silinemedi.' });
     }
 }
-// 5. Masa durumunu güncelle (AVAILABLE / OCCUPIED / BILL_REQUESTED)
 export async function updateTableStatus(req, res) {
     try {
         const businessId = req.user?.businessId;
@@ -245,5 +245,213 @@ export async function updateTableStatus(req, res) {
     catch (error) {
         console.error('Masa durumu güncellenirken hata:', error);
         res.status(500).json({ success: false, error: 'Masa durumu güncellenemedi.' });
+    }
+}
+export async function transferTable(req, res) {
+    try {
+        const businessId = req.user?.businessId;
+        const { fromTableId, toTableId } = req.body;
+        if (!businessId) {
+            res.status(401).json({ success: false, error: 'Yetkisiz erişim.' });
+            return;
+        }
+        const fromTable = await prisma.restaurantTable.findUnique({
+            where: { id: fromTableId },
+            include: { currentOrder: true },
+        });
+        const toTable = await prisma.restaurantTable.findUnique({
+            where: { id: toTableId },
+        });
+        if (!fromTable || !toTable || fromTable.businessId !== businessId || toTable.businessId !== businessId) {
+            res.status(404).json({ success: false, error: 'Kaynak veya hedef masa bulunamadı.' });
+            return;
+        }
+        if (!fromTable.currentOrderId) {
+            res.status(400).json({ success: false, error: 'Kaynak masada aktif bir sipariş yok.' });
+            return;
+        }
+        if (toTable.currentOrderId) {
+            res.status(400).json({ success: false, error: 'Hedef masa şu an dolu. Lütfen masaları birleştirin.' });
+            return;
+        }
+        const orderId = fromTable.currentOrderId;
+        await prisma.$transaction([
+            prisma.order.update({
+                where: { id: orderId },
+                data: { tableId: toTable.id },
+            }),
+            prisma.restaurantTable.update({
+                where: { id: fromTable.id },
+                data: { currentOrderId: null, status: 'AVAILABLE' },
+            }),
+            prisma.restaurantTable.update({
+                where: { id: toTable.id },
+                data: { currentOrderId: orderId, status: fromTable.status },
+            }),
+        ]);
+        try {
+            const io = getIO();
+            io.to(`business:${businessId}:waiters`).emit('table:updated', { tableId: fromTable.id, tableStatus: 'AVAILABLE' });
+            io.to(`business:${businessId}:waiters`).emit('table:updated', { tableId: toTable.id, tableStatus: fromTable.status });
+        }
+        catch (_) { }
+        res.json({ success: true, message: 'Masa başarıyla taşındı.' });
+    }
+    catch (error) {
+        console.error('Masa taşıma hatası:', error);
+        res.status(500).json({ success: false, error: 'Masa taşınırken bir hata oluştu.' });
+    }
+}
+export async function mergeTables(req, res) {
+    try {
+        const businessId = req.user?.businessId;
+        const { fromTableId, toTableId } = req.body;
+        if (!businessId) {
+            res.status(401).json({ success: false, error: 'Yetkisiz erişim.' });
+            return;
+        }
+        const fromTable = await prisma.restaurantTable.findUnique({ where: { id: fromTableId } });
+        const toTable = await prisma.restaurantTable.findUnique({ where: { id: toTableId } });
+        if (!fromTable || !toTable || fromTable.businessId !== businessId || toTable.businessId !== businessId) {
+            res.status(404).json({ success: false, error: 'Kaynak veya hedef masa bulunamadı.' });
+            return;
+        }
+        if (!fromTable.currentOrderId) {
+            res.status(400).json({ success: false, error: 'Kaynak masada aktif bir sipariş yok.' });
+            return;
+        }
+        if (!toTable.currentOrderId) {
+            const orderId = fromTable.currentOrderId;
+            await prisma.$transaction([
+                prisma.order.update({ where: { id: orderId }, data: { tableId: toTable.id } }),
+                prisma.restaurantTable.update({ where: { id: fromTable.id }, data: { currentOrderId: null, status: 'AVAILABLE' } }),
+                prisma.restaurantTable.update({ where: { id: toTable.id }, data: { currentOrderId: orderId, status: fromTable.status } }),
+            ]);
+            try {
+                const io = getIO();
+                io.to(`business:${businessId}:waiters`).emit('table:updated', { reload: true });
+            }
+            catch (_) { }
+            await createAuditLog({
+                businessId,
+                userId: req.user?.userId || req.user?.id,
+                action: 'ORDER_UPDATE',
+                entity: 'Table',
+                entityId: orderId,
+                oldValue: { tableId: fromTable.id, name: fromTable.name },
+                newValue: { tableId: toTable.id, name: toTable.name },
+                description: `Masa ${fromTable.name}'den ${toTable.name}'e aktarıldı (hedef masa boştu).`
+            });
+            res.json({ success: true, message: 'Ürünler aktarıldı (Hedef masa boş olduğu için direkt taşındı).' });
+            return;
+        }
+        const fromOrder = await prisma.order.findUnique({ where: { id: fromTable.currentOrderId } });
+        const toOrder = await prisma.order.findUnique({ where: { id: toTable.currentOrderId } });
+        if (!fromOrder || !toOrder) {
+            res.status(404).json({ success: false, error: 'Sipariş bulunamadı.' });
+            return;
+        }
+        await prisma.$transaction([
+            prisma.orderItem.updateMany({
+                where: { orderId: fromOrder.id },
+                data: { orderId: toOrder.id },
+            }),
+            prisma.payment.updateMany({
+                where: { orderId: fromOrder.id },
+                data: { orderId: toOrder.id },
+            }),
+            prisma.order.update({
+                where: { id: toOrder.id },
+                data: {
+                    totalAmountCents: toOrder.totalAmountCents + fromOrder.totalAmountCents,
+                    paidAmountCents: toOrder.paidAmountCents + fromOrder.paidAmountCents,
+                    discountAmountCents: toOrder.discountAmountCents + fromOrder.discountAmountCents
+                },
+            }),
+            prisma.restaurantTable.update({
+                where: { id: fromTable.id },
+                data: { currentOrderId: null, status: 'AVAILABLE' },
+            }),
+            prisma.order.delete({
+                where: { id: fromOrder.id },
+            }),
+        ]);
+        try {
+            const io = getIO();
+            io.to(`business:${businessId}:waiters`).emit('table:updated', { tableId: fromTable.id, tableStatus: 'AVAILABLE' });
+            io.to(`business:${businessId}:waiters`).emit('table:updated', { tableId: toTable.id, tableStatus: toTable.status });
+        }
+        catch (_) { }
+        await createAuditLog({
+            businessId,
+            userId: req.user?.userId || req.user?.id,
+            action: 'ORDER_UPDATE',
+            entity: 'Table',
+            entityId: toOrder.id,
+            oldValue: { tableId: fromTable.id, name: fromTable.name },
+            newValue: { tableId: toTable.id, name: toTable.name },
+            description: `Masa ${fromTable.name}, ${toTable.name} ile birleştirildi.`
+        });
+        res.json({ success: true, message: 'Masalar başarıyla birleştirildi.' });
+    }
+    catch (error) {
+        console.error('Masa birleştirme hatası:', error);
+        res.status(500).json({ success: false, error: 'Masalar birleştirilirken hata oluştu.' });
+    }
+}
+export async function reorderTables(req, res) {
+    try {
+        const businessId = req.user?.businessId;
+        const { items } = req.body;
+        if (!businessId) {
+            res.status(401).json({ success: false, error: 'Yetkisiz erişim.' });
+            return;
+        }
+        if (!Array.isArray(items)) {
+            res.status(400).json({ success: false, error: 'Geçersiz veri formatı.' });
+            return;
+        }
+        await prisma.$transaction(items.map(item => prisma.restaurantTable.updateMany({
+            where: { id: item.id, businessId },
+            data: { sortOrder: item.sortOrder },
+        })));
+        try {
+            const io = getIO();
+            io.to(`business:${businessId}:waiters`).emit('table:updated', { reload: true });
+        }
+        catch (_) { }
+        res.json({ success: true, message: 'Masalar yeniden sıralandı.' });
+    }
+    catch (error) {
+        console.error('Masa sıralama hatası:', error);
+        res.status(500).json({ success: false, error: 'Sıralama güncellenemedi.' });
+    }
+}
+export async function callWaiter(req, res) {
+    try {
+        const businessId = req.user?.businessId || req.body.businessId;
+        const { id } = req.params;
+        if (!businessId) {
+            res.status(401).json({ success: false, error: 'Yetkisiz erişim.' });
+            return;
+        }
+        const table = await prisma.restaurantTable.findFirst({
+            where: { id: id, businessId: businessId }
+        });
+        if (!table) {
+            res.status(404).json({ success: false, error: 'Masa bulunamadı.' });
+            return;
+        }
+        const io = getIO();
+        io.to(`business:${businessId}:waiters`).emit('notification', {
+            type: 'WAITER_CALL',
+            title: 'Garson Çağrısı',
+            body: `${table.name} masasından çağrılıyorsunuz.`
+        });
+        res.json({ success: true, message: 'Garson çağrıldı.' });
+    }
+    catch (error) {
+        console.error('Garson çağırma hatası:', error);
+        res.status(500).json({ success: false, error: 'Çağrı yapılamadı.' });
     }
 }
