@@ -21,6 +21,7 @@ import '../../features/manager/audit_log_screen.dart';
 import '../../features/manager/reservations_screen.dart';
 import '../../features/manager/branches_screen.dart';
 import '../../features/settings/settings_screen.dart';
+import '../../features/manager/manager_dashboard_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.watch(authProvider);
@@ -37,6 +38,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (isAuthenticated && isLoggingIn) {
+        if (authNotifier.state.isOwner || authNotifier.state.isManager) {
+          return '/manager/dashboard';
+        }
         return '/waiter/tables';
       }
 
@@ -130,6 +134,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/manager/branches',
         builder: (context, state) => const BranchesScreen(),
+      ),
+      GoRoute(
+        path: '/manager/dashboard',
+        builder: (context, state) => const ManagerDashboardScreen(),
       ),
     ],
   );
