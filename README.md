@@ -11,6 +11,17 @@ Projeyi bilgisayarınıza kurmadan denemek için aşağıdaki bağlantıları ku
 
 ---
 
+## 🔑 Test Hesapları (Test Accounts)
+
+Uygulamayı test edebilmeniz için örnek kullanıcı giriş bilgileri:
+
+- 👑 **Patron (Admin) PIN:** `1111`
+- 💼 **Müdür PIN:** `2222`
+- 🤵 **Garson PIN:** `3333`
+- 🍳 **Mutfak PIN:** `4444`
+
+---
+
 ## 📦 Kurulum Dosyaları (APK & IPA)
 
 Projeyi doğrudan kendi cihazınızda denemek isterseniz, derlenmiş dosyaları aşağıdaki bağlantılardan indirebilirsiniz:
