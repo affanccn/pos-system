@@ -8,11 +8,21 @@ async function main() {
 
   await prisma.auditLog.deleteMany();
   await prisma.payment.deleteMany();
+  await prisma.orderItemModifier.deleteMany();
   await prisma.orderItem.deleteMany();
   await prisma.order.deleteMany();
+  await prisma.reservation.deleteMany();
+  await prisma.cashRegisterMovement.deleteMany();
+  await prisma.expense.deleteMany();
+  await prisma.endOfDayReport.deleteMany();
   await prisma.restaurantTable.deleteMany();
+  await prisma.productRecipeItem.deleteMany();
+  await prisma.productModifierItem.deleteMany();
+  await prisma.productModifierGroup.deleteMany();
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
+  await prisma.stockItem.deleteMany();
+  await prisma.printer.deleteMany();
   await prisma.user.deleteMany();
   await prisma.business.deleteMany();
 
