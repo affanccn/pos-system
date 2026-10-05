@@ -1,7 +1,9 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../features/auth/auth_controller.dart';
 import '../../core/auth/permissions.dart';
 
@@ -103,6 +105,7 @@ class ManagerDashboardScreen extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: GridView.count(
+                physics: const BouncingScrollPhysics(),
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
@@ -139,7 +142,8 @@ class ManagerDashboardScreen extends ConsumerWidget {
                       color: const Color(0xFF10B981),
                       onTap: () => context.push('/reports/profitability'),
                     ),
-                  if (userState.role == AppRoles.manager || userState.role == AppRoles.owner)
+                  if (userState.role == AppRoles.manager ||
+                      userState.role == AppRoles.owner)
                     _buildDashboardCard(
                       context,
                       title: 'Kasa',
@@ -147,7 +151,8 @@ class ManagerDashboardScreen extends ConsumerWidget {
                       color: const Color(0xFF14B8A6),
                       onTap: () => context.push('/manager/cash'),
                     ),
-                  if (userState.role == AppRoles.manager || userState.role == AppRoles.owner)
+                  if (userState.role == AppRoles.manager ||
+                      userState.role == AppRoles.owner)
                     _buildDashboardCard(
                       context,
                       title: 'Giderler',
@@ -155,7 +160,8 @@ class ManagerDashboardScreen extends ConsumerWidget {
                       color: const Color(0xFFEF4444),
                       onTap: () => context.push('/manager/expenses'),
                     ),
-                  if (userState.role == AppRoles.manager || userState.role == AppRoles.owner)
+                  if (userState.role == AppRoles.manager ||
+                      userState.role == AppRoles.owner)
                     _buildDashboardCard(
                       context,
                       title: 'Menü',
@@ -171,7 +177,9 @@ class ManagerDashboardScreen extends ConsumerWidget {
                       color: const Color(0xFF8B5CF6),
                       onTap: () => context.push('/manager/staff'),
                     ),
-                  if (userState.role == AppRoles.manager || userState.role == AppRoles.owner || userState.hasPermission(AppPermissions.tableView))
+                  if (userState.role == AppRoles.manager ||
+                      userState.role == AppRoles.owner ||
+                      userState.hasPermission(AppPermissions.tableView))
                     _buildDashboardCard(
                       context,
                       title: 'Rezervasyon',
@@ -195,7 +203,8 @@ class ManagerDashboardScreen extends ConsumerWidget {
                       color: const Color(0xFFA78BFA),
                       onTap: () => context.push('/manager/audit'),
                     ),
-                  if (userState.role == AppRoles.manager && userState.hasPermission(AppPermissions.settingsView))
+                  if (userState.role == AppRoles.manager &&
+                      userState.hasPermission(AppPermissions.settingsView))
                     _buildDashboardCard(
                       context,
                       title: 'Ayarlar',
@@ -212,7 +221,13 @@ class ManagerDashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDashboardCard(BuildContext context, {required String title, required IconData icon, required Color color, required VoidCallback onTap}) {
+  Widget _buildDashboardCard(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
