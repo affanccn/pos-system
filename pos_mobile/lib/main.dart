@@ -27,6 +27,9 @@ class ArtisanPosApp extends ConsumerWidget {
       title: 'Artisan POS',
       scaffoldMessengerKey: scaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        physics: const BouncingScrollPhysics(),
+      ),
       theme: AppTheme.darkTheme,
       routerConfig: router,
     );

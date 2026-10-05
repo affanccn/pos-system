@@ -105,7 +105,6 @@ class ManagerDashboardScreen extends ConsumerWidget {
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: GridView.count(
-                physics: const BouncingScrollPhysics(),
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
