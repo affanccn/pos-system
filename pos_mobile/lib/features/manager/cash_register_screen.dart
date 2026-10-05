@@ -67,25 +67,25 @@ class _CashRegisterScreenState extends ConsumerState<CashRegisterScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (_, setStateDialog) => AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
-          title: const Text('Kasa Hareketi', style: TextStyle(color: Colors.white)),
+          backgroundColor: Theme.of(context).cardColor,
+          title: Text('Kasa Hareketi', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButton<String>(
                 value: selectedType,
-                dropdownColor: const Color(0xFF334155),
+                dropdownColor: Theme.of(context).dividerColor,
                 isExpanded: true,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 items: _typeLabels.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))).toList(),
                 onChanged: (val) => setStateDialog(() => selectedType = val!),
               ),
-              TextField(controller: amountCtrl, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Tutar (TL)', labelStyle: TextStyle(color: Colors.white70)), keyboardType: TextInputType.number),
-              TextField(controller: descCtrl, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Aciklama', labelStyle: TextStyle(color: Colors.white70))),
+              TextField(controller: amountCtrl, style: TextStyle(color: Theme.of(context).colorScheme.onSurface), decoration: InputDecoration(labelText: 'Tutar (TL)', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))), keyboardType: TextInputType.number),
+              TextField(controller: descCtrl, style: TextStyle(color: Theme.of(context).colorScheme.onSurface), decoration: InputDecoration(labelText: 'Aciklama', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)))),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Iptal')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Iptal')),
             ElevatedButton(
               onPressed: () async {
                 final amount = double.tryParse(amountCtrl.text) ?? 0;
@@ -105,7 +105,7 @@ class _CashRegisterScreenState extends ConsumerState<CashRegisterScreen> {
                   }
                 }
               },
-              child: const Text('Kaydet'),
+              child: Text('Kaydet'),
             ),
           ],
         ),
@@ -115,9 +115,9 @@ class _CashRegisterScreenState extends ConsumerState<CashRegisterScreen> {
 
   Widget _buildSummaryCard(String label, int cents, Color color, IconData icon) {
     return Card(
-      color: const Color(0xFF334155),
+      color: Theme.of(context).dividerColor,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         child: Row(
           children: [
             CircleAvatar(
@@ -125,7 +125,7 @@ class _CashRegisterScreenState extends ConsumerState<CashRegisterScreen> {
               backgroundColor: color.withValues(alpha: 0.2),
               child: Icon(icon, color: color, size: 20),
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,11 +133,11 @@ class _CashRegisterScreenState extends ConsumerState<CashRegisterScreen> {
                 children: [
                   Text(
                     label,
-                    style: const TextStyle(color: Colors.white70, fontSize: 11),
+                    style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 11),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 2),
+                  SizedBox(height: 2),
                   FittedBox(
                     fit: BoxFit.scaleDown,
                     alignment: Alignment.centerLeft,
@@ -159,31 +159,31 @@ class _CashRegisterScreenState extends ConsumerState<CashRegisterScreen> {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd.MM.yyyy HH:mm');
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Kasa Yonetimi', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF1E293B),
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text('Kasa Yonetimi', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        backgroundColor: Theme.of(context).cardColor,
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _fetchSummary),
+          IconButton(icon: Icon(Icons.refresh), onPressed: _fetchSummary),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddMovementDialog,
         backgroundColor: const Color(0xFF38BDF8),
-        child: const Icon(Icons.add),
+        child: Icon(Icons.add),
       ),
       body: _isLoading
-        ? const Center(child: CircularProgressIndicator())
+        ? Center(child: CircularProgressIndicator())
         : _summary == null
-          ? const Center(child: Text('Veri yok', style: TextStyle(color: Colors.white54)))
+          ? Center(child: Text('Veri yok', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))))
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Gunluk Kasa Ozeti', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
+                  Text('Gunluk Kasa Ozeti', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 20, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 16),
                   GridView.count(
                     crossAxisCount: 2,
                     crossAxisSpacing: 8,
@@ -200,52 +200,52 @@ class _CashRegisterScreenState extends ConsumerState<CashRegisterScreen> {
                       _buildSummaryCard('Beklenen Kasa', _summary!['expectedCashCents'] ?? 0, Colors.cyan, Icons.calculate),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   if ((_summary!['closingAmountCents'] ?? 0) > 0) ...[
                     Card(
-                      color: const Color(0xFF1E293B),
+                      color: Theme.of(context).cardColor,
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Kapanis / Sayim', style: TextStyle(color: Colors.white, fontSize: 16)),
-                            Text('${((_summary!['closingAmountCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: const TextStyle(color: Colors.purple, fontWeight: FontWeight.bold, fontSize: 18)),
+                            Text('Kapanis / Sayim', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16)),
+                            Text('${((_summary!['closingAmountCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: TextStyle(color: Colors.purple, fontWeight: FontWeight.bold, fontSize: 18)),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Card(
                       color: (_summary!['differenceCents'] ?? 0) >= 0 ? Colors.green.shade900 : Colors.red.shade900,
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text('Kasa Farki', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                            Text('${((_summary!['differenceCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                            Text('Kasa Farki', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold)),
+                            Text('${((_summary!['differenceCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 18)),
                           ],
                         ),
                       ),
                     ),
                   ],
-                  const SizedBox(height: 24),
-                  const Text('Hareketler', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 24),
+                  Text('Hareketler', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
                   ...(_summary!['movements'] as List<dynamic>? ?? []).map((m) {
                     final type = m['type'] as String;
                     final date = DateTime.tryParse(m['createdAt'] ?? '') ?? DateTime.now();
                     return Card(
-                      color: const Color(0xFF334155),
-                      margin: const EdgeInsets.only(bottom: 8),
+                      color: Theme.of(context).dividerColor,
+                      margin: EdgeInsets.only(bottom: 8),
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: (_typeColors[type] ?? Colors.grey).withValues(alpha: 0.2),
                           child: Icon(_typeIcons[type] ?? Icons.help, color: _typeColors[type] ?? Colors.grey),
                         ),
-                        title: Text(_typeLabels[type] ?? type, style: const TextStyle(color: Colors.white)),
-                        subtitle: Text('${m['description'] ?? ''}\n${dateFormat.format(date)} - ${m['user']?['fullName'] ?? ''}', style: const TextStyle(color: Colors.white70)),
+                        title: Text(_typeLabels[type] ?? type, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                        subtitle: Text('${m['description'] ?? ''}\n${dateFormat.format(date)} - ${m['user']?['fullName'] ?? ''}', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                         trailing: Text('${((m['amountCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: TextStyle(color: _typeColors[type] ?? Colors.grey, fontWeight: FontWeight.bold)),
                         isThreeLine: true,
                       ),

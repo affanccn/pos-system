@@ -49,7 +49,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
       final shouldReprint = await showAppDialog<bool>(
         context: context,
         title: 'Tekrar Yazdır?',
-        content: const Text('Hesap zaten istenmiş. Fiş tekrar yazdırılsın mı?', style: TextStyle(color: Colors.white70)),
+        content: Text('Hesap zaten istenmiş. Fiş tekrar yazdırılsın mı?', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
         confirmText: 'Yazdır',
         onConfirm: () => Navigator.of(context).pop(true),
       );
@@ -212,20 +212,20 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
-          title: const Text('İndirim Uygula', style: TextStyle(color: Colors.white)),
+          backgroundColor: Theme.of(context).cardColor,
+          title: Text('İndirim Uygula', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Kalan Tutar: ${(currentRemainingCents / 100).toStringAsFixed(2)} ₺', style: const TextStyle(color: Colors.white70)),
-              const SizedBox(height: 12),
+              Text('Kalan Tutar: ${(currentRemainingCents / 100).toStringAsFixed(2)} ₺', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
+              SizedBox(height: 12),
               TextField(
                 controller: discountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                decoration: InputDecoration(
                   labelText: 'İndirim Tutarı (₺)',
-                  labelStyle: TextStyle(color: Colors.white54),
+                  labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54)),
                   enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
                   focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFF38BDF8))),
                 ),
@@ -235,7 +235,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('İptal', style: TextStyle(color: Colors.white70)),
+              child: Text('İptal', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -254,7 +254,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                 await _executeOrderDiscount(orderId, discountCents);
               },
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF8B5CF6)),
-              child: const Text('Uygula', style: TextStyle(color: Colors.white)),
+              child: Text('Uygula', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
             ),
           ],
         );
@@ -322,7 +322,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -346,45 +346,45 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                       children: [
                         Text(
                           '${widget.table.name} • Tahsilat Yap',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white70),
+                          icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                           onPressed: () => Navigator.of(ctx).pop(),
                         ),
                       ],
                     ),
-                    const Divider(color: Color(0xFF334155)),
-                    const SizedBox(height: 8),
+                    Divider(color: Theme.of(context).dividerColor),
+                    SizedBox(height: 8),
 
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         vertical: 14,
                         horizontal: 16,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF334155)),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Kalan Ödenecek:',
                             style: TextStyle(
-                              color: Color(0xFF94A3B8),
+                              color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                               fontSize: 14,
                             ),
                           ),
                           Text(
                             '${remainingLira.toStringAsFixed(2)} ₺',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Color(0xFFF59E0B),
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -393,17 +393,17 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                    const Text(
+                    Text(
                       'Ödeme Yöntemi',
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
@@ -412,17 +412,17 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                 setModalState(() => selectedMethod = 'CASH'),
                             borderRadius: BorderRadius.circular(10),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              padding: EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: selectedMethod == 'CASH'
                                     ? const Color(0xFF10B981)
                                           .withValues(alpha: 0.2)
-                                    : const Color(0xFF0F172A),
+                                    : Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: selectedMethod == 'CASH'
                                       ? const Color(0xFF10B981)
-                                      : const Color(0xFF334155),
+                                      : Theme.of(context).dividerColor,
                                   width: 2,
                                 ),
                               ),
@@ -435,7 +435,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                         ? const Color(0xFF10B981)
                                         : Colors.white70,
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Text(
                                     'Nakit',
                                     style: TextStyle(
@@ -450,24 +450,24 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           child: InkWell(
                             onTap: () =>
                                 setModalState(() => selectedMethod = 'CARD'),
                             borderRadius: BorderRadius.circular(10),
                             child: Container(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              padding: EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: selectedMethod == 'CARD'
                                     ? const Color(0xFF38BDF8)
                                           .withValues(alpha: 0.2)
-                                    : const Color(0xFF0F172A),
+                                    : Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: selectedMethod == 'CARD'
                                       ? const Color(0xFF38BDF8)
-                                      : const Color(0xFF334155),
+                                      : Theme.of(context).dividerColor,
                                   width: 2,
                                 ),
                               ),
@@ -480,7 +480,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                         ? const Color(0xFF38BDF8)
                                         : Colors.white70,
                                   ),
-                                  const SizedBox(width: 8),
+                                  SizedBox(width: 8),
                                   Text(
                                     'Kredi Kartı',
                                     style: TextStyle(
@@ -497,50 +497,50 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                    const Text(
+                    Text(
                       'Tahsil Edilecek Tutar (₺)',
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     TextField(
                       controller: amountController,
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: const Color(0xFF0F172A),
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
                         suffixText: '₺',
-                        suffixStyle: const TextStyle(
-                          color: Colors.white,
+                        suffixStyle: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 18,
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: Color(0xFF334155),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).dividerColor,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
+                          borderSide: BorderSide(
                             color: Color(0xFF10B981),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
 
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -549,8 +549,8 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               foregroundColor: activeSplit == 1 ? const Color(0xFF38BDF8) : Colors.white70,
-                              side: BorderSide(color: activeSplit == 1 ? const Color(0xFF38BDF8) : const Color(0xFF334155)),
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              side: BorderSide(color: activeSplit == 1 ? const Color(0xFF38BDF8) : Theme.of(context).dividerColor),
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             ),
                             onPressed: () {
                               setModalState(() {
@@ -558,14 +558,14 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                 amountController.text = remainingLira.toStringAsFixed(2);
                               });
                             },
-                            child: const Text('Tamamı'),
+                            child: Text('Tamamı'),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               foregroundColor: activeSplit == 2 ? const Color(0xFF38BDF8) : Colors.white70,
-                              side: BorderSide(color: activeSplit == 2 ? const Color(0xFF38BDF8) : const Color(0xFF334155)),
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              side: BorderSide(color: activeSplit == 2 ? const Color(0xFF38BDF8) : Theme.of(context).dividerColor),
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             ),
                             onPressed: () {
                               setModalState(() {
@@ -573,14 +573,14 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                 amountController.text = (remainingLira / 2).toStringAsFixed(2);
                               });
                             },
-                            child: const Text('1/2 (2 Kişi)'),
+                            child: Text('1/2 (2 Kişi)'),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               foregroundColor: activeSplit == 3 ? const Color(0xFF38BDF8) : Colors.white70,
-                              side: BorderSide(color: activeSplit == 3 ? const Color(0xFF38BDF8) : const Color(0xFF334155)),
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              side: BorderSide(color: activeSplit == 3 ? const Color(0xFF38BDF8) : Theme.of(context).dividerColor),
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             ),
                             onPressed: () {
                               setModalState(() {
@@ -588,14 +588,14 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                 amountController.text = (remainingLira / 3).toStringAsFixed(2);
                               });
                             },
-                            child: const Text('1/3 (3 Kişi)'),
+                            child: Text('1/3 (3 Kişi)'),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           OutlinedButton(
                             style: OutlinedButton.styleFrom(
                               foregroundColor: activeSplit == 4 ? const Color(0xFF38BDF8) : Colors.white70,
-                              side: BorderSide(color: activeSplit == 4 ? const Color(0xFF38BDF8) : const Color(0xFF334155)),
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                              side: BorderSide(color: activeSplit == 4 ? const Color(0xFF38BDF8) : Theme.of(context).dividerColor),
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             ),
                             onPressed: () {
                               setModalState(() {
@@ -603,12 +603,12 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                 amountController.text = (remainingLira / 4).toStringAsFixed(2);
                               });
                             },
-                            child: const Text('1/4 (4 Kişi)'),
+                            child: Text('1/4 (4 Kişi)'),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20),
 
                     SizedBox(
                       width: double.infinity,
@@ -616,7 +616,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF10B981),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -656,7 +656,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                             method: selectedMethod,
                           );
                         },
-                        child: const Text(
+                        child: Text(
                           'Ödemeyi Al ve Kaydet',
                           style: TextStyle(
                             fontSize: 16,
@@ -751,7 +751,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
         title: 'Ürün İptali',
         content: Text(
           '$productName adisyondan silinsin mi?',
-          style: const TextStyle(color: Colors.white70),
+          style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
         ),
         confirmText: 'Sil',
         isDestructive: true,
@@ -773,7 +773,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -781,7 +781,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
         return StatefulBuilder(
           builder: (context, setSheetState) {
             return Padding(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.all(20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -794,8 +794,8 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           children: [
                             Text(
                               productName,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -803,8 +803,8 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                             ),
                             Text(
                               'Adisyonda toplam $currentQuantity adet var',
-                              style: const TextStyle(
-                                color: Color(0xFF94A3B8),
+                              style: TextStyle(
+                                color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                                 fontSize: 13,
                               ),
                             ),
@@ -812,27 +812,27 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white70),
+                        icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                         onPressed: () => Navigator.of(ctx).pop(),
                       ),
                     ],
                   ),
-                  const Divider(color: Color(0xFF334155), height: 24),
-                  const Text(
+                  Divider(color: Theme.of(context).dividerColor, height: 24),
+                  Text(
                     'İptal Edilecek Adet',
                     style: TextStyle(
-                      color: Colors.white70,
+                      color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
                         iconSize: 36,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.remove_circle,
                           color: Color(0xFFEF4444),
                         ),
@@ -841,20 +841,20 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                             : null,
                       ),
                       Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 16),
-                        padding: const EdgeInsets.symmetric(
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0F172A),
+                          color: Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFF334155)),
+                          border: Border.all(color: Theme.of(context).dividerColor),
                         ),
                         child: Text(
                           '$selectedCancelQty',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
@@ -862,7 +862,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                       ),
                       IconButton(
                         iconSize: 36,
-                        icon: const Icon(
+                        icon: Icon(
                           Icons.add_circle,
                           color: Color(0xFF10B981),
                         ),
@@ -872,14 +872,14 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24),
                   Row(
                     children: [
                       Expanded(
                         child: OutlinedButton(
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Color(0xFFEF4444)),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(color: Color(0xFFEF4444)),
+                            padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -896,20 +896,20 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           },
                           child: Text(
                             'Tümünü Sil ($currentQuantity)',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Color(0xFFEF4444),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12),
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFEF4444),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
@@ -926,7 +926,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           },
                           child: Text(
                             '$selectedCancelQty Adet Düş',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -962,22 +962,22 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
 
       showModalBottomSheet(
         context: context,
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Theme.of(context).cardColor,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         builder: (ctx) {
           if (availableTables.isEmpty) {
             return Container(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Icon(Icons.info_outline, color: Color(0xFFF59E0B), size: 40),
                   SizedBox(height: 12),
                   Text(
                     'Aktarılabilecek boş masa bulunmuyor.',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
                   ),
                 ],
               ),
@@ -985,7 +985,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
           }
 
           return Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -995,19 +995,19 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                   children: [
                     Text(
                       '${widget.table.name} ➔ Hedef Masayı Seçin',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white70),
+                      icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                       onPressed: () => Navigator.of(ctx).pop(),
                     ),
                   ],
                 ),
-                const Divider(color: Color(0xFF334155)),
+                Divider(color: Theme.of(context).dividerColor),
                 Flexible(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -1015,28 +1015,28 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                     itemBuilder: (context, index) {
                       final target = availableTables[index];
                       return ListTile(
-                        leading: const CircleAvatar(
+                        leading: CircleAvatar(
                           backgroundColor: Color(0xFF10B981),
                           child: Icon(
                             Icons.table_restaurant,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurface,
                             size: 20,
                           ),
                         ),
                         title: Text(
                           target.name,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         subtitle: Text(
                           'Kapasite: ${target.capacity} Kişi',
-                          style: const TextStyle(color: Color(0xFF94A3B8)),
+                          style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                         ),
-                        trailing: const Icon(
+                        trailing: Icon(
                           Icons.arrow_forward_ios,
-                          color: Colors.white54,
+                          color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54),
                           size: 16,
                         ),
                         onTap: () {
@@ -1066,7 +1066,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -1080,34 +1080,34 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
               child: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(16.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           '${widget.table.name} ➔ ${targetTable.name}',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white70),
+                          icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                           onPressed: () => Navigator.of(ctx).pop(),
                         ),
                       ],
                     ),
                   ),
-                  const Divider(color: Color(0xFF334155), height: 1),
+                  Divider(color: Theme.of(context).dividerColor, height: 1),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Aktarılacak Ürünleri Seçin',
-                          style: TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                          style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 14),
                         ),
                         TextButton(
                           onPressed: () {
@@ -1125,7 +1125,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           },
                           child: Text(
                             isAllSelected ? 'Tümünü Kaldır' : 'Tümünü Seç',
-                            style: const TextStyle(color: Color(0xFF38BDF8)),
+                            style: TextStyle(color: Color(0xFF38BDF8)),
                           ),
                         )
                       ],
@@ -1143,25 +1143,25 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                         final isSelected = currentQty > 0;
 
                         return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                           decoration: BoxDecoration(
                             color: isSelected 
                                 ? const Color(0xFF10B981).withValues(alpha: 0.1) 
-                                : const Color(0xFF0F172A),
+                                : Theme.of(context).scaffoldBackgroundColor,
                             border: Border.all(
-                              color: isSelected ? const Color(0xFF10B981) : const Color(0xFF334155),
+                              color: isSelected ? const Color(0xFF10B981) : Theme.of(context).dividerColor,
                             ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Theme(
                             data: Theme.of(context).copyWith(
-                              unselectedWidgetColor: const Color(0xFF94A3B8),
+                              unselectedWidgetColor: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                             ),
                             child: CheckboxListTile(
                               value: isSelected,
                               activeColor: const Color(0xFF10B981),
                               checkColor: Colors.white,
-                              side: const BorderSide(color: Color(0xFF94A3B8)),
+                              side: BorderSide(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                               onChanged: (val) {
                                 setModalState(() {
                                   if (val == true) {
@@ -1171,21 +1171,21 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                   }
                                 });
                               },
-                              title: Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                              subtitle: Text('Adisyonda: $maxQty adet', style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
+                              title: Text(name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+                              subtitle: Text('Adisyonda: $maxQty adet', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 12)),
                               secondary: isSelected && maxQty > 1
                                   ? Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         IconButton(
-                                          icon: const Icon(Icons.remove_circle_outline, color: Color(0xFFEF4444)),
+                                          icon: Icon(Icons.remove_circle_outline, color: Color(0xFFEF4444)),
                                           onPressed: currentQty > 1
                                               ? () => setModalState(() => selectedItems[itemId] = currentQty - 1)
                                               : null,
                                         ),
-                                        Text('$currentQty', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                                        Text('$currentQty', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 16)),
                                         IconButton(
-                                          icon: const Icon(Icons.add_circle_outline, color: Color(0xFF10B981)),
+                                          icon: Icon(Icons.add_circle_outline, color: Color(0xFF10B981)),
                                           onPressed: currentQty < maxQty
                                               ? () => setModalState(() => selectedItems[itemId] = currentQty + 1)
                                               : null,
@@ -1200,10 +1200,10 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF1E293B),
-                      border: Border(top: BorderSide(color: Color(0xFF334155))),
+                    padding: EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
                     ),
                     child: SafeArea(
                       child: SizedBox(
@@ -1212,7 +1212,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF38BDF8),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -1238,7 +1238,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                   }
                                 }
                               : null,
-                          child: const Text('Seçili Ürünleri Aktar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                          child: Text('Seçili Ürünleri Aktar', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                         ),
                       ),
                     ),
@@ -1384,58 +1384,58 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
 
       showModalBottomSheet(
         context: context,
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Theme.of(context).cardColor,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         builder: (ctx) {
           if (candidateTables.isEmpty) {
             return Container(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Icon(Icons.info_outline, color: Color(0xFFF59E0B), size: 40),
                   SizedBox(height: 12),
                   Text(
                     'Birleştirilebilecek dolu masa bulunmuyor.',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
                   ),
                 ],
               ),
             );
           }
           return Container(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: EdgeInsets.symmetric(vertical: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
+                Text(
                   'Hangi Masayla Birleştirilsin?',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Expanded(
                   child: ListView.builder(
                     itemCount: candidateTables.length,
                     itemBuilder: (ctx, index) {
                       final targetTable = candidateTables[index];
                       return ListTile(
-                        leading: const CircleAvatar(
+                        leading: CircleAvatar(
                           backgroundColor: Color(0xFFF59E0B),
-                          child: Icon(Icons.table_restaurant, color: Colors.white),
+                          child: Icon(Icons.table_restaurant, color: Theme.of(context).colorScheme.onSurface),
                         ),
                         title: Text(
                           targetTable.name,
-                          style: const TextStyle(color: Colors.white),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                         ),
                         subtitle: Text(
                           'Bölüm: ${targetTable.section}',
-                          style: const TextStyle(color: Colors.white70),
+                          style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                         ),
                         onTap: () {
                           Navigator.pop(ctx);
@@ -1474,22 +1474,22 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
 
       showModalBottomSheet(
         context: context,
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Theme.of(context).cardColor,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         builder: (ctx) {
           if (candidateTables.isEmpty) {
             return Container(
-              padding: const EdgeInsets.all(24),
+              padding: EdgeInsets.all(24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Icon(Icons.info_outline, color: Color(0xFFF59E0B), size: 40),
                   SizedBox(height: 12),
                   Text(
                     'Aktarım yapılabilecek başka masa bulunmuyor.',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
                   ),
                 ],
               ),
@@ -1497,7 +1497,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
           }
 
           return Container(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1507,19 +1507,19 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                   children: [
                     Text(
                       '${widget.table.name} ➔ Hedef Masa Seçin',
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.white70),
+                      icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                       onPressed: () => Navigator.of(ctx).pop(),
                     ),
                   ],
                 ),
-                const Divider(color: Color(0xFF334155)),
+                Divider(color: Theme.of(context).dividerColor),
                 Flexible(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -1536,14 +1536,14 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                             isOccupied
                                 ? Icons.receipt_long
                                 : Icons.table_restaurant,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurface,
                             size: 20,
                           ),
                         ),
                         title: Text(
                           target.name,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -1554,11 +1554,11 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           style: TextStyle(
                             color: isOccupied
                                 ? const Color(0xFFF59E0B)
-                                : const Color(0xFF94A3B8),
+                                : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                             fontSize: 12,
                           ),
                         ),
-                        trailing: const Icon(
+                        trailing: Icon(
                           Icons.call_merge,
                           color: Color(0xFF38BDF8),
                           size: 20,
@@ -1585,7 +1585,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
       title: 'Ürünleri Aktarma Onayı',
       content: Text(
         '${widget.table.name} masasındaki tüm ürünler ${target.name} masasına aktarılacak.\n\nİki masanın tüm ürünleri tek adisyonda toplanacak ve ${widget.table.name} boşaltılacaktır. Onaylıyor musunuz?',
-        style: const TextStyle(color: Colors.white70),
+        style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
       ),
       confirmText: 'Birleştir',
       onConfirm: () {
@@ -1640,14 +1640,14 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     final userState = ref.watch(authProvider).state;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Theme.of(context).cardColor,
         title: Text(
           '${widget.table.name} • Adisyon Detayı',
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 18,
           ),
         ),
@@ -1655,7 +1655,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
           if (userState.hasPermission(AppPermissions.tableMerge))
             IconButton(
               tooltip: 'Masayı Birleştir',
-              icon: const Icon(
+              icon: Icon(
                 Icons.merge_type,
                 color: Color(0xFFEF4444),
                 size: 26,
@@ -1665,7 +1665,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
           if (userState.hasPermission(AppPermissions.tableMerge))
             IconButton(
               tooltip: 'Ürünleri Aktar',
-              icon: const Icon(
+              icon: Icon(
                 Icons.call_split,
                 color: Color(0xFFF59E0B),
                 size: 24,
@@ -1675,7 +1675,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
           if (userState.hasPermission(AppPermissions.tableTransfer))
             IconButton(
               tooltip: 'Masayı Taşı',
-              icon: const Icon(
+              icon: Icon(
                 Icons.swap_horiz,
                 color: Color(0xFF38BDF8),
                 size: 26,
@@ -1690,14 +1690,14 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
             ),
           IconButton(
             tooltip: 'Yenile',
-            icon: const Icon(Icons.refresh, color: Colors.white70),
+            icon: Icon(Icons.refresh, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
             onPressed: () =>
                 ref.invalidate(tableActiveOrderProvider(widget.table.id)),
           ),
         ],
       ),
       body: orderAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
           child: CircularProgressIndicator(color: Color(0xFF38BDF8)),
         ),
         error: (err, _) => _buildEmptyOrderView(context),
@@ -1726,12 +1726,12 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
           return Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
+                margin: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF334155)),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: Column(
                   children: [
@@ -1743,17 +1743,17 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           children: [
                             Text(
                               'Sipariş #$orderNumber',
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             Text(
                               'Garson: $waiter',
-                              style: const TextStyle(
-                                color: Color(0xFF94A3B8),
+                              style: TextStyle(
+                                color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                                 fontSize: 13,
                               ),
                             ),
@@ -1762,18 +1762,18 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            const Text(
+                            Text(
                               'Toplam Tutar',
                               style: TextStyle(
-                                color: Color(0xFF94A3B8),
+                                color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                                 fontSize: 12,
                               ),
                             ),
-                            const SizedBox(height: 2),
+                            SizedBox(height: 2),
                             Text(
                               '$totalAmount ₺',
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -1783,21 +1783,21 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                       ],
                     ),
                     if (paidAmountCents > 0) ...[
-                      const Divider(color: Color(0xFF334155), height: 20),
+                      Divider(color: Theme.of(context).dividerColor, height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.check_circle_outline,
                                 color: Color(0xFF10B981),
                                 size: 16,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: 4),
                               Text(
                                 'Tahsil Edilen: $paidAmount ₺',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Color(0xFF10B981),
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -1807,15 +1807,15 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           ),
                           Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.pending_outlined,
                                 color: Color(0xFFF59E0B),
                                 size: 16,
                               ),
-                              const SizedBox(width: 4),
+                              SizedBox(width: 4),
                               Text(
                                 'Kalan: $remainingAmount ₺',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   color: Color(0xFFF59E0B),
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -1830,14 +1830,14 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                 ),
               ),
 
-              const Padding(
+              Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Sipariş Kalemleri',
                     style: TextStyle(
-                      color: Color(0xFF94A3B8),
+                      color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -1847,13 +1847,13 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
 
               Expanded(
                 child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 8,
                   ),
                   itemCount: items.length,
                   separatorBuilder: (context, index) =>
-                      const Divider(color: Color(0xFF334155), height: 1),
+                      Divider(color: Theme.of(context).dividerColor, height: 1),
                   itemBuilder: (context, index) {
                     final item = items[index];
                     final itemId = item['id'] as String;
@@ -1867,14 +1867,14 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                     final modifiers = (item['modifiers'] as List<dynamic>?) ?? [];
 
                     return ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
+                      contentPadding: EdgeInsets.symmetric(
                         horizontal: 8,
                         vertical: 4,
                       ),
                       title: Text(
                         name,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -1884,12 +1884,12 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           if (modifiers.isNotEmpty)
                             ...modifiers.map((mod) => Text(
                               '+ ${mod['modifierNameSnapshot']} ${mod['quantity'] > 1 ? '(x${mod['quantity']})' : ''}',
-                              style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 12),
+                              style: TextStyle(color: Color(0xFF38BDF8), fontSize: 12),
                             )),
                           if (note != null && note.toString().isNotEmpty)
                             Text(
                               'Not: $note',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 color: Color(0xFFF59E0B),
                                 fontSize: 12,
                               ),
@@ -1897,11 +1897,11 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                         ],
                       ),
                       leading: CircleAvatar(
-                        backgroundColor: const Color(0xFF334155),
+                        backgroundColor: Theme.of(context).dividerColor,
                         radius: 16,
                         child: Text(
                           '$quantity',
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Color(0xFF38BDF8),
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -1913,15 +1913,15 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                         children: [
                           Text(
                             '$totalItemPrice ₺',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           IconButton(
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.card_giftcard,
                               color: Color(0xFF10B981),
                               size: 22,
@@ -1932,7 +1932,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                                 : () => _executeItemComplimentary(itemId),
                           ),
                           IconButton(
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.remove_circle_outline,
                               color: Color(0xFFEF4444),
                               size: 22,
@@ -1955,10 +1955,10 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
               ),
 
               Container(
-                padding: const EdgeInsets.all(16),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF1E293B),
-                  border: Border(top: BorderSide(color: Color(0xFF334155))),
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
                 ),
                 child: SafeArea(
                   child: Column(
@@ -1990,57 +1990,57 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF38BDF8),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   vertical: 12,
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              icon: const Icon(Icons.add, size: 20),
-                              label: const Text(
+                              icon: Icon(Icons.add, size: 20),
+                              label: Text(
                                 'Ürün Ekle',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: _isProcessing ? null : _requestBill,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFFF59E0B),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   vertical: 12,
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              icon: const Icon(Icons.receipt, size: 20),
-                              label: const Text(
+                              icon: Icon(Icons.receipt, size: 20),
+                              label: Text(
                                 'Hesap İste',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                           Expanded(
                             child: ElevatedButton.icon(
                               onPressed: _isProcessing ? null : () => _showDiscountDialog(orderId, remainingAmountCents),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF8B5CF6),
                                 foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   vertical: 12,
                                 ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
-                              icon: const Icon(Icons.discount, size: 20),
-                              label: const Text(
+                              icon: Icon(Icons.discount, size: 20),
+                              label: Text(
                                 'İndirim',
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
@@ -2048,7 +2048,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: 10),
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
@@ -2068,28 +2068,28 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF10B981),
                             foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           icon: _isProcessing
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 18,
                                   height: 18,
                                   child: CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.onSurface,
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Icon(Icons.point_of_sale),
+                              : Icon(Icons.point_of_sale),
                           label: Text(
                             paidAmountCents > 0
                                 ? 'Kalanı Öde ($remainingAmount ₺)'
                                 : (remainingAmountCents <= 0 
                                     ? 'Hesabı Kapat' 
                                     : 'Ödeme Al / Hesabı Kapat ($totalAmount ₺)'),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                             ),
@@ -2112,17 +2112,17 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.receipt_long, color: Color(0xFF94A3B8), size: 48),
-          const SizedBox(height: 12),
-          const Text(
+          Icon(Icons.receipt_long, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), size: 48),
+          SizedBox(height: 12),
+          Text(
             'Bu masada aktif bir sipariş kalmadı.',
-            style: TextStyle(color: Colors.white70, fontSize: 16),
+            style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 16),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () => Navigator.of(context).pop(),
-            icon: const Icon(Icons.arrow_back),
-            label: const Text('Masalara Dön'),
+            icon: Icon(Icons.arrow_back),
+            label: Text('Masalara Dön'),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF38BDF8),
               foregroundColor: Colors.white,

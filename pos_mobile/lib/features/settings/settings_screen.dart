@@ -9,18 +9,18 @@ class SettingsScreen extends ConsumerWidget {
 
   Widget _buildSettingsTile(BuildContext context, IconData icon, String title, String subtitle, VoidCallback onTap, Color iconColor) {
     return Card(
-      color: const Color(0xFF1E293B),
-      margin: const EdgeInsets.only(bottom: 12),
+      color: Theme.of(context).cardColor,
+      margin: EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CircleAvatar(
           backgroundColor: iconColor.withValues(alpha: 0.2),
           child: Icon(icon, color: iconColor),
         ),
-        title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 12)),
-        trailing: const Icon(Icons.chevron_right, color: Colors.white54),
+        title: Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        subtitle: Text(subtitle, style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54), fontSize: 12)),
+        trailing: Icon(Icons.chevron_right, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54)),
         onTap: onTap,
       ),
     );
@@ -31,14 +31,14 @@ class SettingsScreen extends ConsumerWidget {
     final userState = ref.watch(authProvider).state;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Ayarlar', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text('Ayarlar', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(16),
         children: [
           if (userState.role == AppRoles.owner || userState.role == AppRoles.manager)
             _buildSettingsTile(
@@ -96,7 +96,7 @@ class SettingsScreen extends ConsumerWidget {
             'Sistem Ayarları',
             'Tema, ses, bildirimler, haptic',
             () {},
-            const Color(0xFF94A3B8),
+            (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
           ),
         ],
       ),

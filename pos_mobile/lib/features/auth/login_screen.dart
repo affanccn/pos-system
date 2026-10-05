@@ -44,24 +44,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildKey(String label, {VoidCallback? onTap, Color? color}) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: EdgeInsets.all(8.0),
         child: InkWell(
           onTap: onTap ?? () => _onKeyPress(label),
           borderRadius: BorderRadius.circular(16),
           child: Container(
             height: 72,
             decoration: BoxDecoration(
-              color: color ?? const Color(0xFF1E293B),
+              color: color ?? Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF334155), width: 1.5),
+              border: Border.all(color: Theme.of(context).dividerColor, width: 1.5),
             ),
             child: Center(
               child: Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             ),
@@ -77,28 +77,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = authController.state;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 400),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              padding: EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.point_of_sale_rounded, size: 54, color: Color(0xFF38BDF8)),
-                  const SizedBox(height: 12),
-                  const Text(
+                  Icon(Icons.point_of_sale_rounded, size: 54, color: Color(0xFF38BDF8)),
+                  SizedBox(height: 12),
+                  Text(
                     'Artisan Bistro POS',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface),
                   ),
-                  const SizedBox(height: 6),
-                  const Text(
+                  SizedBox(height: 6),
+                  Text(
                     'Giriş yapmak için 4 haneli PIN girin',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF94A3B8)),
+                    style: TextStyle(fontSize: 14, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +106,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       final isFilled = index < _pin.length;
                       return AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
-                        margin: const EdgeInsets.symmetric(horizontal: 10),
+                        margin: EdgeInsets.symmetric(horizontal: 10),
                         width: 18,
                         height: 18,
                         decoration: BoxDecoration(
@@ -120,49 +120,49 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       );
                     }),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
 
                   if (authState.isLoading)
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.all(8.0),
                       child: CircularProgressIndicator(color: Color(0xFF38BDF8)),
                     )
                   else if (authState.errorMessage != null)
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
+                      padding: EdgeInsets.only(bottom: 12.0),
                       child: Text(
                         authState.errorMessage!,
-                        style: const TextStyle(color: Color(0xFFEF4444), fontSize: 13, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: Color(0xFFEF4444), fontSize: 13, fontWeight: FontWeight.w600),
                         textAlign: TextAlign.center,
                       ),
                     )
                   else
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
 
                   Row(children: [_buildKey('1'), _buildKey('2'), _buildKey('3')]),
                   Row(children: [_buildKey('4'), _buildKey('5'), _buildKey('6')]),
                   Row(children: [_buildKey('7'), _buildKey('8'), _buildKey('9')]),
                   Row(
                     children: [
-                      _buildKey('C', onTap: _clearPin, color: const Color(0xFF334155)),
+                      _buildKey('C', onTap: _clearPin, color: Theme.of(context).dividerColor),
                       _buildKey('0'),
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: EdgeInsets.all(8.0),
                           child: InkWell(
                             onTap: _onBackspace,
                             borderRadius: BorderRadius.circular(16),
                             child: Container(
                               height: 72,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF334155),
+                                color: Theme.of(context).dividerColor,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(color: const Color(0xFF475569), width: 1.5),
                               ),
-                              child: const Center(
-                                child: Icon(Icons.backspace_outlined, color: Colors.white, size: 24),
+                              child: Center(
+                                child: Icon(Icons.backspace_outlined, color: Theme.of(context).colorScheme.onSurface, size: 24),
                               ),
                             ),
                           ),

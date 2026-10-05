@@ -26,7 +26,7 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -50,31 +50,31 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                       children: [
                         Text(
                           isEditing ? 'Yazıcıyı Düzenle' : 'Yeni Yazıcı Ekle',
-                          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white70),
+                          icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                           onPressed: () => Navigator.of(ctx).pop(),
                         ),
                       ],
                     ),
-                    const Divider(color: Color(0xFF334155)),
-                    const SizedBox(height: 12),
+                    Divider(color: Theme.of(context).dividerColor),
+                    SizedBox(height: 12),
 
-                    const Text('Yazıcı Adı *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Text('Yazıcı Adı *', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     TextField(
                       controller: nameController,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                       decoration: InputDecoration(
                         hintText: 'Örn: Mutfak Yazıcısı 1',
-                        hintStyle: const TextStyle(color: Colors.white38),
+                        hintStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.38)),
                         filled: true,
-                        fillColor: const Color(0xFF0F172A),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF334155))),
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     Row(
                       children: [
@@ -83,37 +83,37 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('IP Adresi *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                              const SizedBox(height: 6),
+                              Text('IP Adresi *', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                              SizedBox(height: 6),
                               TextField(
                                 controller: ipController,
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                                 decoration: InputDecoration(
                                   filled: true,
-                                  fillColor: const Color(0xFF0F172A),
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF334155))),
+                                  fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           flex: 1,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Port *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                              const SizedBox(height: 6),
+                              Text('Port *', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                              SizedBox(height: 6),
                               TextField(
                                 controller: portController,
                                 keyboardType: TextInputType.number,
                                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                                style: const TextStyle(color: Colors.white),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                                 decoration: InputDecoration(
                                   filled: true,
-                                  fillColor: const Color(0xFF0F172A),
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF334155))),
+                                  fillColor: Theme.of(context).scaffoldBackgroundColor,
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                                 ),
                               ),
                             ],
@@ -121,29 +121,29 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                    const Text('İstasyon (KDS / Mutfak vs.)', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Text('İstasyon (KDS / Mutfak vs.)', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      padding: EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF334155)),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String?>(
                           value: stationType,
                           isExpanded: true,
-                          dropdownColor: const Color(0xFF1E293B),
-                          hint: const Text('Bağlı Değil', style: TextStyle(color: Colors.white54)),
-                          items: const [
-                            DropdownMenuItem(value: null, child: Text('Hiçbiri', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'KITCHEN', child: Text('Mutfak', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'BAR', child: Text('Bar', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'DESSERT', child: Text('Tatlı', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'COFFEE', child: Text('Kahve', style: TextStyle(color: Colors.white))),
+                          dropdownColor: Theme.of(context).cardColor,
+                          hint: Text('Bağlı Değil', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
+                          items: [
+                            DropdownMenuItem(value: null, child: Text('Hiçbiri', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'KITCHEN', child: Text('Mutfak', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'BAR', child: Text('Bar', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'DESSERT', child: Text('Tatlı', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'COFFEE', child: Text('Kahve', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
                           ],
                           onChanged: (val) {
                             setModalState(() => stationType = val);
@@ -151,12 +151,12 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     CheckboxListTile(
                       contentPadding: EdgeInsets.zero,
-                      title: const Text('Kasa / Müşteri Fişi Yazıcısı', style: TextStyle(color: Colors.white)),
-                      subtitle: const Text('Hesap ve ödeme fişleri buradan çıkar', style: TextStyle(color: Colors.white54, fontSize: 12)),
+                      title: Text('Kasa / Müşteri Fişi Yazıcısı', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                      subtitle: Text('Hesap ve ödeme fişleri buradan çıkar', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54), fontSize: 12)),
                       value: isCashier,
                       activeColor: const Color(0xFF10B981),
                       onChanged: (val) {
@@ -164,17 +164,17 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                       },
                     ),
                     
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     Row(
                       children: [
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF0F172A),
+                              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                               foregroundColor: Colors.white,
-                              side: const BorderSide(color: Color(0xFF334155)),
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              side: BorderSide(color: Theme.of(context).dividerColor),
+                              padding: EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             onPressed: isTesting
@@ -199,18 +199,18 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                                     }
                                   },
                             child: isTesting 
-                                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                : const Text('Test Et'),
+                                ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface, strokeWidth: 2))
+                                : Text('Test Et'),
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12),
                         Expanded(
                           flex: 2,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color(0xFF38BDF8),
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              padding: EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
                             onPressed: isSaving
@@ -259,8 +259,8 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                                     }
                                   },
                             child: isSaving
-                                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                : const Text('Kaydet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface, strokeWidth: 2))
+                                : Text('Kaydet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                           ),
                         ),
                       ],
@@ -279,13 +279,13 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Yazıcıyı Sil', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        content: Text('${printer.name} kalıcı olarak kaldırılacak. Emin misiniz?', style: const TextStyle(color: Colors.white70)),
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text('Yazıcıyı Sil', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        content: Text('${printer.name} kalıcı olarak kaldırılacak. Emin misiniz?', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Vazgeç', style: TextStyle(color: Color(0xFF94A3B8))),
+            child: Text('Vazgeç', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444), foregroundColor: Colors.white),
@@ -302,7 +302,7 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                 }
               }
             },
-            child: const Text('Sil'),
+            child: Text('Sil'),
           ),
         ],
       ),
@@ -314,13 +314,13 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
     final printersAsync = ref.watch(printersFutureProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Yazıcı Yönetimi', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text('Yazıcı Yönetimi', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.white70),
+            icon: Icon(Icons.refresh, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
             onPressed: () => ref.invalidate(printersFutureProvider),
           ),
         ],
@@ -328,65 +328,65 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showPrinterForm(),
         backgroundColor: const Color(0xFF38BDF8),
-        icon: const Icon(Icons.print, color: Colors.white),
-        label: const Text('Yeni Yazıcı', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        icon: Icon(Icons.print, color: Theme.of(context).colorScheme.onSurface),
+        label: Text('Yeni Yazıcı', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
       ),
       body: printersAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF38BDF8))),
-        error: (err, _) => Center(child: Text('Hata: $err', style: const TextStyle(color: Colors.redAccent))),
+        loading: () => Center(child: CircularProgressIndicator(color: Color(0xFF38BDF8))),
+        error: (err, _) => Center(child: Text('Hata: $err', style: TextStyle(color: Colors.redAccent))),
         data: (printers) {
           if (printers.isEmpty) {
-            return const Center(child: Text('Kayıtlı yazıcı bulunamadı.', style: TextStyle(color: Colors.white54)));
+            return Center(child: Text('Kayıtlı yazıcı bulunamadı.', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))));
           }
 
           return ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(16),
             itemCount: printers.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, _) => SizedBox(height: 12),
             itemBuilder: (ctx, idx) {
               final printer = printers[idx];
               return Container(
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF334155)),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: const CircleAvatar(
-                    backgroundColor: Color(0xFF0F172A),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  leading: CircleAvatar(
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                     child: Icon(Icons.print, color: Color(0xFF38BDF8)),
                   ),
-                  title: Text(printer.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  title: Text(printer.name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 4),
-                      Text('IP: ${printer.ipAddress}:${printer.port}', style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13)),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
+                      Text('IP: ${printer.ipAddress}:${printer.port}', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13)),
+                      SizedBox(height: 4),
                       Wrap(
                         spacing: 6,
                         children: [
                           if (printer.stationType != null)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 color: const Color(0xFFF59E0B).withAlpha(51),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 printer.stationType!,
-                                style: const TextStyle(color: Color(0xFFF59E0B), fontSize: 10, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: Color(0xFFF59E0B), fontSize: 10, fontWeight: FontWeight.bold),
                               ),
                             ),
                           if (printer.isCashier)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 color: const Color(0xFF10B981).withAlpha(51),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'KASA',
                                 style: TextStyle(color: Color(0xFF10B981), fontSize: 10, fontWeight: FontWeight.bold),
                               ),
@@ -399,11 +399,11 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.white54),
+                        icon: Icon(Icons.edit, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54)),
                         onPressed: () => _showPrinterForm(existingPrinter: printer),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Color(0xFFEF4444)),
+                        icon: Icon(Icons.delete_outline, color: Color(0xFFEF4444)),
                         onPressed: () => _confirmDelete(printer),
                       ),
                     ],

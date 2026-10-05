@@ -147,4 +147,48 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get lightTheme {
+    final baseTextTheme = GoogleFonts.plusJakartaSansTextTheme(ThemeData.light().textTheme);
+    return ThemeData(
+      brightness: Brightness.light,
+      scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+      primaryColor: AppColors.primary,
+      colorScheme: const ColorScheme.light(
+        primary: AppColors.primary,
+        secondary: AppColors.accent,
+        surface: Colors.white,
+        error: AppColors.error,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onSurface: Color(0xFF0F172A),
+        onError: Colors.white,
+      ),
+      cardColor: Colors.white,
+      dividerColor: const Color(0xFFE2E8F0),
+      textTheme: baseTextTheme.copyWith(
+        displayLarge: baseTextTheme.displayLarge?.copyWith(color: const Color(0xFF0F172A), fontWeight: FontWeight.bold),
+        displayMedium: baseTextTheme.displayMedium?.copyWith(color: const Color(0xFF0F172A), fontWeight: FontWeight.bold),
+        titleLarge: baseTextTheme.titleLarge?.copyWith(color: const Color(0xFF0F172A), fontWeight: FontWeight.w700),
+        bodyLarge: baseTextTheme.bodyLarge?.copyWith(color: const Color(0xFF0F172A)),
+        bodyMedium: baseTextTheme.bodyMedium?.copyWith(color: const Color(0xFF475569)),
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: IconThemeData(color: Color(0xFF0F172A)),
+        titleTextStyle: TextStyle(color: Color(0xFF0F172A), fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+      ),
+      cardTheme: CardThemeData(
+        color: Colors.white,
+        elevation: 1,
+        shadowColor: Colors.black.withValues(alpha: 0.05),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: const BorderSide(color: Color(0xFFE2E8F0), width: 1)),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+      ),
+      dividerTheme: const DividerThemeData(color: Color(0xFFE2E8F0), thickness: 1, space: 1),
+    );
+  }
 }
+

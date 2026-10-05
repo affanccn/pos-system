@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../auth/auth_controller.dart';
 import '../../core/network/socket_service.dart';
 import '../../core/widgets/app_states.dart';
+import '../../main.dart';
 
 final kitchenOrdersProvider = FutureProvider.autoDispose<List<dynamic>>((
   ref,
@@ -154,11 +155,11 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
     final ordersAsync = ref.watch(kitchenOrdersProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Theme.of(context).cardColor,
         title: Row(
-          children: const [
+          children: [
             Icon(Icons.soup_kitchen, color: Color(0xFFF59E0B)),
             SizedBox(width: 10),
             Expanded(
@@ -166,7 +167,7 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                 'Mutfak & Bar Ekranı (KDS)',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 18,
                 ),
                 maxLines: 1,
@@ -177,18 +178,26 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
         ),
         actions: [
           IconButton(
+            tooltip: 'Temayı Değiştir',
+            icon: Icon(
+              Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.amber : Colors.indigo,
+            ),
+            onPressed: () => ref.read(themeProvider.notifier).toggleTheme(),
+          ),
+          IconButton(
             tooltip: 'Yenile',
-            icon: const Icon(Icons.refresh, color: Colors.white70),
+            icon: Icon(Icons.refresh, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
             onPressed: () => ref.invalidate(kitchenOrdersProvider),
           ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(48),
           child: Container(
-            color: const Color(0xFF0F172A),
+            color: Theme.of(context).scaffoldBackgroundColor,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               child: Row(
                 children: [
                   _buildStationChip(
@@ -196,13 +205,13 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                     'ALL',
                     Icons.all_inclusive,
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   _buildStationChip('Mutfak', 'KITCHEN', Icons.restaurant),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   _buildStationChip('Bar / İçecek', 'BAR', Icons.local_bar),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   _buildStationChip('Tatlı', 'DESSERT', Icons.cake),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   _buildStationChip('Kahve', 'COFFEE', Icons.coffee),
                 ],
               ),
@@ -216,17 +225,17 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.error_outline,
                 color: Color(0xFFEF4444),
                 size: 48,
               ),
-              const SizedBox(height: 12),
-              Text('Hata: $err', style: const TextStyle(color: Colors.white70)),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
+              Text('Hata: $err', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
+              SizedBox(height: 12),
               ElevatedButton(
                 onPressed: () => ref.invalidate(kitchenOrdersProvider),
-                child: const Text('Tekrar Dene'),
+                child: Text('Tekrar Dene'),
               ),
             ],
           ),
@@ -258,7 +267,7 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                   : (constraints.maxWidth > 600 ? 2 : 1);
 
               return GridView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: crossAxisCount,
                   crossAxisSpacing: 16,
@@ -289,14 +298,14 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
 
                   return Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1E293B),
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: allReady
                             ? const Color(0xFF10B981)
                             : (elapsedMins >= 15
                                   ? const Color(0xFFEF4444)
-                                  : const Color(0xFF334155)),
+                                  : Theme.of(context).dividerColor),
                         width: allReady || elapsedMins >= 15 ? 2 : 1,
                       ),
                       boxShadow: [
@@ -311,17 +320,17 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(
+                          padding: EdgeInsets.symmetric(
                             horizontal: 16,
                             vertical: 12,
                           ),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF0F172A),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).scaffoldBackgroundColor,
                             borderRadius: BorderRadius.vertical(
                               top: Radius.circular(16),
                             ),
                             border: Border(
-                              bottom: BorderSide(color: Color(0xFF334155)),
+                              bottom: BorderSide(color: Theme.of(context).dividerColor),
                             ),
                           ),
                           child: Row(
@@ -332,23 +341,23 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                                 children: [
                                   Text(
                                     tableName,
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.onSurface,
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
                                     '#$orderNumber • $waiterName',
-                                    style: const TextStyle(
-                                      color: Color(0xFF94A3B8),
+                                    style: TextStyle(
+                                      color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                                       fontSize: 12,
                                     ),
                                   ),
                                 ],
                               ),
                               Container(
-                                padding: const EdgeInsets.symmetric(
+                                padding: EdgeInsets.symmetric(
                                   horizontal: 10,
                                   vertical: 4,
                                 ),
@@ -364,7 +373,7 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                                       size: 14,
                                       color: timerColor,
                                     ),
-                                    const SizedBox(width: 4),
+                                    SizedBox(width: 4),
                                     Text(
                                       '$elapsedMins dk',
                                       style: TextStyle(
@@ -382,7 +391,7 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
 
                         if (notes != null && notes.toString().isNotEmpty)
                           Container(
-                            padding: const EdgeInsets.symmetric(
+                            padding: EdgeInsets.symmetric(
                               horizontal: 12,
                               vertical: 6,
                             ),
@@ -390,16 +399,16 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                                 .withValues(alpha: 0.15),
                             child: Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.info_outline,
                                   size: 16,
                                   color: Color(0xFFF59E0B),
                                 ),
-                                const SizedBox(width: 6),
+                                SizedBox(width: 6),
                                 Expanded(
                                   child: Text(
                                     'Not: $notes',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: Color(0xFFF59E0B),
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
@@ -412,10 +421,10 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
 
                         Expanded(
                           child: ListView.separated(
-                            padding: const EdgeInsets.all(12),
+                            padding: EdgeInsets.all(12),
                             itemCount: items.length,
-                            separatorBuilder: (context, index) => const Divider(
-                              color: Color(0xFF334155),
+                            separatorBuilder: (context, index) => Divider(
+                              color: Theme.of(context).dividerColor,
                               height: 1,
                             ),
                             itemBuilder: (context, index) {
@@ -447,7 +456,7 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                                     : () => _updateItemStatus(itemId, status),
                                 borderRadius: BorderRadius.circular(8),
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(
+                                  padding: EdgeInsets.symmetric(
                                     vertical: 8,
                                     horizontal: 4,
                                   ),
@@ -462,14 +471,14 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                                         radius: 14,
                                         child: Text(
                                           '$qty',
-                                          style: const TextStyle(
-                                            color: Colors.white,
+                                          style: TextStyle(
+                                            color: Theme.of(context).colorScheme.onSurface,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 13,
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(width: 10),
+                                      SizedBox(width: 10),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
@@ -501,7 +510,7 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                                                 itemNotes.toString().isNotEmpty)
                                               Text(
                                                 '• $itemNotes',
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   color: Color(0xFFF59E0B),
                                                   fontSize: 12,
                                                 ),
@@ -509,9 +518,9 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                                           ],
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
+                                      SizedBox(width: 8),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(
+                                        padding: EdgeInsets.symmetric(
                                           horizontal: 8,
                                           vertical: 4,
                                         ),
@@ -536,7 +545,7 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                                               size: 14,
                                               color: statusColor,
                                             ),
-                                            const SizedBox(width: 4),
+                                            SizedBox(width: 4),
                                             Text(
                                               statusText,
                                               style: TextStyle(
@@ -557,14 +566,14 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                         ),
 
                         Padding(
-                          padding: const EdgeInsets.all(10),
+                          padding: EdgeInsets.all(10),
                           child: ElevatedButton.icon(
                             style: ElevatedButton.styleFrom(
                               backgroundColor: allReady
                                   ? const Color(0xFF10B981)
-                                  : const Color(0xFF334155),
+                                  : Theme.of(context).dividerColor,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              padding: EdgeInsets.symmetric(vertical: 12),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -577,7 +586,7 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                               allReady
                                   ? 'Servise Gönder / Arşivle'
                                   : 'Tümünü Hazırla & Gönder',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 13,
                               ),
@@ -603,9 +612,9 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
       onTap: () => setState(() => _selectedStation = stationKey),
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFF59E0B) : const Color(0xFF1E293B),
+          color: isSelected ? const Color(0xFFF59E0B) : Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -616,7 +625,7 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
               size: 14,
               color: isSelected ? Colors.black : Colors.white70,
             ),
-            const SizedBox(width: 6),
+            SizedBox(width: 6),
             Text(
               title,
               style: TextStyle(

@@ -41,13 +41,13 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Şubelerim', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text('Şubelerim', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _fetchBranches),
+          IconButton(icon: Icon(Icons.refresh), onPressed: _fetchBranches),
         ],
       ),
       body: _isLoading
@@ -58,7 +58,7 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
                   icon: Icons.storefront_outlined,
                 )
               : ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16),
                   itemCount: _branches.length,
                   itemBuilder: (context, index) {
                     final branch = _branches[index];
@@ -66,11 +66,11 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
                     final createdAt = DateTime.tryParse(branch['createdAt'] ?? '');
                     
                     return Container(
-                      margin: const EdgeInsets.only(bottom: 16),
+                      margin: EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B),
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: const Color(0xFF334155), width: 1),
+                        border: Border.all(color: Theme.of(context).dividerColor, width: 1),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.2),
@@ -86,22 +86,22 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
                           child: InkWell(
                             onTap: () {},
                             child: Padding(
-                              padding: const EdgeInsets.all(20),
+                              padding: EdgeInsets.all(20),
                               child: Row(
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.all(16),
+                                    padding: EdgeInsets.all(16),
                                     decoration: BoxDecoration(
                                       color: isActive ? const Color(0xFF38BDF8).withValues(alpha: 0.15) : const Color(0xFF64748B).withValues(alpha: 0.15),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
                                       Icons.storefront,
-                                      color: isActive ? const Color(0xFF38BDF8) : const Color(0xFF94A3B8),
+                                      color: isActive ? const Color(0xFF38BDF8) : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                                       size: 32,
                                     ),
                                   ),
-                                  const SizedBox(width: 16),
+                                  SizedBox(width: 16),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,7 +119,7 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
                                               ),
                                             ),
                                             Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                               decoration: BoxDecoration(
                                                 color: isActive ? const Color(0xFF10B981).withValues(alpha: 0.15) : const Color(0xFFEF4444).withValues(alpha: 0.15),
                                                 borderRadius: BorderRadius.circular(8),
@@ -138,26 +138,26 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
                                             ),
                                           ],
                                         ),
-                                        const SizedBox(height: 8),
+                                        SizedBox(height: 8),
                                         Row(
                                           children: [
-                                            const Icon(Icons.link, size: 14, color: Color(0xFF64748B)),
-                                            const SizedBox(width: 4),
+                                            Icon(Icons.link, size: 14, color: Color(0xFF64748B)),
+                                            SizedBox(width: 4),
                                             Text(
                                               '${branch['slug']}.restoran.com',
-                                              style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                                              style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13),
                                             ),
                                           ],
                                         ),
                                         if (createdAt != null) ...[
-                                          const SizedBox(height: 4),
+                                          SizedBox(height: 4),
                                           Row(
                                             children: [
-                                              const Icon(Icons.calendar_today, size: 14, color: Color(0xFF64748B)),
-                                              const SizedBox(width: 4),
+                                              Icon(Icons.calendar_today, size: 14, color: Color(0xFF64748B)),
+                                              SizedBox(width: 4),
                                               Text(
                                                 'Kayıt: ${DateFormat('dd MMM yyyy', 'tr_TR').format(createdAt)}',
-                                                style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                                                style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13),
                                               ),
                                             ],
                                           ),
@@ -165,8 +165,8 @@ class _BranchesScreenState extends ConsumerState<BranchesScreen> {
                                       ],
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  const Icon(Icons.chevron_right, color: Color(0xFF64748B)),
+                                  SizedBox(width: 8),
+                                  Icon(Icons.chevron_right, color: Color(0xFF64748B)),
                                 ],
                               ),
                             ),

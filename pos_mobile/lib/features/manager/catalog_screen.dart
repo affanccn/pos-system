@@ -23,7 +23,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
       title: 'Yeni Kategori Ekle',
       content: TextField(
         controller: nameCtrl,
-        decoration: const InputDecoration(labelText: 'Kategori Adı'),
+        decoration: InputDecoration(labelText: 'Kategori Adı'),
         autofocus: true,
       ),
       confirmText: 'Ekle',
@@ -54,21 +54,21 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
         children: [
           TextField(
             controller: nameCtrl,
-            style: const TextStyle(color: Colors.white),
-            decoration: const InputDecoration(
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            decoration: InputDecoration(
               labelText: 'Seçenek Adı (Örn: Karamel Şurubu)',
-              labelStyle: TextStyle(color: Colors.white70),
+              labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
             ),
             autofocus: true,
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           TextField(
             controller: priceCtrl,
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: 'Fiyat (TL)',
-              labelStyle: TextStyle(color: Colors.white70),
+              labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
             ),
           ),
         ],
@@ -103,7 +103,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     showAppDialog(
       context: context,
       title: 'Silme Onayı',
-      content: const Text('Bu seçeneği silmek istediğinize emin misiniz?', style: TextStyle(color: Colors.white70)),
+      content: Text('Bu seçeneği silmek istediğinize emin misiniz?', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
       confirmText: 'Sil',
       isDestructive: true,
       onConfirm: () async {
@@ -134,18 +134,18 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
             children: [
               TextField(
                 controller: nameCtrl,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                decoration: InputDecoration(
                   labelText: 'Grup Adı (Örn: Şuruplar)',
-                  labelStyle: TextStyle(color: Colors.white70),
+                  labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                 ),
                 autofocus: true,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               SwitchListTile(
-                title: const Text(
+                title: Text(
                   'Zorunlu Seçim',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 ),
                 value: isRequired,
                 onChanged: (v) => setState(() => isRequired = v),
@@ -187,7 +187,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     showAppDialog(
       context: context,
       title: 'Silme Onayı',
-      content: const Text('Bu grubu silmek istediğinize emin misiniz? Grubun içindeki seçenekler de silinebilir.', style: TextStyle(color: Colors.white70)),
+      content: Text('Bu grubu silmek istediğinize emin misiniz? Grubun içindeki seçenekler de silinebilir.', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
       confirmText: 'Sil',
       isDestructive: true,
       onConfirm: () async {
@@ -209,7 +209,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     showAppDialog(
       context: context,
       title: 'Silme Onayı',
-      content: const Text('Bu ürünü silmek istediğinize emin misiniz?', style: TextStyle(color: Colors.white70)),
+      content: Text('Bu ürünü silmek istediğinize emin misiniz?', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
       confirmText: 'Sil',
       isDestructive: true,
       onConfirm: () async {
@@ -232,22 +232,22 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     final catalogAsync = ref.watch(catalogProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text(
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text(
           'Menü & Ekstralar',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
           onPressed: () => context.pop(),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddCategoryDialog,
-        icon: const Icon(Icons.add),
-        label: const Text('Kategori Ekle'),
+        icon: Icon(Icons.add),
+        label: Text('Kategori Ekle'),
       ),
       body: catalogAsync.when(
         loading: () => const AppLoadingState(message: 'Katalog yükleniyor...'),
@@ -274,14 +274,14 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                   children: [
                     Text(
                       category.name,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add, color: Colors.green),
+                      icon: Icon(Icons.add, color: Colors.green),
                       onPressed: () async {
                         final res = await Navigator.push(
                           context,
@@ -297,8 +297,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                 ),
                 children: category.products.map((product) {
                   return Card(
-                    color: const Color(0xFF334155),
-                    margin: const EdgeInsets.symmetric(
+                    color: Theme.of(context).dividerColor,
+                    margin: EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,
                     ),
@@ -309,13 +309,13 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                           Expanded(
                             child: Text(
                               product.name,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                             ),
                           ),
                           Row(
                             children: [
                               IconButton(
-                                icon: const Icon(
+                                icon: Icon(
                                   Icons.edit,
                                   color: Colors.blue,
                                 ),
@@ -335,7 +335,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                 },
                               ),
                               IconButton(
-                                icon: const Icon(
+                                icon: Icon(
                                   Icons.delete,
                                   color: Colors.red,
                                 ),
@@ -347,13 +347,13 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                       ),
                       subtitle: Text(
                         '${(product.priceCents / 100).toStringAsFixed(2)} TL',
-                        style: const TextStyle(color: Colors.greenAccent),
+                        style: TextStyle(color: Colors.greenAccent),
                       ),
                       children: [
                         ...product.modifierGroups.map((group) {
                           return Container(
-                            margin: const EdgeInsets.all(8),
-                            padding: const EdgeInsets.all(8),
+                            margin: EdgeInsets.all(8),
+                            padding: EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               border: Border.all(color: Colors.white24),
                               borderRadius: BorderRadius.circular(8),
@@ -367,7 +367,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                   children: [
                                     Text(
                                       '${group.name} ${group.isRequired ? "(Zorunlu)" : ""}',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: Colors.amber,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -375,7 +375,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                     Row(
                                       children: [
                                         IconButton(
-                                          icon: const Icon(
+                                          icon: Icon(
                                             Icons.add_circle,
                                             color: Colors.blueAccent,
                                           ),
@@ -384,7 +384,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                           tooltip: 'Seçenek Ekle',
                                         ),
                                         IconButton(
-                                          icon: const Icon(
+                                          icon: Icon(
                                             Icons.delete,
                                             color: Colors.redAccent,
                                           ),
@@ -399,8 +399,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                   return ListTile(
                                     title: Text(
                                       item.name,
-                                      style: const TextStyle(
-                                        color: Colors.white70,
+                                      style: TextStyle(
+                                        color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                                       ),
                                     ),
                                     trailing: Row(
@@ -408,12 +408,12 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                                       children: [
                                         Text(
                                           '+${(item.priceCents / 100).toStringAsFixed(2)} TL',
-                                          style: const TextStyle(
+                                          style: TextStyle(
                                             color: Colors.green,
                                           ),
                                         ),
                                         IconButton(
-                                          icon: const Icon(
+                                          icon: Icon(
                                             Icons.close,
                                             color: Colors.red,
                                           ),
@@ -430,8 +430,8 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
                         }),
                         TextButton.icon(
                           onPressed: () => _showAddModifierGroupDialog(product),
-                          icon: const Icon(Icons.add),
-                          label: const Text('Yeni Ekstra Grubu Ekle'),
+                          icon: Icon(Icons.add),
+                          label: Text('Yeni Ekstra Grubu Ekle'),
                         ),
                       ],
                     ),

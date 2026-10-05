@@ -54,10 +54,10 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
       builder: (context, child) {
         return Theme(
           data: ThemeData.dark().copyWith(
-            colorScheme: const ColorScheme.dark(
+            colorScheme: ColorScheme.dark(
               primary: Color(0xFF38BDF8),
               onPrimary: Colors.white,
-              surface: Color(0xFF1E293B),
+              surface: Theme.of(context).cardColor,
               onSurface: Colors.white,
             ),
           ),
@@ -76,22 +76,22 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
 
   Widget _buildSummaryCard(String title, String value, IconData icon, Color color) {
     return Card(
-      color: const Color(0xFF334155),
+      color: Theme.of(context).dividerColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: EdgeInsets.all(12.0),
         child: Row(
           children: [
             CircleAvatar(radius: 18, backgroundColor: color.withValues(alpha: 0.2), child: Icon(icon, color: color, size: 18)),
-            const SizedBox(width: 10),
+            SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(title, style: const TextStyle(color: Colors.white70, fontSize: 11), overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 2),
-                  Text(value, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+                  Text(title, style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 11), overflow: TextOverflow.ellipsis),
+                  SizedBox(height: 2),
+                  Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 15, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
                 ],
               ),
             )
@@ -102,7 +102,7 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
   }
 
   Widget _buildBarChart(List<dynamic> peakHours) {
-    if (peakHours.isEmpty) return const Center(child: Text('Veri yok', style: TextStyle(color: Colors.white54)));
+    if (peakHours.isEmpty) return Center(child: Text('Veri yok', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))));
     
     double maxY = 0;
     for (var p in peakHours) {
@@ -123,7 +123,7 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
               sideTitles: SideTitles(
                 showTitles: true,
                 getTitlesWidget: (value, meta) {
-                  return Text('${value.toInt()}:00', style: const TextStyle(color: Colors.white70, fontSize: 10));
+                  return Text('${value.toInt()}:00', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 10));
                 },
                 reservedSize: 28,
               ),
@@ -154,29 +154,29 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
 
   Widget _buildListSection(String title, List<dynamic> items, String Function(dynamic) nameExtractor, String Function(dynamic) valueExtractor) {
     return Card(
-      color: const Color(0xFF1E293B),
+      color: Theme.of(context).cardColor,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            if (items.isEmpty) const Text('Veri yok', style: TextStyle(color: Colors.white54)),
+            Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 12),
+            if (items.isEmpty) Text('Veri yok', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
             ...items.map((item) => Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              padding: EdgeInsets.symmetric(vertical: 4.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
                     child: Text(nameExtractor(item), 
-                      style: const TextStyle(color: Colors.white70),
+                      style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(valueExtractor(item), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  SizedBox(width: 8),
+                  Text(valueExtractor(item), style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
                 ],
               ),
             )),
@@ -191,30 +191,30 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
     final dateFormat = DateFormat('dd.MM.yyyy');
     
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Gelişmiş Raporlar', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF1E293B),
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text('Gelişmiş Raporlar', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        backgroundColor: Theme.of(context).cardColor,
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
           TextButton.icon(
             onPressed: _selectDateRange,
-            icon: const Icon(Icons.calendar_today, color: Colors.white),
-            label: Text('${dateFormat.format(_startDate)} - ${dateFormat.format(_endDate)}', style: const TextStyle(color: Colors.white)),
+            icon: Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.onSurface),
+            label: Text('${dateFormat.format(_startDate)} - ${dateFormat.format(_endDate)}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
           ),
         ],
       ),
       body: _isLoading 
-        ? const Center(child: CircularProgressIndicator(color: Color(0xFF38BDF8)))
+        ? Center(child: CircularProgressIndicator(color: Color(0xFF38BDF8)))
         : _reportData == null 
-          ? const Center(child: Text('Veri bulunamadı', style: TextStyle(color: Colors.white)))
+          ? Center(child: Text('Veri bulunamadı', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)))
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Finansal Özet', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
+                  Text('Finansal Özet', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 16),
                   GridView.count(
                     crossAxisCount: MediaQuery.of(context).size.width > 600 ? 4 : 2,
                     crossAxisSpacing: 16,
@@ -229,9 +229,9 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
                       _buildSummaryCard('İndirim', '${(_reportData!['financials']['discountCents'] / 100).toStringAsFixed(2)} TL', Icons.discount, Colors.orange),
                     ],
                   ),
-                  const SizedBox(height: 32),
-                  const Text('Operasyonel Özet', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 32),
+                  Text('Operasyonel Özet', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 16),
                   GridView.count(
                     crossAxisCount: MediaQuery.of(context).size.width > 600 ? 3 : 2,
                     crossAxisSpacing: 16,
@@ -245,17 +245,17 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
                       _buildSummaryCard('Ort. Sipariş Süresi', '${(_reportData!['operations']['avgOrderTimeMin'] as num).toStringAsFixed(1)} dk', Icons.timer, Colors.redAccent),
                     ],
                   ),
-                  const SizedBox(height: 32),
-                  const Text('Yoğun Saatler', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 32),
+                  Text('Yoğun Saatler', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 16),
                   Card(
-                    color: const Color(0xFF1E293B),
+                    color: Theme.of(context).cardColor,
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(16.0),
                       child: _buildBarChart(_reportData!['operations']['peakHours'] as List<dynamic>),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -265,7 +265,7 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
                           (item) => '${item['qty']} adet'
                         )
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16),
                       Expanded(
                         child: _buildListSection('En Çok Tercih Edilen Masa', _reportData!['tables']['topTables'] as List<dynamic>, 
                           (item) => item['name'], 
@@ -274,7 +274,7 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -284,7 +284,7 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
                           (item) => '${(item['rev'] / 100).toStringAsFixed(2)} TL'
                         )
                       ),
-                      const SizedBox(width: 16),
+                      SizedBox(width: 16),
                       Expanded(
                         child: _buildListSection('Garson Performansı', _reportData!['staff']['waiterSales'] as List<dynamic>, 
                           (item) => item['name'], 
@@ -293,7 +293,7 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32),
                 ],
               ),
             ),

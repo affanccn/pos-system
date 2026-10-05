@@ -94,7 +94,7 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
       lastDate: DateTime.now(),
       initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
       builder: (context, child) => Theme(
-        data: ThemeData.dark().copyWith(colorScheme: const ColorScheme.dark(primary: Color(0xFF38BDF8), surface: Color(0xFF1E293B), onSurface: Colors.white)),
+        data: ThemeData.dark().copyWith(colorScheme: ColorScheme.dark(primary: Color(0xFF38BDF8), surface: Theme.of(context).cardColor, onSurface: Colors.white)),
         child: child!,
       ),
     );
@@ -120,23 +120,23 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
             _detailRow('Tarih', _formatDate(log['createdAt'])),
             if (log['description'] != null) _detailRow('Aciklama', log['description']),
             if (log['oldValue'] != null) ...[
-              const SizedBox(height: 12),
-              const Text('Eski Deger:', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
+              SizedBox(height: 12),
+              Text('Eski Deger:', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
+              SizedBox(height: 4),
               Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: const Color(0xFF334155), borderRadius: BorderRadius.circular(8)),
-                child: Text('${log['oldValue']}', style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(color: Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(8)),
+                child: Text('${log['oldValue']}', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13)),
               ),
             ],
             if (log['newValue'] != null) ...[
-              const SizedBox(height: 12),
-              const Text('Yeni Deger:', style: TextStyle(color: Color(0xFF10B981), fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
+              SizedBox(height: 12),
+              Text('Yeni Deger:', style: TextStyle(color: Color(0xFF10B981), fontWeight: FontWeight.bold)),
+              SizedBox(height: 4),
               Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(color: const Color(0xFF334155), borderRadius: BorderRadius.circular(8)),
-                child: Text('${log['newValue']}', style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(color: Theme.of(context).dividerColor, borderRadius: BorderRadius.circular(8)),
+                child: Text('${log['newValue']}', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13)),
               ),
             ],
           ],
@@ -148,12 +148,12 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
 
   Widget _detailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(width: 100, child: Text('$label:', style: const TextStyle(color: Colors.white70))),
-          Expanded(child: Text(value, style: const TextStyle(color: Colors.white))),
+          SizedBox(width: 100, child: Text('$label:', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)))),
+          Expanded(child: Text(value, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
         ],
       ),
     );
@@ -170,37 +170,37 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd.MM.yyyy');
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Islem Gecmisi', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF1E293B),
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text('Islem Gecmisi', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        backgroundColor: Theme.of(context).cardColor,
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
           TextButton.icon(
             onPressed: _selectDateRange,
-            icon: const Icon(Icons.calendar_today, color: Colors.white, size: 18),
-            label: Text('${dateFormat.format(_startDate)} - ${dateFormat.format(_endDate)}', style: const TextStyle(color: Colors.white, fontSize: 12)),
+            icon: Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.onSurface, size: 18),
+            label: Text('${dateFormat.format(_startDate)} - ${dateFormat.format(_endDate)}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12)),
           ),
         ],
       ),
       body: Column(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: const Color(0xFF1E293B),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            color: Theme.of(context).cardColor,
             child: Row(
               children: [
-                const Text('Filtre: ', style: TextStyle(color: Colors.white70)),
-                const SizedBox(width: 8),
+                Text('Filtre: ', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
+                SizedBox(width: 8),
                 Expanded(
                   child: DropdownButton<String?>(
                     value: _actionFilter,
-                    dropdownColor: const Color(0xFF334155),
+                    dropdownColor: Theme.of(context).dividerColor,
                     isExpanded: true,
-                    hint: const Text('Tum Islemler', style: TextStyle(color: Colors.white54)),
-                    style: const TextStyle(color: Colors.white),
+                    hint: Text('Tum Islemler', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                     items: [
-                      const DropdownMenuItem(value: null, child: Text('Tum Islemler')),
+                      DropdownMenuItem(value: null, child: Text('Tum Islemler')),
                       ..._actionLabels.entries.map((e) => DropdownMenuItem(value: e.key, child: Text(e.value))),
                     ],
                     onChanged: (val) {
@@ -227,15 +227,15 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
                       final action = log['action'] as String? ?? '';
                       final color = _actionColors[action] ?? Colors.grey;
                       return Card(
-                        color: const Color(0xFF334155),
-                        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                        color: Theme.of(context).dividerColor,
+                        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                         child: ListTile(
                           leading: CircleAvatar(
                             backgroundColor: color.withValues(alpha: 0.2),
                             child: Icon(Icons.history, color: color, size: 20),
                           ),
-                          title: Text(_actionLabels[action] ?? action, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                          subtitle: Text('${log['user']?['fullName'] ?? ''} | ${_formatDate(log['createdAt'])}${log['description'] != null ? '\n${log['description']}' : ''}', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                          title: Text(_actionLabels[action] ?? action, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+                          subtitle: Text('${log['user']?['fullName'] ?? ''} | ${_formatDate(log['createdAt'])}${log['description'] != null ? '\n${log['description']}' : ''}', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 12)),
                           onTap: () => _showDetailDialog(log),
                           isThreeLine: log['description'] != null,
                         ),
@@ -245,18 +245,18 @@ class _AuditLogScreenState extends ConsumerState<AuditLogScreen> {
           ),
           if (_totalPages > 1)
             Container(
-              padding: const EdgeInsets.all(12),
-              color: const Color(0xFF1E293B),
+              padding: EdgeInsets.all(12),
+              color: Theme.of(context).cardColor,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.chevron_left, color: Colors.white),
+                    icon: Icon(Icons.chevron_left, color: Theme.of(context).colorScheme.onSurface),
                     onPressed: _page > 1 ? () { setState(() => _page--); _fetchLogs(); } : null,
                   ),
-                  Text('Sayfa $_page / $_totalPages', style: const TextStyle(color: Colors.white)),
+                  Text('Sayfa $_page / $_totalPages', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                   IconButton(
-                    icon: const Icon(Icons.chevron_right, color: Colors.white),
+                    icon: Icon(Icons.chevron_right, color: Theme.of(context).colorScheme.onSurface),
                     onPressed: _page < _totalPages ? () { setState(() => _page++); _fetchLogs(); } : null,
                   ),
                 ],

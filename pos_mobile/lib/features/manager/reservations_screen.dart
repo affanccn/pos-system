@@ -103,30 +103,30 @@ class _ReservationsScreenState extends ConsumerState<ReservationsScreen> {
     final timeFormat = DateFormat('HH:mm');
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Rezervasyonlar', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text('Rezervasyonlar', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
           TextButton.icon(
-            icon: const Icon(Icons.calendar_today, color: Color(0xFF38BDF8), size: 18),
+            icon: Icon(Icons.calendar_today, color: Color(0xFF38BDF8), size: 18),
             label: Text(
               dateFormat.format(_selectedDate),
-              style: const TextStyle(color: Color(0xFF38BDF8)),
+              style: TextStyle(color: Color(0xFF38BDF8)),
             ),
             onPressed: _selectDate,
           ),
-          IconButton(icon: const Icon(Icons.add, color: Color(0xFF10B981)), onPressed: _showAddReservationDialog),
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _fetchReservations),
+          IconButton(icon: Icon(Icons.add, color: Color(0xFF10B981)), onPressed: _showAddReservationDialog),
+          IconButton(icon: Icon(Icons.refresh), onPressed: _fetchReservations),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF38BDF8)))
+          ? Center(child: CircularProgressIndicator(color: Color(0xFF38BDF8)))
           : _reservations.isEmpty
-              ? const Center(child: Text('Bu tarihte rezervasyon yok.', style: TextStyle(color: Colors.white54)))
+              ? Center(child: Text('Bu tarihte rezervasyon yok.', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))))
               : ListView.builder(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   itemCount: _reservations.length,
                   itemBuilder: (context, index) {
                     final res = _reservations[index];
@@ -134,8 +134,8 @@ class _ReservationsScreenState extends ConsumerState<ReservationsScreen> {
                     final status = res['status'];
 
                     return Card(
-                      color: const Color(0xFF1E293B),
-                      margin: const EdgeInsets.only(bottom: 8),
+                      color: Theme.of(context).cardColor,
+                      margin: EdgeInsets.only(bottom: 8),
                       child: ExpansionTile(
                         iconColor: Colors.white54,
                         collapsedIconColor: Colors.white54,
@@ -148,14 +148,14 @@ class _ReservationsScreenState extends ConsumerState<ReservationsScreen> {
                         ),
                         title: Text(
                           res['customerName'] ?? 'Bilinmeyen',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
                           '${res['guestCount']} Kişi • ${res['table']?['name'] ?? 'Masa Seçilmedi'}',
-                          style: const TextStyle(color: Colors.white70, fontSize: 13),
+                          style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13),
                         ),
                         trailing: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: _getStatusColor(status).withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(6),
@@ -167,59 +167,59 @@ class _ReservationsScreenState extends ConsumerState<ReservationsScreen> {
                         ),
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: EdgeInsets.all(16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 if (res['customerPhone'] != null && res['customerPhone'].toString().isNotEmpty)
                                   Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
+                                    padding: EdgeInsets.only(bottom: 8),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.phone, color: Colors.white54, size: 16),
-                                        const SizedBox(width: 8),
-                                        Text(res['customerPhone'], style: const TextStyle(color: Colors.white)),
+                                        Icon(Icons.phone, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54), size: 16),
+                                        SizedBox(width: 8),
+                                        Text(res['customerPhone'], style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                                       ],
                                     ),
                                   ),
                                 if (res['notes'] != null && res['notes'].toString().isNotEmpty)
                                   Padding(
-                                    padding: const EdgeInsets.only(bottom: 12),
+                                    padding: EdgeInsets.only(bottom: 12),
                                     child: Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        const Icon(Icons.note, color: Colors.white54, size: 16),
-                                        const SizedBox(width: 8),
-                                        Expanded(child: Text(res['notes'], style: const TextStyle(color: Colors.white))),
+                                        Icon(Icons.note, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54), size: 16),
+                                        SizedBox(width: 8),
+                                        Expanded(child: Text(res['notes'], style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
                                       ],
                                     ),
                                   ),
-                                const Divider(color: Color(0xFF334155)),
+                                Divider(color: Theme.of(context).dividerColor),
                                 Wrap(
                                   spacing: 8,
                                   runSpacing: 8,
                                   children: [
                                     if (status != 'CONFIRMED')
                                       ActionChip(
-                                        label: const Text('Onayla', style: TextStyle(color: Color(0xFF38BDF8))),
+                                        label: Text('Onayla', style: TextStyle(color: Color(0xFF38BDF8))),
                                         backgroundColor: const Color(0xFF38BDF8).withValues(alpha: 0.1),
                                         onPressed: () => _changeStatus(res['id'], 'CONFIRMED'),
                                       ),
                                     if (status != 'ARRIVED')
                                       ActionChip(
-                                        label: const Text('Geldi', style: TextStyle(color: Color(0xFF10B981))),
+                                        label: Text('Geldi', style: TextStyle(color: Color(0xFF10B981))),
                                         backgroundColor: const Color(0xFF10B981).withValues(alpha: 0.1),
                                         onPressed: () => _changeStatus(res['id'], 'ARRIVED'),
                                       ),
                                     if (status != 'NO_SHOW')
                                       ActionChip(
-                                        label: const Text('Gelmedi', style: TextStyle(color: Color(0xFFEF4444))),
+                                        label: Text('Gelmedi', style: TextStyle(color: Color(0xFFEF4444))),
                                         backgroundColor: const Color(0xFFEF4444).withValues(alpha: 0.1),
                                         onPressed: () => _changeStatus(res['id'], 'NO_SHOW'),
                                       ),
                                     if (status != 'CANCELLED')
                                       ActionChip(
-                                        label: const Text('İptal Et', style: TextStyle(color: Colors.grey)),
+                                        label: Text('İptal Et', style: TextStyle(color: Colors.grey)),
                                         backgroundColor: Colors.grey.withValues(alpha: 0.1),
                                         onPressed: () => _changeStatus(res['id'], 'CANCELLED'),
                                       ),
@@ -292,48 +292,48 @@ class _AddReservationDialogState extends ConsumerState<_AddReservationDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      backgroundColor: const Color(0xFF1E293B),
-      title: const Text('Yeni Rezervasyon', style: TextStyle(color: Colors.white)),
+      backgroundColor: Theme.of(context).cardColor,
+      title: Text('Yeni Rezervasyon', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: _nameController,
-              style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: 'Müşteri Adı', labelStyle: TextStyle(color: Colors.white54)),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+              decoration: InputDecoration(labelText: 'Müşteri Adı', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
             ),
             TextField(
               controller: _phoneController,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(labelText: 'Telefon', labelStyle: TextStyle(color: Colors.white54)),
+              decoration: InputDecoration(labelText: 'Telefon', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: Text('Kişi Sayısı: $_guestCount', style: const TextStyle(color: Colors.white)),
+                  child: Text('Kişi Sayısı: $_guestCount', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.remove, color: Colors.white54),
+                  icon: Icon(Icons.remove, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54)),
                   onPressed: () {
                     if (_guestCount > 1) setState(() => _guestCount--);
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add, color: Colors.white54),
+                  icon: Icon(Icons.add, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54)),
                   onPressed: () {
                     setState(() => _guestCount++);
                   },
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text('Saat', style: TextStyle(color: Colors.white54)),
-              trailing: Text(_time.format(context), style: const TextStyle(color: Colors.white, fontSize: 16)),
+              title: Text('Saat', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
+              trailing: Text(_time.format(context), style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16)),
               onTap: () async {
                 final picked = await showTimePicker(context: context, initialTime: _time);
                 if (picked != null) setState(() => _time = picked);
@@ -341,9 +341,9 @@ class _AddReservationDialogState extends ConsumerState<_AddReservationDialog> {
             ),
             TextField(
               controller: _notesController,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               maxLines: 2,
-              decoration: const InputDecoration(labelText: 'Notlar', labelStyle: TextStyle(color: Colors.white54)),
+              decoration: InputDecoration(labelText: 'Notlar', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
             ),
           ],
         ),
@@ -351,14 +351,14 @@ class _AddReservationDialogState extends ConsumerState<_AddReservationDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('İptal', style: TextStyle(color: Colors.white54)),
+          child: Text('İptal', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
         ),
         ElevatedButton(
           onPressed: _isLoading ? null : _submit,
           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
           child: _isLoading 
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-              : const Text('Kaydet'),
+              ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface, strokeWidth: 2))
+              : Text('Kaydet'),
         ),
       ],
     );

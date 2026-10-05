@@ -107,22 +107,22 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        backgroundColor: Color(0xFF0F172A),
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Center(child: CircularProgressIndicator()),
       );
     }
     if (_order == null) {
       return Scaffold(
-        backgroundColor: const Color(0xFF0F172A),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          title: const Text('Ödeme'),
-          backgroundColor: const Color(0xFF1E293B),
+          title: Text('Ödeme'),
+          backgroundColor: Theme.of(context).cardColor,
         ),
-        body: const Center(
+        body: Center(
           child: Text(
             'Sipariş bulunamadı.',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           ),
         ),
       );
@@ -132,10 +132,10 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         _totalAmountCents - _paidAmountCents - _discountAmountCents;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('Ödeme - Masa ${_order!['table']['name']}'),
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Theme.of(context).cardColor,
         foregroundColor: Colors.white,
       ),
       body: Row(
@@ -143,8 +143,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           Expanded(
             flex: 2,
             child: Container(
-              decoration: const BoxDecoration(
-                border: Border(right: BorderSide(color: Color(0xFF334155))),
+              decoration: BoxDecoration(
+                border: Border(right: BorderSide(color: Theme.of(context).dividerColor)),
               ),
               child: ListView.builder(
                 itemCount: _items.length,
@@ -164,11 +164,11 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     ),
                     subtitle: Text(
                       '$paidQty / $totalQty ödendi',
-                      style: const TextStyle(color: Colors.white54),
+                      style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54)),
                     ),
                     trailing: Text(
                       '${(item['totalPriceCents'] / 100).toStringAsFixed(2)} ₺',
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                     ),
                   );
                 },
@@ -178,19 +178,19 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           Expanded(
             flex: 1,
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text(
+                  Text(
                     'ÖZET',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   _buildSummaryRow('Ara Toplam', _totalAmountCents),
                   _buildSummaryRow(
                     'İndirim',
@@ -202,64 +202,64 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     _paidAmountCents,
                     color: Colors.amber,
                   ),
-                  const Divider(color: Color(0xFF334155)),
+                  Divider(color: Theme.of(context).dividerColor),
                   _buildSummaryRow(
                     'KALAN',
                     remaining > 0 ? remaining : 0,
                     isLarge: true,
                   ),
-                  const Spacer(),
+                  Spacer(),
 
                   if (remaining > 0) ...[
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16),
                       ),
                       onPressed: _isProcessing
                           ? null
                           : () => _processPayment('CASH', remaining),
-                      icon: const Icon(Icons.money, color: Colors.white),
-                      label: const Text(
+                      icon: Icon(Icons.money, color: Theme.of(context).colorScheme.onSurface),
+                      label: Text(
                         'Nakit',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16),
                       ),
                       onPressed: _isProcessing
                           ? null
                           : () => _processPayment('CARD', remaining),
-                      icon: const Icon(Icons.credit_card, color: Colors.white),
-                      label: const Text(
+                      icon: Icon(Icons.credit_card, color: Theme.of(context).colorScheme.onSurface),
+                      label: Text(
                         'Kredi Kartı',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        padding: EdgeInsets.symmetric(vertical: 16),
                       ),
                       onPressed: _isProcessing
                           ? null
                           : () => _processPayment('ACCOUNT', remaining),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.account_balance_wallet,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
-                      label: const Text(
+                      label: Text(
                         'Cari Hesaba Yaz',
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
                       ),
                     ),
                   ] else ...[
-                    const Center(
+                    Center(
                       child: Text(
                         'HESAP KAPANDI',
                         style: TextStyle(
@@ -286,14 +286,14 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     bool isLarge = false,
   }) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             title,
             style: TextStyle(
-              color: Colors.white70,
+              color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
               fontSize: isLarge ? 20 : 16,
             ),
           ),

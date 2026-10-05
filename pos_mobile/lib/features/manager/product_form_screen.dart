@@ -76,25 +76,25 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
         return StatefulBuilder(
           builder: (context, setStateDialog) {
             return AlertDialog(
-              backgroundColor: const Color(0xFF1E293B),
-              title: const Text('Reçete Malzemesi Ekle', style: TextStyle(color: Colors.white)),
+              backgroundColor: Theme.of(context).cardColor,
+              title: Text('Reçete Malzemesi Ekle', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   DropdownButton<StockItem>(
                     value: selected,
-                    dropdownColor: const Color(0xFF334155),
+                    dropdownColor: Theme.of(context).dividerColor,
                     isExpanded: true,
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                     items: _availableStocks.map((s) => DropdownMenuItem(value: s, child: Text('${s.name} (${s.unit})'))).toList(),
                     onChanged: (val) => setStateDialog(() => selected = val),
                   ),
-                  TextField(controller: qtyCtrl, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Miktar', labelStyle: TextStyle(color: Colors.white70)), keyboardType: TextInputType.number),
-                  TextField(controller: wasteCtrl, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Fire (%)', labelStyle: TextStyle(color: Colors.white70)), keyboardType: TextInputType.number),
+                  TextField(controller: qtyCtrl, style: TextStyle(color: Theme.of(context).colorScheme.onSurface), decoration: InputDecoration(labelText: 'Miktar', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))), keyboardType: TextInputType.number),
+                  TextField(controller: wasteCtrl, style: TextStyle(color: Theme.of(context).colorScheme.onSurface), decoration: InputDecoration(labelText: 'Fire (%)', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))), keyboardType: TextInputType.number),
                 ],
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('İptal')),
+                TextButton(onPressed: () => Navigator.pop(ctx), child: Text('İptal')),
                 ElevatedButton(
                   onPressed: () {
                     if (selected == null) return;
@@ -119,7 +119,7 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                     });
                     Navigator.pop(ctx);
                   },
-                  child: const Text('Ekle'),
+                  child: Text('Ekle'),
                 ),
               ],
             );
@@ -165,56 +165,56 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(widget.product == null ? 'Yeni Ürün' : 'Ürün Düzenle', style: const TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF1E293B),
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(widget.product == null ? 'Yeni Ürün' : 'Ürün Düzenle', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        backgroundColor: Theme.of(context).cardColor,
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
           IconButton(
-            icon: _isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Icon(Icons.save),
+            icon: _isSaving ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface, strokeWidth: 2)) : Icon(Icons.save),
             onPressed: _isSaving ? null : _save,
           ),
         ],
       ),
-      body: _isLoadingStocks ? const Center(child: CircularProgressIndicator()) : SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body: _isLoadingStocks ? Center(child: CircularProgressIndicator()) : SingleChildScrollView(
+        padding: EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Card(
-                color: const Color(0xFF1E293B),
+                color: Theme.of(context).cardColor,
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: EdgeInsets.all(16.0),
                   child: Column(
                     children: [
                       TextFormField(
                         controller: _nameCtrl,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: const InputDecoration(labelText: 'Ürün Adı', labelStyle: TextStyle(color: Colors.white70)),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                        decoration: InputDecoration(labelText: 'Ürün Adı', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                         validator: (v) => v!.isEmpty ? 'Boş bırakılamaz' : null,
                       ),
                       TextFormField(
                         controller: _descCtrl,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: const InputDecoration(labelText: 'Açıklama', labelStyle: TextStyle(color: Colors.white70)),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                        decoration: InputDecoration(labelText: 'Açıklama', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                       ),
                       Row(
                         children: [
                           Expanded(child: TextFormField(
                             controller: _priceCtrl,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: const InputDecoration(labelText: 'Fiyat (TL)', labelStyle: TextStyle(color: Colors.white70)),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                            decoration: InputDecoration(labelText: 'Fiyat (TL)', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                             keyboardType: TextInputType.number,
                             validator: (v) => v!.isEmpty ? 'Boş bırakılamaz' : null,
                           )),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           Expanded(child: TextFormField(
                             controller: _taxCtrl,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: const InputDecoration(labelText: 'KDV (%)', labelStyle: TextStyle(color: Colors.white70)),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                            decoration: InputDecoration(labelText: 'KDV (%)', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                             keyboardType: TextInputType.number,
                           )),
                         ],
@@ -223,17 +223,17 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         children: [
                           Expanded(child: TextFormField(
                             controller: _costCtrl,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: const InputDecoration(labelText: 'Maliyet (TL)', labelStyle: TextStyle(color: Colors.white70)),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                            decoration: InputDecoration(labelText: 'Maliyet (TL)', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                             keyboardType: TextInputType.number,
                           )),
-                          const SizedBox(width: 16),
+                          SizedBox(width: 16),
                           Expanded(
                             child: DropdownButtonFormField<String>(
                               initialValue: _stationType,
-                              dropdownColor: const Color(0xFF334155),
-                              style: const TextStyle(color: Colors.white),
-                              decoration: const InputDecoration(labelText: 'İstasyon', labelStyle: TextStyle(color: Colors.white70)),
+                              dropdownColor: Theme.of(context).dividerColor,
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                              decoration: InputDecoration(labelText: 'İstasyon', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                               items: _stationTypes.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
                               onChanged: (val) => setState(() => _stationType = val),
                             )
@@ -244,29 +244,29 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Reçete (İçindekiler)', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  Text('Reçete (İçindekiler)', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold)),
                   ElevatedButton.icon(
                     onPressed: _addRecipeItem,
-                    icon: const Icon(Icons.add),
-                    label: const Text('Malzeme Ekle'),
+                    icon: Icon(Icons.add),
+                    label: Text('Malzeme Ekle'),
                     style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF38BDF8), foregroundColor: Colors.white),
                   )
                 ],
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               if (_recipeItems.isEmpty)
-                const Center(child: Padding(padding: EdgeInsets.all(32.0), child: Text('Reçete eklenmemiş.', style: TextStyle(color: Colors.white54)))),
+                Center(child: Padding(padding: EdgeInsets.all(32.0), child: Text('Reçete eklenmemiş.', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))))),
               ..._recipeItems.map((r) => Card(
-                color: const Color(0xFF334155),
+                color: Theme.of(context).dividerColor,
                 child: ListTile(
-                  title: Text(r.stockItem?.name ?? 'Bilinmeyen', style: const TextStyle(color: Colors.white)),
-                  subtitle: Text('Miktar: ${r.quantity} ${r.stockItem?.unit ?? ''} | Fire: %${r.wastePercentage} | Maliyet: ${(r.costCents / 100).toStringAsFixed(2)} TL', style: const TextStyle(color: Colors.white70)),
+                  title: Text(r.stockItem?.name ?? 'Bilinmeyen', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                  subtitle: Text('Miktar: ${r.quantity} ${r.stockItem?.unit ?? ''} | Fire: %${r.wastePercentage} | Maliyet: ${(r.costCents / 100).toStringAsFixed(2)} TL', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                   trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.redAccent),
+                    icon: Icon(Icons.delete, color: Colors.redAccent),
                     onPressed: () {
                       setState(() {
                         _recipeItems.remove(r);

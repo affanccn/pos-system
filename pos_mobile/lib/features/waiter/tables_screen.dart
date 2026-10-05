@@ -10,6 +10,7 @@ import '../../core/network/socket_service.dart';
 import '../../data/models/table_model.dart';
 import '../auth/auth_controller.dart';
 import 'tables_controller.dart';
+import '../../main.dart';
 
 class TablesScreen extends ConsumerStatefulWidget {
   const TablesScreen({super.key});
@@ -26,12 +27,12 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
     VoidCallback onTap,
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
+      padding: EdgeInsets.symmetric(horizontal: 4),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(8),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             color: color.withValues(alpha: 0.1),
@@ -40,7 +41,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(icon, color: color, size: 18),
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Text(
                 label,
                 style: TextStyle(
@@ -75,8 +76,8 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.notifications_active, color: Colors.white),
-            const SizedBox(width: 8),
+            Icon(Icons.notifications_active, color: Theme.of(context).colorScheme.onSurface),
+            SizedBox(width: 8),
             Expanded(
               child: Text('🔔 $tableName: $qty adet $productName HAZIR!'),
             ),
@@ -100,8 +101,8 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 8),
+            Icon(Icons.check_circle, color: Theme.of(context).colorScheme.onSurface),
+            SizedBox(width: 8),
             Expanded(child: Text('✅ $tableName siparişinin TÜMÜ hazır!')),
           ],
         ),
@@ -173,9 +174,9 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
     showAppDialog(
       context: context,
       title: 'Oturumu Kapat',
-      content: const Text(
+      content: Text(
         'Mevcut kullanıcı oturumunu kapatıp PIN ekranına dönmek istiyor musunuz?',
-        style: TextStyle(color: Colors.white70),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
       ),
       confirmText: 'Çıkış Yap',
       isDestructive: true,
@@ -200,11 +201,11 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (dialogCtx, setDialogState) => AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
+          backgroundColor: Theme.of(context).cardColor,
           title: Text(
             isEditing ? 'Masayı Düzenle' : 'Yeni Masa Ekle',
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -213,31 +214,31 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Masa Adı / Numarası',
-                  style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 13),
                 ),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 TextField(
                   controller: nameController,
                   autofocus: true,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
                     hintText: 'Örn: Masa 12',
-                    hintStyle: const TextStyle(color: Colors.white38),
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38)),
                     filled: true,
-                    fillColor: const Color(0xFF0F172A),
+                    fillColor: Theme.of(context).scaffoldBackgroundColor,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-                const Text(
+                SizedBox(height: 16),
+                Text(
                   'Bölüm / Salon',
-                  style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 13),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -248,7 +249,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                       selected: isSel,
                       selectedColor: const Color(0xFF38BDF8)
                           .withValues(alpha: 0.25),
-                      backgroundColor: const Color(0xFF0F172A),
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                       labelStyle: TextStyle(
                         color: isSel ? const Color(0xFF38BDF8) : Colors.white70,
                         fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
@@ -256,7 +257,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                       side: BorderSide(
                         color: isSel
                             ? const Color(0xFF38BDF8)
-                            : const Color(0xFF334155),
+                            : Theme.of(context).dividerColor,
                       ),
                       onSelected: (val) {
                         if (val) setDialogState(() => selectedSection = sec);
@@ -264,17 +265,17 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                     );
                   }).toList(),
                 ),
-                const SizedBox(height: 16),
-                const Text(
+                SizedBox(height: 16),
+                Text(
                   'Kapasite (Kişi Sayısı)',
-                  style: TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color, fontSize: 13),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.remove_circle_outline,
                         color: Color(0xFF38BDF8),
                       ),
@@ -283,26 +284,26 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                           : null,
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(
+                      padding: EdgeInsets.symmetric(
                         horizontal: 20,
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: const Color(0xFF334155)),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: Text(
                         '$capacity Kişi',
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSurface,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.add_circle_outline,
                         color: Color(0xFF38BDF8),
                       ),
@@ -316,9 +317,9 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text(
+              child: Text(
                 'Vazgeç',
-                style: TextStyle(color: Color(0xFF94A3B8)),
+                style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
               ),
             ),
             ElevatedButton(
@@ -396,12 +397,12 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -411,29 +412,29 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
               children: [
                 Text(
                   '${table.name} İşlemleri',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white70),
+                  icon: Icon(Icons.close, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
                   onPressed: () => Navigator.of(ctx).pop(),
                 ),
               ],
             ),
-            const Divider(color: Color(0xFF334155)),
+            Divider(color: Theme.of(context).dividerColor),
             if (canEdit)
               ListTile(
-                leading: const Icon(Icons.edit, color: Color(0xFF38BDF8)),
-                title: const Text(
+                leading: Icon(Icons.edit, color: Color(0xFF38BDF8)),
+                title: Text(
                   'Masayı Düzenle',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 ),
-                subtitle: const Text(
+                subtitle: Text(
                   'İsim, kapasite ve bölümü değiştir',
-                  style: TextStyle(color: Color(0xFF94A3B8)),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                 ),
                 onTap: () {
                   Navigator.of(ctx).pop();
@@ -442,11 +443,11 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
               ),
             if (canDelete)
               ListTile(
-                leading: const Icon(
+                leading: Icon(
                   Icons.delete_outline,
                   color: Color(0xFFEF4444),
                 ),
-                title: const Text(
+                title: Text(
                   'Masayı Sil',
                   style: TextStyle(color: Color(0xFFEF4444)),
                 ),
@@ -454,7 +455,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                   table.status != 'AVAILABLE'
                       ? 'Dolu masa silinemez! Önce hesabı kapatın.'
                       : 'Masayı sistemden kaldır',
-                  style: const TextStyle(color: Color(0xFF94A3B8)),
+                  style: TextStyle(color: Theme.of(context).textTheme.bodyMedium?.color),
                 ),
                 enabled: table.status == 'AVAILABLE',
                 onTap: () {
@@ -475,7 +476,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
       title: 'Masayı Sil',
       content: Text(
         '${table.name} masası kalıcı olarak silinecek. Emin misiniz?',
-        style: const TextStyle(color: Colors.white70),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
       ),
       confirmText: 'Sil',
       isDestructive: true,
@@ -512,18 +513,18 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
     final selectedSection = ref.watch(selectedSectionProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Theme.of(context).cardColor,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Masa Yönetimi',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontSize: 17,
               ),
             ),
@@ -533,18 +534,18 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xFF10B981),
                   ),
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 Flexible(
                   child: Text(
                     '${userState.name ?? "Personel"} • ${AppRoles.getRoleLabel(userState.role)}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
-                      color: Color(0xFF94A3B8),
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
                       fontWeight: FontWeight.w500,
                     ),
                     overflow: TextOverflow.ellipsis,
@@ -555,10 +556,18 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            tooltip: 'Temayı Değiştir',
+            icon: Icon(
+              Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.amber : Colors.indigo,
+            ),
+            onPressed: () => ref.read(themeProvider.notifier).toggleTheme(),
+          ),
           if (userState.hasPermission(AppPermissions.kitchenView))
             IconButton(
               tooltip: 'Mutfak Ekranı',
-              icon: const Icon(
+              icon: Icon(
                 Icons.soup_kitchen,
                 color: Color(0xFFF59E0B),
                 size: 24,
@@ -567,12 +576,12 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
             ),
           IconButton(
             tooltip: 'Yenile',
-            icon: const Icon(Icons.refresh, color: Colors.white70),
+            icon: Icon(Icons.refresh, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
             onPressed: () => ref.invalidate(tablesFutureProvider),
           ),
           IconButton(
             tooltip: 'Çıkış Yap',
-            icon: const Icon(Icons.logout, color: Color(0xFFEF4444), size: 22),
+            icon: Icon(Icons.logout, color: Color(0xFFEF4444), size: 22),
             onPressed: () => _confirmLogout(context),
           ),
         ],
@@ -583,14 +592,14 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
             ? PreferredSize(
                 preferredSize: const Size.fromHeight(76),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
+                  padding: EdgeInsets.symmetric(
                     horizontal: 4,
                     vertical: 4,
                   ),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF162032),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
                     border: Border(
-                      top: BorderSide(color: Color(0xFF334155), width: 0.5),
+                      top: BorderSide(color: Theme.of(context).dividerColor, width: 0.5),
                     ),
                   ),
                   child: Column(
@@ -647,7 +656,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -716,8 +725,8 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
           ? FloatingActionButton.extended(
               backgroundColor: const Color(0xFF38BDF8),
               foregroundColor: Colors.white,
-              icon: const Icon(Icons.add),
-              label: const Text(
+              icon: Icon(Icons.add),
+              label: Text(
                 'Yeni Masa',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
@@ -763,19 +772,19 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
             children: [
               Container(
                 height: 54,
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   vertical: 8,
                   horizontal: 12,
                 ),
-                decoration: const BoxDecoration(
-                  color: Color(0xFF1E293B),
-                  border: Border(bottom: BorderSide(color: Color(0xFF334155))),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
                 ),
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
                   itemCount: allSectionTabs.length,
                   separatorBuilder: (context, index) =>
-                      const SizedBox(width: 8),
+                      SizedBox(width: 8),
                   itemBuilder: (context, index) {
                     final sectionName = allSectionTabs[index];
                     final isSelected = selectedSection == sectionName;
@@ -797,19 +806,19 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                       },
                       borderRadius: BorderRadius.circular(20),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                           horizontal: 14,
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? const Color(0xFF38BDF8)
-                              : const Color(0xFF0F172A),
+                              : Theme.of(context).scaffoldBackgroundColor,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                             color: isSelected
                                 ? const Color(0xFF38BDF8)
-                                : const Color(0xFF334155),
+                                : Theme.of(context).dividerColor,
                           ),
                         ),
                         child: Row(
@@ -824,16 +833,16 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                                 fontSize: 13,
                               ),
                             ),
-                            const SizedBox(width: 6),
+                            SizedBox(width: 6),
                             Container(
-                              padding: const EdgeInsets.symmetric(
+                              padding: EdgeInsets.symmetric(
                                 horizontal: 6,
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
                                 color: isSelected
                                     ? Colors.black.withValues(alpha: 0.15)
-                                    : const Color(0xFF334155),
+                                    : Theme.of(context).dividerColor,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
@@ -841,7 +850,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                                 style: TextStyle(
                                   color: isSelected
                                       ? Colors.black
-                                      : const Color(0xFF94A3B8),
+                                      : (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey),
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -861,16 +870,16 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.table_restaurant,
                               color: Color(0xFF64748B),
                               size: 48,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12),
                             Text(
                               '$selectedSection bölümünde masa bulunamadı.',
-                              style: const TextStyle(
-                                color: Colors.white70,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                                 fontSize: 15,
                               ),
                             ),
@@ -878,7 +887,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                         ),
                       )
                     : ReorderableGridView.builder(
-                        padding: const EdgeInsets.all(16),
+                        padding: EdgeInsets.all(16),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
@@ -936,7 +945,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                             borderRadius: BorderRadius.circular(16),
                             child: Container(
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1E293B),
+                                color: Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: statusColor,
@@ -951,7 +960,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                                 ],
                               ),
                               child: Padding(
-                                padding: const EdgeInsets.all(12),
+                                padding: EdgeInsets.all(12),
                                 child: Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -965,15 +974,15 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                                           child: Text(
                                             table.name,
                                             overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              color: Colors.white,
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.onSurface,
                                               fontSize: 16,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                         ),
                                         Container(
-                                          padding: const EdgeInsets.symmetric(
+                                          padding: EdgeInsets.symmetric(
                                             horizontal: 8,
                                             vertical: 4,
                                           ),
@@ -1002,16 +1011,16 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                                       children: [
                                         Row(
                                           children: [
-                                            const Icon(
+                                            Icon(
                                               Icons.people_outline,
-                                              color: Color(0xFF94A3B8),
+                                              color: Theme.of(context).textTheme.bodyMedium?.color,
                                               size: 16,
                                             ),
-                                            const SizedBox(width: 4),
+                                            SizedBox(width: 4),
                                             Text(
                                               '${table.capacity} Kişi',
-                                              style: const TextStyle(
-                                                color: Color(0xFF94A3B8),
+                                              style: TextStyle(
+                                                color: Theme.of(context).textTheme.bodyMedium?.color,
                                                 fontSize: 13,
                                               ),
                                             ),
@@ -1026,9 +1035,9 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                                                   AppPermissions.tableDelete,
                                                 ))
                                               IconButton(
-                                                icon: const Icon(
+                                                icon: Icon(
                                                   Icons.more_vert,
-                                                  color: Colors.white38,
+                                                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
                                                   size: 18,
                                                 ),
                                                 padding: EdgeInsets.zero,
@@ -1039,7 +1048,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                                                       table,
                                                     ),
                                               ),
-                                            const SizedBox(width: 6),
+                                            SizedBox(width: 6),
                                             Icon(
                                               isAvailable
                                                   ? Icons.add_circle_outline

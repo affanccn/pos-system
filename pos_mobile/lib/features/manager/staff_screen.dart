@@ -25,7 +25,7 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
       case 'KITCHEN':
         return const Color(0xFFF59E0B);
       default:
-        return const Color(0xFF94A3B8);
+        return (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey);
     }
   }
 
@@ -75,30 +75,30 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Özel Yetkiler (İsteğe Bağlı)', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
+        Text('Özel Yetkiler (İsteğe Bağlı)', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+        SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF0F172A),
+            color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF334155)),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Column(
             children: _permissionGroups.entries.map((group) {
               return ExpansionTile(
                 iconColor: const Color(0xFF38BDF8),
                 collapsedIconColor: Colors.white54,
-                title: Text(group.key, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                title: Text(group.key, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14)),
                 children: group.value.map((perm) {
                   final val = perm['val']!;
                   final label = perm['label']!;
                   final isChecked = selected.contains(val);
                   return CheckboxListTile(
-                    title: Text(label, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+                    title: Text(label, style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13)),
                     value: isChecked,
                     activeColor: const Color(0xFF10B981),
                     checkColor: Colors.white,
-                    side: const BorderSide(color: Color(0xFF334155)),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                     onChanged: (checked) {
                       setModalState(() {
                         if (checked == true) {
@@ -129,7 +129,7 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -151,57 +151,57 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Yeni Personel Tanımla',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white70),
+                          icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                           onPressed: () => Navigator.of(ctx).pop(),
                         ),
                       ],
                     ),
-                    const Divider(color: Color(0xFF334155)),
-                    const SizedBox(height: 12),
+                    Divider(color: Theme.of(context).dividerColor),
+                    SizedBox(height: 12),
 
-                    const Text('Ad Soyad *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Text('Ad Soyad *', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     TextField(
                       controller: nameController,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                       decoration: InputDecoration(
                         hintText: 'Örn: Ahmet Yılmaz',
-                        hintStyle: const TextStyle(color: Colors.white38),
+                        hintStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.38)),
                         filled: true,
-                        fillColor: const Color(0xFF0F172A),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF334155))),
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                    const Text('Görevi / Rolü *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Text('Görevi / Rolü *', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      padding: EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF334155)),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: selectedRole,
                           isExpanded: true,
-                          dropdownColor: const Color(0xFF1E293B),
-                          items: const [
-                            DropdownMenuItem(value: 'WAITER', child: Text('Garson (Masa & Sipariş)', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'KITCHEN', child: Text('Mutfak (KDS)', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'MANAGER', child: Text('Müdür (Operasyon & Rapor)', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'OWNER', child: Text('Patron (Tam Yetki)', style: TextStyle(color: Colors.white))),
+                          dropdownColor: Theme.of(context).cardColor,
+                          items: [
+                            DropdownMenuItem(value: 'WAITER', child: Text('Garson (Masa & Sipariş)', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'KITCHEN', child: Text('Mutfak (KDS)', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'MANAGER', child: Text('Müdür (Operasyon & Rapor)', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'OWNER', child: Text('Patron (Tam Yetki)', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
                           ],
                           onChanged: (val) {
                             if (val != null) setModalState(() => selectedRole = val);
@@ -209,44 +209,44 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                    const Text('4 Haneli Giriş PIN Kodu *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Text('4 Haneli Giriş PIN Kodu *', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     TextField(
                       controller: pinController,
                       keyboardType: TextInputType.number,
                       maxLength: 4,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      style: const TextStyle(color: Colors.white, fontSize: 20, letterSpacing: 8, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 20, letterSpacing: 8, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
                         hintText: '••••',
-                        hintStyle: const TextStyle(color: Colors.white38),
+                        hintStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.38)),
                         counterText: '',
                         filled: true,
-                        fillColor: const Color(0xFF0F172A),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF334155))),
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                    const Text('E-posta (İsteğe Bağlı)', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Text('E-posta (İsteğe Bağlı)', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     TextField(
                       controller: emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                       decoration: InputDecoration(
                         hintText: 'ahmet@restoran.com',
-                        hintStyle: const TextStyle(color: Colors.white38),
+                        hintStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.38)),
                         filled: true,
-                        fillColor: const Color(0xFF0F172A),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF334155))),
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     _buildPermissionsSelector(selectedPermissions, setModalState),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     SizedBox(
                       width: double.infinity,
@@ -254,7 +254,7 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF10B981),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: isSaving
@@ -306,8 +306,8 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                                 }
                               },
                         child: isSaving
-                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                            : const Text('Personeli Kaydet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface, strokeWidth: 2))
+                            : Text('Personeli Kaydet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
@@ -328,30 +328,30 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
+          backgroundColor: Theme.of(context).cardColor,
           title: Text(
             '${staff.fullName} • PIN Değiştir',
-            style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.bold),
+            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 17, fontWeight: FontWeight.bold),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Yeni 4 haneli PIN belirleyin:', style: TextStyle(color: Colors.white70, fontSize: 13)),
-              const SizedBox(height: 12),
+              Text('Yeni 4 haneli PIN belirleyin:', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13)),
+              SizedBox(height: 12),
               TextField(
                 controller: pinController,
                 keyboardType: TextInputType.number,
                 maxLength: 4,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                style: const TextStyle(color: Colors.white, fontSize: 22, letterSpacing: 8, fontWeight: FontWeight.bold),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 22, letterSpacing: 8, fontWeight: FontWeight.bold),
                 decoration: InputDecoration(
                   hintText: '••••',
-                  hintStyle: const TextStyle(color: Colors.white38),
+                  hintStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.38)),
                   counterText: '',
                   filled: true,
-                  fillColor: const Color(0xFF0F172A),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF334155))),
+                  fillColor: Theme.of(context).scaffoldBackgroundColor,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                 ),
               ),
             ],
@@ -359,7 +359,7 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Vazgeç', style: TextStyle(color: Color(0xFF94A3B8))),
+              child: Text('Vazgeç', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF38BDF8), foregroundColor: Colors.white),
@@ -397,8 +397,8 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                       }
                     },
               child: isSaving
-                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                  : const Text('Kaydet'),
+                  ? SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface, strokeWidth: 2))
+                  : Text('Kaydet'),
             ),
           ],
         ),
@@ -417,7 +417,7 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -439,51 +439,51 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Personel Bilgilerini Düzenle',
-                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white70),
+                          icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                           onPressed: () => Navigator.of(ctx).pop(),
                         ),
                       ],
                     ),
-                    const Divider(color: Color(0xFF334155)),
-                    const SizedBox(height: 12),
+                    Divider(color: Theme.of(context).dividerColor),
+                    SizedBox(height: 12),
 
-                    const Text('Ad Soyad', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Text('Ad Soyad', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     TextField(
                       controller: nameController,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: const Color(0xFF0F172A),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF334155))),
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                    const Text('Görevi / Rolü', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Text('Görevi / Rolü', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                      padding: EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: const Color(0xFF334155)),
+                        border: Border.all(color: Theme.of(context).dividerColor),
                       ),
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton<String>(
                           value: selectedRole,
                           isExpanded: true,
-                          dropdownColor: const Color(0xFF1E293B),
-                          items: const [
-                            DropdownMenuItem(value: 'WAITER', child: Text('Garson', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'KITCHEN', child: Text('Mutfak', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'MANAGER', child: Text('Müdür', style: TextStyle(color: Colors.white))),
-                            DropdownMenuItem(value: 'OWNER', child: Text('Patron', style: TextStyle(color: Colors.white))),
+                          dropdownColor: Theme.of(context).cardColor,
+                          items: [
+                            DropdownMenuItem(value: 'WAITER', child: Text('Garson', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'KITCHEN', child: Text('Mutfak', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'MANAGER', child: Text('Müdür', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                            DropdownMenuItem(value: 'OWNER', child: Text('Patron', style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
                           ],
                           onChanged: (val) {
                             if (val != null) setModalState(() => selectedRole = val);
@@ -491,12 +491,12 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Hesap Durumu (Aktif)', style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+                        Text('Hesap Durumu (Aktif)', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14, fontWeight: FontWeight.w600)),
                         Switch(
                           value: isActive,
                           activeThumbColor: const Color(0xFF10B981),
@@ -504,22 +504,22 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                    const Text('E-posta', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 6),
+                    Text('E-posta', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13, fontWeight: FontWeight.w600)),
+                    SizedBox(height: 6),
                     TextField(
                       controller: emailController,
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: const Color(0xFF0F172A),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF334155))),
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Theme.of(context).dividerColor)),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     _buildPermissionsSelector(selectedPermissions, setModalState),
-                    const SizedBox(height: 24),
+                    SizedBox(height: 24),
 
                     SizedBox(
                       width: double.infinity,
@@ -527,7 +527,7 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF38BDF8),
                           foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          padding: EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: isSaving
@@ -565,8 +565,8 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                                 }
                               },
                         child: isSaving
-                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                            : const Text('Değişiklikleri Kaydet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                            ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface, strokeWidth: 2))
+                            : Text('Değişiklikleri Kaydet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
@@ -583,16 +583,16 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Personeli Sil / Pasife Al', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text('Personeli Sil / Pasife Al', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
         content: Text(
           '${staff.fullName} adlı personelin hesabını kaldırmak istediğinize emin misiniz? (Geçmiş siparişi varsa pasife alınır)',
-          style: const TextStyle(color: Colors.white70),
+          style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Vazgeç', style: TextStyle(color: Color(0xFF94A3B8))),
+            child: Text('Vazgeç', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFEF4444), foregroundColor: Colors.white),
@@ -614,7 +614,7 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                 }
               }
             },
-            child: const Text('Sil / Pasife Al'),
+            child: Text('Sil / Pasife Al'),
           ),
         ],
       ),
@@ -626,42 +626,42 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
     final staffAsync = ref.watch(staffListProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text(
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text(
           'Personel Yönetimi',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 18),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.onSurface, fontSize: 18),
         ),
         actions: [
           IconButton(
             tooltip: 'Yenile',
-            icon: const Icon(Icons.refresh, color: Colors.white70),
+            icon: Icon(Icons.refresh, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
             onPressed: () => ref.invalidate(staffListProvider),
           ),
         ],
       ),
       body: staffAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF38BDF8))),
+        loading: () => Center(child: CircularProgressIndicator(color: Color(0xFF38BDF8))),
         error: (err, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, color: Color(0xFFEF4444), size: 48),
-              const SizedBox(height: 12),
-              Text('Hata: $err', style: const TextStyle(color: Colors.white70)),
-              const SizedBox(height: 16),
+              Icon(Icons.error_outline, color: Color(0xFFEF4444), size: 48),
+              SizedBox(height: 12),
+              Text('Hata: $err', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
+              SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.invalidate(staffListProvider),
-                child: const Text('Tekrar Dene'),
+                child: Text('Tekrar Dene'),
               ),
             ],
           ),
         ),
         data: (staffList) {
           if (staffList.isEmpty) {
-            return const Center(
-              child: Text('Kayıtlı personel bulunamadı.', style: TextStyle(color: Colors.white70)),
+            return Center(
+              child: Text('Kayıtlı personel bulunamadı.', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
             );
           }
 
@@ -671,12 +671,12 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
           return Column(
             children: [
               Container(
-                margin: const EdgeInsets.all(16),
-                padding: const EdgeInsets.all(16),
+                margin: EdgeInsets.all(16),
+                padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E293B),
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFF334155)),
+                  border: Border.all(color: Theme.of(context).dividerColor),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -690,9 +690,9 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
 
               Expanded(
                 child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   itemCount: staffList.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 10),
+                  separatorBuilder: (context, index) => SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final staff = staffList[index];
                     final roleColor = _getRoleColor(staff.role);
@@ -702,14 +702,14 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
 
                     return Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFF1E293B),
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: staff.isActive ? const Color(0xFF334155) : const Color(0xFF334155).withValues(alpha: 0.5),
+                          color: staff.isActive ? Theme.of(context).dividerColor : Theme.of(context).dividerColor.withValues(alpha: 0.5),
                         ),
                       ),
                       child: ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                         leading: CircleAvatar(
                           backgroundColor: roleColor.withValues(alpha: 0.15),
                           radius: 22,
@@ -732,7 +732,7 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                               ),
                             ),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
                                 color: roleColor.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(8),
@@ -745,12 +745,12 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                             ),
                             if (!staff.isActive)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: const Color(0xFFEF4444).withValues(alpha: 0.15),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
-                                child: const Text(
+                                child: Text(
                                   'Pasif',
                                   style: TextStyle(color: Color(0xFFEF4444), fontSize: 10, fontWeight: FontWeight.bold),
                                 ),
@@ -760,15 +760,15 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 4),
+                            SizedBox(height: 4),
                             if (staff.email != null && staff.email!.isNotEmpty)
-                              Text(staff.email!, style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 12)),
-                            Text('Kayıt: $formattedDate', style: const TextStyle(color: Color(0xFF64748B), fontSize: 11)),
+                              Text(staff.email!, style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 12)),
+                            Text('Kayıt: $formattedDate', style: TextStyle(color: Color(0xFF64748B), fontSize: 11)),
                           ],
                         ),
                         trailing: PopupMenuButton<String>(
-                          icon: const Icon(Icons.more_vert, color: Colors.white70),
-                          color: const Color(0xFF1E293B),
+                          icon: Icon(Icons.more_vert, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
+                          color: Theme.of(context).cardColor,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           onSelected: (val) {
                             switch (val) {
@@ -784,27 +784,27 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                             }
                           },
                           itemBuilder: (context) => [
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'pin',
                               child: Row(
                                 children: [
                                   Icon(Icons.pin, color: Color(0xFF38BDF8), size: 18),
                                   SizedBox(width: 8),
-                                  Text('PIN Değiştir', style: TextStyle(color: Colors.white)),
+                                  Text('PIN Değiştir', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                                 ],
                               ),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'edit',
                               child: Row(
                                 children: [
                                   Icon(Icons.edit, color: Color(0xFFF59E0B), size: 18),
                                   SizedBox(width: 8),
-                                  Text('Düzenle', style: TextStyle(color: Colors.white)),
+                                  Text('Düzenle', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                                 ],
                               ),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'delete',
                               child: Row(
                                 children: [
@@ -828,8 +828,8 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: const Color(0xFF10B981),
         foregroundColor: Colors.white,
-        icon: const Icon(Icons.person_add),
-        label: const Text('Yeni Personel', style: TextStyle(fontWeight: FontWeight.bold)),
+        icon: Icon(Icons.person_add),
+        label: Text('Yeni Personel', style: TextStyle(fontWeight: FontWeight.bold)),
         onPressed: _showAddStaffModal,
       ),
     );
@@ -839,8 +839,8 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
     return Column(
       children: [
         Text(value, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: color)),
-        const SizedBox(height: 2),
-        Text(title, style: const TextStyle(fontSize: 12, color: Color(0xFF94A3B8))),
+        SizedBox(height: 2),
+        Text(title, style: TextStyle(fontSize: 12, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
       ],
     );
   }

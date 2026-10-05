@@ -64,7 +64,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
       lastDate: DateTime.now(),
       initialDateRange: DateTimeRange(start: _startDate, end: _endDate),
       builder: (context, child) => Theme(
-        data: ThemeData.dark().copyWith(colorScheme: const ColorScheme.dark(primary: Color(0xFF38BDF8), surface: Color(0xFF1E293B), onSurface: Colors.white)),
+        data: ThemeData.dark().copyWith(colorScheme: ColorScheme.dark(primary: Color(0xFF38BDF8), surface: Theme.of(context).cardColor, onSurface: Colors.white)),
         child: child!,
       ),
     );
@@ -83,25 +83,25 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (context, setStateDialog) => AlertDialog(
-          backgroundColor: const Color(0xFF1E293B),
-          title: const Text('Yeni Gider', style: TextStyle(color: Colors.white)),
+          backgroundColor: Theme.of(context).cardColor,
+          title: Text('Yeni Gider', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               DropdownButton<String>(
                 value: selectedCategory,
-                dropdownColor: const Color(0xFF334155),
+                dropdownColor: Theme.of(context).dividerColor,
                 isExpanded: true,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 items: _categories.map((c) => DropdownMenuItem(value: c['value'], child: Text(c['label']!))).toList(),
                 onChanged: (val) => setStateDialog(() => selectedCategory = val!),
               ),
-              TextField(controller: amountCtrl, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Tutar (TL)', labelStyle: TextStyle(color: Colors.white70)), keyboardType: TextInputType.number),
-              TextField(controller: descCtrl, style: const TextStyle(color: Colors.white), decoration: const InputDecoration(labelText: 'Aciklama', labelStyle: TextStyle(color: Colors.white70))),
+              TextField(controller: amountCtrl, style: TextStyle(color: Theme.of(context).colorScheme.onSurface), decoration: InputDecoration(labelText: 'Tutar (TL)', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))), keyboardType: TextInputType.number),
+              TextField(controller: descCtrl, style: TextStyle(color: Theme.of(context).colorScheme.onSurface), decoration: InputDecoration(labelText: 'Aciklama', labelStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)))),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Iptal')),
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text('Iptal')),
             ElevatedButton(
               onPressed: () async {
                 final amount = double.tryParse(amountCtrl.text) ?? 0;
@@ -121,7 +121,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Hata: $e')));
                 }
               },
-              child: const Text('Kaydet'),
+              child: Text('Kaydet'),
             ),
           ],
         ),
@@ -133,36 +133,36 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd.MM.yyyy');
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Gider Yonetimi', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF1E293B),
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text('Gider Yonetimi', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        backgroundColor: Theme.of(context).cardColor,
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         actions: [
           TextButton.icon(
             onPressed: _selectDateRange,
-            icon: const Icon(Icons.calendar_today, color: Colors.white, size: 18),
-            label: Text('${dateFormat.format(_startDate)} - ${dateFormat.format(_endDate)}', style: const TextStyle(color: Colors.white, fontSize: 12)),
+            icon: Icon(Icons.calendar_today, color: Theme.of(context).colorScheme.onSurface, size: 18),
+            label: Text('${dateFormat.format(_startDate)} - ${dateFormat.format(_endDate)}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 12)),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddExpenseDialog,
         backgroundColor: const Color(0xFF38BDF8),
-        child: const Icon(Icons.add),
+        child: Icon(Icons.add),
       ),
       body: _isLoading
         ? const AppLoadingState(message: 'Giderler yükleniyor...')
         : Column(
             children: [
               Container(
-                padding: const EdgeInsets.all(16),
-                color: const Color(0xFF1E293B),
+                padding: EdgeInsets.all(16),
+                color: Theme.of(context).cardColor,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Toplam Gider:', style: TextStyle(color: Colors.white70, fontSize: 16)),
-                    Text('${(_totalCents / 100).toStringAsFixed(2)} TL', style: const TextStyle(color: Colors.redAccent, fontSize: 22, fontWeight: FontWeight.bold)),
+                    Text('Toplam Gider:', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 16)),
+                    Text('${(_totalCents / 100).toStringAsFixed(2)} TL', style: TextStyle(color: Colors.redAccent, fontSize: 22, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -175,25 +175,25 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                         final e = _expenses[index];
                         final date = DateTime.tryParse(e['expenseDate'] ?? '') ?? DateTime.now();
                         return Card(
-                          color: const Color(0xFF334155),
-                          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                          color: Theme.of(context).dividerColor,
+                          margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                           child: ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Colors.redAccent.withValues(alpha: 0.2),
-                              child: const Icon(Icons.money_off, color: Colors.redAccent),
+                              child: Icon(Icons.money_off, color: Colors.redAccent),
                             ),
-                            title: Text(_categoryLabel(e['category'] ?? ''), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            subtitle: Text('${e['description'] ?? ''}\n${dateFormat.format(date)} - ${e['user']?['fullName'] ?? ''}', style: const TextStyle(color: Colors.white70)),
+                            title: Text(_categoryLabel(e['category'] ?? ''), style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+                            subtitle: Text('${e['description'] ?? ''}\n${dateFormat.format(date)} - ${e['user']?['fullName'] ?? ''}', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                             trailing: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text('${((e['amountCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16)),
+                                Text('${((e['amountCents'] ?? 0) / 100).toStringAsFixed(2)} TL', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 16)),
                                 InkWell(
                                   onTap: () {
                                     showAppDialog(
                                       context: context,
                                       title: 'Gideri Sil',
-                                      content: const Text('Bu gider kaydını silmek istediğinize emin misiniz?', style: TextStyle(color: Colors.white70)),
+                                      content: Text('Bu gider kaydını silmek istediğinize emin misiniz?', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
                                       confirmText: 'Sil',
                                       isDestructive: true,
                                       onConfirm: () async {
@@ -204,7 +204,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                                       },
                                     );
                                   },
-                                  child: const Icon(Icons.delete, color: Colors.red, size: 20),
+                                  child: Icon(Icons.delete, color: Colors.red, size: 20),
                                 )
                               ],
                             ),

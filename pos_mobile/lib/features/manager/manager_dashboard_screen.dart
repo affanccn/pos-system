@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/auth_controller.dart';
 import '../../core/auth/permissions.dart';
+import '../../main.dart';
 
 class ManagerDashboardScreen extends ConsumerWidget {
   const ManagerDashboardScreen({super.key});
@@ -15,40 +16,40 @@ class ManagerDashboardScreen extends ConsumerWidget {
     final userState = ref.watch(authProvider).state;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0B1221),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               'Yönetici Paneli',
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
                 letterSpacing: 1.2,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Color(0xFF10B981),
                   ),
                 ),
-                const SizedBox(width: 5),
+                SizedBox(width: 5),
                 Text(
                   '${userState.name ?? "Personel"} • ${AppRoles.getRoleLabel(userState.role)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF94A3B8),
+                    color: Theme.of(context).textTheme.bodyMedium?.color,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -59,11 +60,19 @@ class ManagerDashboardScreen extends ConsumerWidget {
         centerTitle: true,
         actions: [
           IconButton(
+            tooltip: 'Temayı Değiştir',
+            icon: Icon(
+              Theme.of(context).brightness == Brightness.dark ? Icons.light_mode : Icons.dark_mode,
+              color: Theme.of(context).brightness == Brightness.dark ? Colors.amber : Colors.indigo,
+            ),
+            onPressed: () => ref.read(themeProvider.notifier).toggleTheme(),
+          ),
+          IconButton(
             tooltip: 'Çıkış Yap',
-            icon: const Icon(Icons.logout, color: Color(0xFFEF4444), size: 24),
+            icon: Icon(Icons.logout, color: Color(0xFFEF4444), size: 24),
             onPressed: () => _confirmLogout(context, ref),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
         ],
       ),
       body: Stack(
@@ -103,7 +112,7 @@ class ManagerDashboardScreen extends ConsumerWidget {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(20.0),
               child: GridView.count(
                 crossAxisCount: 2,
                 crossAxisSpacing: 16,
@@ -231,7 +240,7 @@ class ManagerDashboardScreen extends ConsumerWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFF1E293B).withValues(alpha: 0.7),
+          color: Theme.of(context).cardColor.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: color.withValues(alpha: 0.2)),
           boxShadow: [
@@ -247,24 +256,24 @@ class ManagerDashboardScreen extends ConsumerWidget {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: color.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(icon, color: color, size: 36),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -282,23 +291,23 @@ class ManagerDashboardScreen extends ConsumerWidget {
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: const Text('Çıkış Yap', style: TextStyle(color: Colors.white)),
-        content: const Text(
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text('Çıkış Yap', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        content: Text(
           'Hesabınızdan çıkış yapmak istediğinize emin misiniz?',
-          style: TextStyle(color: Colors.white70),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('İptal', style: TextStyle(color: Colors.white70)),
+            child: Text('İptal', style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFEF4444),
             ),
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Çıkış Yap'),
+            child: Text('Çıkış Yap'),
           ),
         ],
       ),

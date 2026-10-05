@@ -109,24 +109,24 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E293B),
-        title: Text('${item.product.name} Notu', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Theme.of(context).cardColor,
+        title: Text('${item.product.name} Notu', style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
         content: TextField(
           controller: noteController,
           autofocus: true,
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           decoration: InputDecoration(
             hintText: 'Örn: Az şekerli, sossuz, buzsuz...',
-            hintStyle: const TextStyle(color: Colors.white38),
+            hintStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.38)),
             filled: true,
-            fillColor: const Color(0xFF0F172A),
+            fillColor: Theme.of(context).scaffoldBackgroundColor,
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Vazgeç', style: TextStyle(color: Color(0xFF94A3B8))),
+            child: Text('Vazgeç', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF38BDF8), foregroundColor: Colors.white),
@@ -135,7 +135,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
               ref.read(cartProvider).updateNote(index, newNote.isEmpty ? null : newNote);
               Navigator.of(ctx).pop();
             },
-            child: const Text('Kaydet'),
+            child: Text('Kaydet'),
           ),
         ],
       ),
@@ -145,7 +145,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
   void _showCartSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Theme.of(context).cardColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -156,7 +156,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
             final cart = ref.watch(cartProvider);
 
             return Container(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16),
               height: MediaQuery.of(context).size.height * 0.70,
               child: Column(
                 children: [
@@ -165,53 +165,53 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     children: [
                       Text(
                         widget.existingOrderId != null ? 'Eklenecek Ürünler' : 'Masa Sepeti',
-                        style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white70),
+                        icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                         onPressed: () => Navigator.of(ctx).pop(),
                       ),
                     ],
                   ),
-                  const Divider(color: Color(0xFF334155)),
+                  Divider(color: Theme.of(context).dividerColor),
                   Expanded(
                     child: cart.isEmpty
-                        ? const Center(
-                            child: Text('Sepet henüz boş', style: TextStyle(color: Colors.white54)),
+                        ? Center(
+                            child: Text('Sepet henüz boş', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
                           )
                         : ListView.separated(
                             itemCount: cart.items.length,
-                            separatorBuilder: (context, index) => const Divider(color: Color(0xFF334155)),
+                            separatorBuilder: (context, index) => Divider(color: Theme.of(context).dividerColor),
                             itemBuilder: (context, index) {
                               final item = cart.items[index];
                               final modNames = item.modifiers.map((m) => m.name).join(', ');
 
                               return ListTile(
                                 contentPadding: EdgeInsets.zero,
-                                title: Text(item.product.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                title: Text(item.product.name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     if (modNames.isNotEmpty)
                                       Padding(
-                                        padding: const EdgeInsets.only(top: 2),
+                                        padding: EdgeInsets.only(top: 2),
                                         child: Text(
                                           '+ $modNames',
-                                          style: const TextStyle(color: Color(0xFF38BDF8), fontSize: 12),
+                                          style: TextStyle(color: Color(0xFF38BDF8), fontSize: 12),
                                         ),
                                       ),
                                     if (item.note != null && item.note!.isNotEmpty)
                                       Padding(
-                                        padding: const EdgeInsets.only(top: 2),
+                                        padding: EdgeInsets.only(top: 2),
                                         child: Text(
                                           'Not: ${item.note}',
-                                          style: const TextStyle(color: Color(0xFFF59E0B), fontSize: 12),
+                                          style: TextStyle(color: Color(0xFFF59E0B), fontSize: 12),
                                         ),
                                       ),
-                                    const SizedBox(height: 2),
+                                    SizedBox(height: 2),
                                     Text(
                                       '${item.unitPrice.toStringAsFixed(2)} ₺ x ${item.quantity} = ${item.total.toStringAsFixed(2)} ₺',
-                                      style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 13),
+                                      style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 13),
                                     ),
                                   ],
                                 ),
@@ -228,15 +228,15 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                       onPressed: () => _showItemNoteDialog(index, item),
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.remove_circle_outline, color: Color(0xFFEF4444)),
+                                      icon: Icon(Icons.remove_circle_outline, color: Color(0xFFEF4444)),
                                       onPressed: () => cart.removeProductAt(index),
                                     ),
                                     Text(
                                       '${item.quantity}',
-                                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold),
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.add_circle_outline, color: Color(0xFF10B981)),
+                                      icon: Icon(Icons.add_circle_outline, color: Color(0xFF10B981)),
                                       onPressed: () => cart.addProductAt(index),
                                     ),
                                   ],
@@ -245,18 +245,18 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                             },
                           ),
                   ),
-                  const Divider(color: Color(0xFF334155)),
+                  Divider(color: Theme.of(context).dividerColor),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text('Toplam Tutar:', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                      Text('Toplam Tutar:', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 16)),
                       Text(
                         '${cart.totalPrice.toStringAsFixed(2)} ₺',
-                        style: const TextStyle(color: Color(0xFF10B981), fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: Color(0xFF10B981), fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     height: 48,
@@ -273,10 +273,10 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                               _submitOrder();
                             },
                       child: _isSubmitting
-                          ? const CircularProgressIndicator(color: Colors.white)
+                          ? CircularProgressIndicator(color: Theme.of(context).colorScheme.onSurface)
                           : Text(
                               widget.existingOrderId != null ? 'Adisyona Ekle' : 'Siparişi Onayla',
-                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                     ),
                   ),
@@ -292,7 +292,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
   void _showModifierModal(BuildContext context, Product product, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xFF1E293B),
+      backgroundColor: Theme.of(context).cardColor,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -342,17 +342,17 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                         Expanded(
                           child: Text(
                             product.name,
-                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 18, fontWeight: FontWeight.bold),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white70),
+                          icon: Icon(Icons.close, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey)),
                           onPressed: () => Navigator.of(ctx).pop(),
                         ),
                       ],
                     ),
-                    const Divider(color: Color(0xFF334155)),
+                    Divider(color: Theme.of(context).dividerColor),
                     Expanded(
                       child: SingleChildScrollView(
                         child: Column(
@@ -369,13 +369,13 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                      padding: EdgeInsets.symmetric(vertical: 8.0),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
                                             group.name,
-                                            style: const TextStyle(color: Color(0xFF94A3B8), fontSize: 15, fontWeight: FontWeight.bold),
+                                            style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 15, fontWeight: FontWeight.bold),
                                           ),
                                           if (group.isRequired)
                                             Text(
@@ -393,13 +393,13 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                       final isSelected = selectedModifierIds.contains(item.id);
                                       return CheckboxListTile(
                                         value: isSelected,
-                                        title: Text(item.name, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                                        title: Text(item.name, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 14)),
                                         subtitle: item.priceCents > 0
-                                            ? Text('+ ${(item.priceCents / 100).toStringAsFixed(2)} ₺', style: const TextStyle(color: Color(0xFF38BDF8), fontWeight: FontWeight.bold))
+                                            ? Text('+ ${(item.priceCents / 100).toStringAsFixed(2)} ₺', style: TextStyle(color: Color(0xFF38BDF8), fontWeight: FontWeight.bold))
                                             : null,
                                         checkColor: Colors.white,
                                         activeColor: const Color(0xFF10B981),
-                                        side: const BorderSide(color: Color(0xFF334155)),
+                                        side: BorderSide(color: Theme.of(context).dividerColor),
                                         onChanged: (val) {
                                           setModalState(() {
                                             if (val == true) {
@@ -420,52 +420,52 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                         },
                                       );
                                     }),
-                                    const Divider(color: Color(0xFF334155)),
+                                    Divider(color: Theme.of(context).dividerColor),
                                   ],
                                 );
                               }),
 
-                            const Padding(
+                            Padding(
                               padding: EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
                                 'Özel Not / Açıklama',
-                                style: TextStyle(color: Color(0xFF94A3B8), fontSize: 15, fontWeight: FontWeight.bold),
+                                style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                             ),
                             TextField(
                               controller: noteController,
-                              style: const TextStyle(color: Colors.white),
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                               decoration: InputDecoration(
                                 hintText: 'Örn: Az pişmiş, buzsuz, sossuz...',
-                                hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
+                                hintStyle: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.38), fontSize: 13),
                                 filled: true,
-                                fillColor: const Color(0xFF0F172A),
+                                fillColor: Theme.of(context).scaffoldBackgroundColor,
                                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: 16),
                           ],
                         ),
                       ),
                     ),
-                    const Divider(color: Color(0xFF334155)),
+                    Divider(color: Theme.of(context).dividerColor),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Birim Fiyat:', style: TextStyle(color: Colors.white70, fontSize: 15)),
+                        Text('Birim Fiyat:', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), fontSize: 15)),
                         Text(
                           '${currentPrice.toStringAsFixed(2)} ₺',
-                          style: const TextStyle(color: Color(0xFF10B981), fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Color(0xFF10B981), fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
                       height: 48,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isValid ? const Color(0xFF10B981) : const Color(0xFF334155),
+                          backgroundColor: isValid ? const Color(0xFF10B981) : Theme.of(context).dividerColor,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
@@ -486,7 +486,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                 Navigator.of(ctx).pop();
                               }
                             : null,
-                        child: const Text('Sepete Ekle', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: Text('Sepete Ekle', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
                     ),
                   ],
@@ -505,19 +505,19 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     final cart = ref.watch(cartProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: Theme.of(context).cardColor,
         title: Text(
           widget.existingOrderId != null ? '${widget.table.name} • Ürün Ekle' : '${widget.table.name} • Yeni Sipariş',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         actions: [
           Stack(
             alignment: Alignment.center,
             children: [
               IconButton(
-                icon: const Icon(Icons.shopping_cart, color: Colors.white),
+                icon: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSurface),
                 onPressed: _showCartSheet,
               ),
               if (cart.isNotEmpty)
@@ -525,14 +525,14 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                   right: 8,
                   top: 8,
                   child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
+                    padding: EdgeInsets.all(4),
+                    decoration: BoxDecoration(
                       color: Color(0xFFEF4444),
                       shape: BoxShape.circle,
                     ),
                     child: Text(
                       '${cart.totalQuantity}',
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 10, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -541,15 +541,15 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
         ],
       ),
       body: catalogAsync.when(
-        loading: () => const Center(
+        loading: () => Center(
           child: CircularProgressIndicator(color: Color(0xFF38BDF8)),
         ),
         error: (err, _) => Center(
-          child: Text('Katalog yüklenemedi:\n$err', style: const TextStyle(color: Colors.white70)),
+          child: Text('Katalog yüklenemedi:\n$err', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))),
         ),
         data: (categories) {
           if (categories.isEmpty) {
-            return const Center(child: Text('Menü bulunamadı.', style: TextStyle(color: Colors.white70)));
+            return Center(child: Text('Menü bulunamadı.', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey))));
           }
 
           final activeCategoryId = _selectedCategoryId ?? categories.first.id;
@@ -562,22 +562,22 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
             children: [
               Container(
                 height: 50,
-                color: const Color(0xFF1E293B),
+                color: Theme.of(context).cardColor,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                   itemCount: categories.length,
                   itemBuilder: (context, index) {
                     final cat = categories[index];
                     final isSelected = cat.id == activeCategoryId;
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: EdgeInsets.symmetric(horizontal: 4),
                       child: ChoiceChip(
                         label: Text(cat.name),
                         selected: isSelected,
                         selectedColor: const Color(0xFF38BDF8),
-                        backgroundColor: const Color(0xFF334155),
+                        backgroundColor: Theme.of(context).dividerColor,
                         labelStyle: TextStyle(
                           color: isSelected ? Colors.black : Colors.white70,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -595,11 +595,11 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
 
               Expanded(
                 child: activeCategory.products.isEmpty
-                    ? const Center(
-                        child: Text('Bu kategoride ürün yok.', style: TextStyle(color: Colors.white54)),
+                    ? Center(
+                        child: Text('Bu kategoride ürün yok.', style: TextStyle(color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey).withValues(alpha: 0.54))),
                       )
                     : GridView.builder(
-                        padding: const EdgeInsets.all(12),
+                        padding: EdgeInsets.all(12),
                         itemCount: activeCategory.products.length,
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
@@ -627,14 +627,14 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                 },
                                 child: Container(
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFF1E293B),
+                                    color: Theme.of(context).cardColor,
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: hasModifiers ? const Color(0xFF38BDF8).withValues(alpha: 0.6) : const Color(0xFF334155),
+                                      color: hasModifiers ? const Color(0xFF38BDF8).withValues(alpha: 0.6) : Theme.of(context).dividerColor,
                                       width: hasModifiers ? 1.5 : 1,
                                     ),
                                   ),
-                                  padding: const EdgeInsets.all(10),
+                                  padding: EdgeInsets.all(10),
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -646,15 +646,15 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                             product.name,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              color: Colors.white,
+                                            style: TextStyle(
+                                              color: Theme.of(context).colorScheme.onSurface,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14,
                                             ),
                                           ),
                                           if (hasModifiers)
                                             Padding(
-                                              padding: const EdgeInsets.only(top: 4.0),
+                                              padding: EdgeInsets.only(top: 4.0),
                                               child: Text(
                                                 '✨ Ekstra Seçenekli',
                                                 style: TextStyle(
@@ -671,21 +671,21 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                         children: [
                                           Text(
                                             '${product.price.toStringAsFixed(2)} ₺',
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               color: Color(0xFF10B981),
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
                                           Container(
-                                            padding: const EdgeInsets.all(4),
+                                            padding: EdgeInsets.all(4),
                                             decoration: BoxDecoration(
                                               color: hasModifiers ? const Color(0xFFF59E0B) : const Color(0xFF38BDF8),
                                               shape: BoxShape.circle,
                                             ),
                                             child: Icon(
                                               hasModifiers ? Icons.tune : Icons.add,
-                                              color: Colors.white,
+                                              color: Theme.of(context).colorScheme.onSurface,
                                               size: 18,
                                             ),
                                           ),
@@ -699,9 +699,9 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                 top: 0,
                                 right: 0,
                                 child: IconButton(
-                                  padding: const EdgeInsets.all(8),
+                                  padding: EdgeInsets.all(8),
                                   constraints: const BoxConstraints(),
-                                  icon: const Icon(Icons.edit_note, color: Colors.white70, size: 24),
+                                  icon: Icon(Icons.edit_note, color: (Theme.of(context).textTheme.bodyMedium?.color ?? Colors.grey), size: 24),
                                   tooltip: 'Ekstra Not Ekle',
                                   onPressed: () => _showModifierModal(context, product, ref),
                                 ),
@@ -717,13 +717,13 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
       ),
       bottomNavigationBar: cart.isNotEmpty
           ? Container(
-              padding: const EdgeInsets.all(16),
-              color: const Color(0xFF1E293B),
+              padding: EdgeInsets.all(16),
+              color: Theme.of(context).cardColor,
               child: SafeArea(
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF10B981),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: _showCartSheet,
@@ -731,17 +731,17 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 12),
+                        padding: EdgeInsets.only(left: 12),
                         child: Text(
                           'Sepet (${cart.totalQuantity} Ürün)',
-                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(right: 12),
+                        padding: EdgeInsets.only(right: 12),
                         child: Text(
                           '${cart.totalPrice.toStringAsFixed(2)} ₺  >',
-                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
