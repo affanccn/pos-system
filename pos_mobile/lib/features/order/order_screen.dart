@@ -579,7 +579,7 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                         selectedColor: const Color(0xFF38BDF8),
                         backgroundColor: Theme.of(context).dividerColor,
                         labelStyle: TextStyle(
-                          color: isSelected ? Colors.black : Colors.white70,
+                          color: isSelected ? Colors.black : Theme.of(context).colorScheme.onSurface,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                         onSelected: (selected) {

@@ -826,7 +826,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                             Text(
                               sectionName,
                               style: TextStyle(
-                                color: isSelected ? Colors.black : Colors.white,
+                                color: isSelected ? Colors.black : Theme.of(context).colorScheme.onSurface,
                                 fontWeight: isSelected
                                     ? FontWeight.bold
                                     : FontWeight.w500,
