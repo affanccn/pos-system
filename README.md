@@ -1,6 +1,35 @@
 # POS System
 
-Bu proje, mobil (Flutter) ve backend (Node.js/TypeScript) kısımlarından oluşan bir POS (Nokta Satış) sistemidir.
+Bu proje, restoran, kafe ve benzeri işletmeler için geliştirilmiş, mobil (Flutter) ve backend (Node.js/TypeScript) kısımlarından oluşan kapsamlı bir POS (Nokta Satış) sistemidir.
+
+## 🌟 Özellikler (Features)
+
+- 👥 **Rol Bazlı Yetkilendirme:** Patron, Müdür, Garson ve Mutfak olmak üzere 4 farklı yetki seviyesi ve PIN ile hızlı giriş.
+- 🪑 **Masa & Rezervasyon Yönetimi:** Masaların anlık durum takibi, sipariş atama ve ileri tarihli rezervasyon oluşturma.
+- 🍔 **Gelişmiş Menü Yönetimi:** Ürün, kategori ekleme, fiyatlandırma ve ürün detaylı düzenleme işlemleri.
+- 📡 **Gerçek Zamanlı İletişim (Real-time):** Garsonun girdiği siparişin anında mutfak ve kasaya (Socket.io) iletilmesi.
+- 💰 **Kasa & Maliyet Yönetimi:** Gelir-gider takibi, personel maaşları ve detaylı maliyet hesaplamaları.
+- 📊 **Gelişmiş Raporlar:** Görsel grafikler (fl_chart) ile günlük ve aylık satış raporlarının analizi.
+- 📝 **Log ve İşlem Geçmişi:** Sistemde yapılan tüm önemli işlemlerin (iptal, iade, satış) kayıt altına alınması.
+- 👨‍💼 **Personel Yönetimi:** Çalışanların vardiya, yetki ve kişisel bilgilerinin (özlük) takibi.
+
+## 🛠️ Kullanılan Teknolojiler (Tech Stack)
+
+### Mobil Uygulama (Frontend)
+- **Framework:** Flutter
+- **State Management:** Riverpod
+- **Ağ İstekleri & Realtime:** Dio, Socket.io Client
+- **Routing:** GoRouter
+- **Grafikler & UI:** fl_chart, Google Fonts, Reorderable Grid View
+
+### Sunucu (Backend)
+- **Çalışma Ortamı:** Node.js & TypeScript
+- **Framework:** Express.js
+- **Veritabanı ORM:** Prisma
+- **Gerçek Zamanlı İletişim:** Socket.io
+- **Güvenlik:** JWT (JSON Web Token), Bcrypt
+
+---
 
 ## 🚀 Canlı Demo (Live Demo)
 
