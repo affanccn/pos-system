@@ -6,7 +6,7 @@ Bu proje, mobil (Flutter) ve backend (Node.js/TypeScript) kısımlarından oluş
 
 Projeyi bilgisayarınıza kurmadan denemek için aşağıdaki bağlantıları kullanabilirsiniz:
 
-- **Web Canlı Demo (Tarayıcıda Çalıştır):** [Buraya Appetize.io veya Flutter Web linkinizi ekleyin]
+- **Web Canlı Demo (Tarayıcıda Çalıştır):** [https://appetize.io/app/b_2ywfkzjhpphsetxycfjwfn3wzu]
 - **Backend API URL:** `https://pos-system-nd0u.onrender.com`
 
 ---
