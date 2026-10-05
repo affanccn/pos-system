@@ -752,7 +752,7 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                   : null,
             );
           }
-          final dynamicSections = <String>{'Salon', 'Teras', 'Bahçe', 'VIP'};
+          final dynamicSections = <String>{};
           for (final t in tables) {
             dynamicSections.add(t.section);
           }

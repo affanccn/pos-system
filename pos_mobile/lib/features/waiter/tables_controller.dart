@@ -14,7 +14,13 @@ final tablesFutureProvider = FutureProvider.autoDispose<List<RestaurantTable>>((
     
     final List<dynamic> list = rawData is List ? rawData : (rawData['data'] ?? []);
     
-    return list.map((item) => RestaurantTable.fromJson(item as Map<String, dynamic>)).toList();
+    final tables = list.map((item) => RestaurantTable.fromJson(item as Map<String, dynamic>)).toList();
+    tables.sort((a, b) {
+      int cmp = a.sortOrder.compareTo(b.sortOrder);
+      if (cmp != 0) return cmp;
+      return a.name.compareTo(b.name);
+    });
+    return tables;
   } catch (e) {
     throw Exception('Masalar yüklenirken hata oluştu: $e');
   }
