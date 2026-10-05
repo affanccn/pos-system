@@ -11,7 +11,6 @@ interface PaymentInput {
   cardAmountCents?: number;
 }
 
-// 1. Ödeme Al ve Masayı Kapat (Transaction)
 export async function processPayment(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -28,7 +27,6 @@ export async function processPayment(req: Request, res: Response): Promise<void>
       return;
     }
 
-    // Siparişi ve işletme aidiyetini doğrula
     const order = await prisma.order.findFirst({
       where: { id: orderId, businessId },
       include: { table: true },
@@ -48,7 +46,6 @@ export async function processPayment(req: Request, res: Response): Promise<void>
     let finalCash = 0;
     let finalCard = 0;
 
-    // Ödeme yöntemi doğrulaması
     if (method === PaymentMethod.CASH) {
       finalCash = totalBillCents;
     } else if (method === PaymentMethod.CARD) {
@@ -66,9 +63,7 @@ export async function processPayment(req: Request, res: Response): Promise<void>
       }
     }
 
-    // Prisma Transaction: Payment oluştur -> Order'ı PAID yap -> Masayı AVAILABLE yap
     const transactionResult = await prisma.$transaction(async (tx) => {
-      // 1. Ödeme kaydı
       const payment = await tx.payment.create({
         data: {
           businessId,
@@ -81,13 +76,11 @@ export async function processPayment(req: Request, res: Response): Promise<void>
         },
       });
 
-      // 2. Siparişi PAID durumuna al
       await tx.order.update({
         where: { id: orderId },
         data: { status: OrderStatus.PAID },
       });
 
-      // 3. Masayı serbest bırak (AVAILABLE)
       await tx.restaurantTable.update({
         where: { id: order.tableId },
         data: {
@@ -99,7 +92,6 @@ export async function processPayment(req: Request, res: Response): Promise<void>
       return payment;
     });
 
-    // Realtime: Masanın boşaldığını tüm garsonlara ve yöneticilere bildir
     try {
       const io = getIO();
       io.to(`business:${businessId}`).emit('table:status_changed', {

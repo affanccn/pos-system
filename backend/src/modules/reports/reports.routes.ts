@@ -13,6 +13,5 @@ reportsRouter.get('/daily', requirePermission(PERMISSIONS.REPORT_VIEW), getDaily
 reportsRouter.get('/advanced', requirePermission(PERMISSIONS.REPORT_VIEW), getAdvancedReport);
 reportsRouter.get('/profitability', requirePermission(PERMISSIONS.REPORT_FINANCIAL), getProfitabilityReport);
 
-// End of Day (Z Raporu)
 reportsRouter.get('/end-of-day/preview', requirePermission(PERMISSIONS.REPORT_FINANCIAL), previewEndOfDay);
 reportsRouter.post('/end-of-day/close', requirePermission(PERMISSIONS.REPORT_FINANCIAL), closeDay);

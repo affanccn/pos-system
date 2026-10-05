@@ -61,7 +61,6 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                     const Divider(color: Color(0xFF334155)),
                     const SizedBox(height: 12),
 
-                    // İsim
                     const Text('Yazıcı Adı *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
                     TextField(
@@ -77,7 +76,6 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // IP ve Port
                     Row(
                       children: [
                         Expanded(
@@ -125,7 +123,6 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // İstasyon Seçimi
                     const Text('İstasyon (KDS / Mutfak vs.)', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
                     Container(
@@ -156,7 +153,6 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Kasa Yazıcısı mı?
                     CheckboxListTile(
                       contentPadding: EdgeInsets.zero,
                       title: const Text('Kasa / Müşteri Fişi Yazıcısı', style: TextStyle(color: Colors.white)),
@@ -170,7 +166,6 @@ class _PrinterScreenState extends ConsumerState<PrinterScreen> {
                     
                     const SizedBox(height: 24),
 
-                    // Butonlar
                     Row(
                       children: [
                         Expanded(

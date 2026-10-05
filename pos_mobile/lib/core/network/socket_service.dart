@@ -59,7 +59,7 @@ class SocketService extends ChangeNotifier {
     final body = data['body'] as String?;
     final type = data['type'] as String?;
 
-    Color bgColor = const Color(0xFF38BDF8); // Default Blue
+    Color bgColor = const Color(0xFF38BDF8);
     IconData icon = Icons.notifications;
 
     if (type == 'CRITICAL_STOCK') {

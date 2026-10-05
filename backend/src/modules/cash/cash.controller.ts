@@ -20,7 +20,6 @@ export async function getCashMovements(req: Request, res: Response): Promise<voi
       include: { user: { select: { fullName: true } } }
     });
 
-    // Kasa bakiyesi hesapla
     let balance = 0;
     for (const m of movements) {
       if (m.type === 'OPENING' || m.type === 'CASH_IN') balance += m.amountCents;
@@ -91,14 +90,12 @@ export async function getDailyCashSummary(req: Request, res: Response): Promise<
     const endOfDay = new Date(targetDate);
     endOfDay.setHours(23, 59, 59, 999);
 
-    // Kasa hareketleri
     const movements = await prisma.cashRegisterMovement.findMany({
       where: { businessId, createdAt: { gte: startOfDay, lte: endOfDay } },
       orderBy: { createdAt: 'asc' },
       include: { user: { select: { fullName: true } } }
     });
 
-    // Nakit odemeler
     const cashPayments = await prisma.payment.findMany({
       where: {
         businessId,
@@ -113,7 +110,6 @@ export async function getDailyCashSummary(req: Request, res: Response): Promise<
       else if (p.method === 'MIXED') cashFromSales += p.cashAmountCents;
     }
 
-    // Giderler
     const expenses = await prisma.expense.findMany({
       where: { businessId, expenseDate: { gte: startOfDay, lte: endOfDay } }
     });

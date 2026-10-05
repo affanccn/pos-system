@@ -3,7 +3,7 @@ class Printer {
   final String name;
   final String ipAddress;
   final int port;
-  final String? stationType; // KITCHEN, BAR vs. Kasa için null olabilir
+  final String? stationType;
   final bool isCashier;
   final bool isActive;
   final DateTime? createdAt;

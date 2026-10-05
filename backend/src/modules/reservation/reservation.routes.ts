@@ -7,7 +7,6 @@ export const reservationRouter = Router();
 
 reservationRouter.use(authMiddleware);
 
-// Yönetici veya Garson rezervasyonları görebilir
 reservationRouter.get('/', getReservations);
 reservationRouter.post('/', requirePermission(PERMISSIONS.TABLE_EDIT), createReservation);
 reservationRouter.patch('/:id', requirePermission(PERMISSIONS.TABLE_EDIT), updateReservationStatus);

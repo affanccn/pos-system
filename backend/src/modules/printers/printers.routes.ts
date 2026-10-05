@@ -5,8 +5,6 @@ import { PERMISSIONS } from '../../constants/permissions.js';
 
 const router = Router();
 
-// Tüm işlemler için ayarlar yetkisi (settings.edit veya view) gerekebilir.
-// Patron ve Müdür için genel settings yetkisini kontrol edeceğiz.
 router.use(authMiddleware);
 
 router.get('/', requirePermission(PERMISSIONS.SETTINGS_VIEW), getPrinters);

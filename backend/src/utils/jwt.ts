@@ -12,7 +12,7 @@ export interface TokenPayload {
 
 export function signToken(payload: TokenPayload): string {
   return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: '7d', // Tablet ve el terminallerinde haftalık oturum süresi
+    expiresIn: '7d',
   });
 }
 

@@ -31,7 +31,6 @@ export async function getProfitabilityReport(req: Request, res: Response): Promi
     const start = startDate ? getLogicalDayBounds(startDate).startOfDay : getLogicalDayBounds().startOfDay;
     const end = endDate ? getLogicalDayBounds(endDate).endOfDay : getLogicalDayBounds().endOfDay;
 
-    // Tüm ürünleri reçete ve kategori bilgisiyle getir
     const products = await prisma.product.findMany({
       where: { businessId },
       include: {
@@ -42,7 +41,6 @@ export async function getProfitabilityReport(req: Request, res: Response): Promi
       },
     });
 
-    // Satışları getir (sadece geçerli durumlar)
     const orderItems = await prisma.orderItem.findMany({
       where: {
         order: {
@@ -61,13 +59,12 @@ export async function getProfitabilityReport(req: Request, res: Response): Promi
       },
     });
 
-    // Ürün bazlı satış toplam
     const salesMap = new Map<string, { qty: number; revenueCents: number; complimentaryQty: number; returnedQty: number }>();
     for (const item of orderItems) {
       const existing = salesMap.get(item.productId) || { qty: 0, revenueCents: 0, complimentaryQty: 0, returnedQty: 0 };
       if (item.status === 'COMPLIMENTARY') {
         existing.complimentaryQty += item.quantity;
-        existing.qty += item.quantity; // ikram da malzeme tüketir
+        existing.qty += item.quantity;
       } else if (item.status === 'RETURNED') {
         existing.returnedQty += item.quantity;
       } else {
@@ -77,7 +74,6 @@ export async function getProfitabilityReport(req: Request, res: Response): Promi
       salesMap.set(item.productId, existing);
     }
 
-    // Ürün bazlı kârlılık hesapla
     interface ProductProfit {
       productId: string;
       productName: string;
@@ -96,8 +92,7 @@ export async function getProfitabilityReport(req: Request, res: Response): Promi
     const productProfits: ProductProfit[] = [];
 
     for (const product of products) {
-      // Reçeteden birim maliyet hesapla
-      let recipeCostCents = product.costCents; // Varsayılan: product.costCents
+      let recipeCostCents = product.costCents;
 
       if (product.recipeItems.length > 0) {
         recipeCostCents = 0;
@@ -131,15 +126,12 @@ export async function getProfitabilityReport(req: Request, res: Response): Promi
       });
     }
 
-    // En kârlı ürünler (brüt kâra göre sıralı)
     const byProfit = [...productProfits].sort((a, b) => b.grossProfitCents - a.grossProfitCents);
 
-    // En düşük marjlı ürünler
     const byLowMargin = [...productProfits]
       .filter((p) => p.totalSoldQty > 0)
       .sort((a, b) => a.grossMarginPercent - b.grossMarginPercent);
 
-    // Kategori bazlı kârlılık
     const categoryMap = new Map<string, { revenueCents: number; costCents: number; qty: number }>();
     for (const p of productProfits) {
       const existing = categoryMap.get(p.categoryName) || { revenueCents: 0, costCents: 0, qty: 0 };
@@ -164,7 +156,6 @@ export async function getProfitabilityReport(req: Request, res: Response): Promi
       })
       .sort((a, b) => b.grossProfitCents - a.grossProfitCents);
 
-    // Genel toplamlar
     const totalRevenue = productProfits.reduce((s, p) => s + p.totalRevenueCents, 0);
     const totalCost = productProfits.reduce((s, p) => s + p.totalCostCents, 0);
     const totalProfit = totalRevenue - totalCost;

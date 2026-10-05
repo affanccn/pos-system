@@ -176,7 +176,6 @@ class _DailyReportScreenState extends ConsumerState<DailyReportScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Kapanış Durumu Uyarısı
                       if (_reportData!['isAlreadyClosed'] == true)
                         Container(
                           padding: const EdgeInsets.all(12),
@@ -195,7 +194,6 @@ class _DailyReportScreenState extends ConsumerState<DailyReportScreen> {
                           ),
                         ),
                       
-                      // Satış Özeti
                       Card(
                         color: const Color(0xFF1E293B),
                         margin: const EdgeInsets.only(bottom: 16),
@@ -218,7 +216,6 @@ class _DailyReportScreenState extends ConsumerState<DailyReportScreen> {
                         ),
                       ),
 
-                      // Kasa Durumu
                       Card(
                         color: const Color(0xFF1E293B),
                         child: Padding(

@@ -28,7 +28,7 @@ class KitchenScreen extends ConsumerStatefulWidget {
 
 class _KitchenScreenState extends ConsumerState<KitchenScreen> {
   Timer? _refreshTimer;
-  String _selectedStation = 'ALL'; // ALL, KITCHEN, BAR
+  String _selectedStation = 'ALL';
 
   void _onOrderUpdate(dynamic _) {
     if (mounted) ref.invalidate(kitchenOrdersProvider);
@@ -72,7 +72,6 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
     super.dispose();
   }
 
-  // Kalem durumu güncelleme
   Future<void> _updateItemStatus(String itemId, String currentStatus) async {
     String nextStatus = 'PREPARING';
     if (currentStatus == 'PENDING') {
@@ -105,7 +104,6 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
     }
   }
 
-  // Tüm Fişi Hazırla & Gönder
   Future<void> _readyAll(String orderId, String tableName) async {
     try {
       final apiClient = ref.read(apiClientProvider);
@@ -144,7 +142,6 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
     }
   }
 
-  // Kalemin Bar mı Mutfak mı olduğunu kategori adına göre ayırt etme
   bool _matchesStation(dynamic item) {
     if (_selectedStation == 'ALL') return true;
     final stationType =
@@ -235,7 +232,6 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
           ),
         ),
         data: (orders) {
-          // İstasyon filtresine uyan kalemleri olan siparişleri filtrele
           final filteredOrders = orders
               .map((order) {
                 final items = (order['items'] as List<dynamic>?) ?? [];
@@ -314,7 +310,6 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // BaÅŸlÄ±k
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -385,7 +380,6 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                           ),
                         ),
 
-                        // Not
                         if (notes != null && notes.toString().isNotEmpty)
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -416,7 +410,6 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                             ),
                           ),
 
-                        // Kalemler
                         Expanded(
                           child: ListView.separated(
                             padding: const EdgeInsets.all(12),
@@ -563,7 +556,6 @@ class _KitchenScreenState extends ConsumerState<KitchenScreen> {
                           ),
                         ),
 
-                        // TÃ¼mÃ¼nÃ¼ HazÄ±rla & GÃ¶nder Butonu
                         Padding(
                           padding: const EdgeInsets.all(10),
                           child: ElevatedButton.icon(

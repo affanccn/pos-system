@@ -6,7 +6,6 @@ export const branchRouter = Router();
 
 branchRouter.use(authMiddleware);
 
-// Sadece OWNER yetkisindeki kullanıcılar kendi mail adresine bağlı şubeleri görebilir.
 branchRouter.get('/', requireRole(['OWNER']), async (req: Request, res: Response) => {
   try {
     const user = req.user;

@@ -1,5 +1,4 @@
 class AppPermissions {
-  // Masa Yetkileri
   static const String tableView = 'table.view';
   static const String tableCreate = 'table.create';
   static const String tableEdit = 'table.edit';
@@ -8,7 +7,6 @@ class AppPermissions {
   static const String tableMerge = 'table.merge';
   static const String tableSplit = 'table.split';
 
-  // Sipariş Yetkileri
   static const String orderCreate = 'order.create';
   static const String orderEdit = 'order.edit';
   static const String orderCancel = 'order.cancel';
@@ -16,38 +14,31 @@ class AppPermissions {
   static const String orderDiscount = 'order.discount';
   static const String orderComplimentary = 'order.complimentary';
 
-  // Ödeme Yetkileri
   static const String paymentCreate = 'payment.create';
   static const String paymentRefund = 'payment.refund';
   static const String paymentSplit = 'payment.split';
 
-  // Ürün & Menü Yetkileri
   static const String productView = 'product.view';
   static const String productCreate = 'product.create';
   static const String productEdit = 'product.edit';
   static const String productDelete = 'product.delete';
   static const String productPriceEdit = 'product.price_edit';
 
-  // Stok Yetkileri
   static const String stockView = 'stock.view';
   static const String stockCreate = 'stock.create';
   static const String stockAdjust = 'stock.adjust';
 
-  // Rapor Yetkileri
   static const String reportView = 'report.view';
   static const String reportFinancial = 'report.financial';
 
-  // Personel Yetkileri
   static const String staffView = 'staff.view';
   static const String staffCreate = 'staff.create';
   static const String staffEdit = 'staff.edit';
   static const String staffDelete = 'staff.delete';
 
-  // Yönetim & Ayarlar
   static const String settingsView = 'settings.view';
   static const String settingsEdit = 'settings.edit';
 
-  // Mutfak / KDS
   static const String kitchenView = 'kitchen.view';
   static const String kitchenManage = 'kitchen.manage';
 }

@@ -46,7 +46,7 @@ class SettingsScreen extends ConsumerWidget {
               Icons.storefront,
               'Restoran Bilgileri',
               'Şube adı, logo, iletişim, adres',
-              () {}, // TODO
+              () {},
               const Color(0xFF38BDF8),
             ),
           
@@ -56,7 +56,7 @@ class SettingsScreen extends ConsumerWidget {
               Icons.grid_view,
               'Salon & Masalar',
               'Salon yönetimi, masa düzeni, kapasiteler',
-              () {}, // TODO
+              () {},
               const Color(0xFF10B981),
             ),
 
@@ -86,7 +86,7 @@ class SettingsScreen extends ConsumerWidget {
               Icons.people,
               'Personel & Yetkiler',
               'Çalışanlar, roller, erişim izinleri',
-              () {}, // TODO
+              () {},
               const Color(0xFFA78BFA),
             ),
 
@@ -95,7 +95,7 @@ class SettingsScreen extends ConsumerWidget {
             Icons.settings_system_daydream,
             'Sistem Ayarları',
             'Tema, ses, bildirimler, haptic',
-            () {}, // TODO
+            () {},
             const Color(0xFF94A3B8),
           ),
         ],

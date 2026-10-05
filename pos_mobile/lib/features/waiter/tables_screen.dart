@@ -186,7 +186,6 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
     );
   }
 
-  // Yeni Masa Ekleme veya Düzenleme Modalı
   void _showTableFormDialog({RestaurantTable? existingTable}) {
     final messenger = ScaffoldMessenger.of(context);
     final isEditing = existingTable != null;
@@ -388,7 +387,6 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
     );
   }
 
-  // Masa Aksiyon Menüsü (Düzenle / Sil)
   void _showTableActionSheet(RestaurantTable table) {
     final userState = ref.read(authProvider).state;
     final canEdit = userState.hasPermission(AppPermissions.tableEdit);
@@ -557,7 +555,6 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
           ],
         ),
         actions: [
-          // Mutfak Ekranı
           if (userState.hasPermission(AppPermissions.kitchenView))
             IconButton(
               tooltip: 'Mutfak Ekranı',
@@ -568,13 +565,11 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
               ),
               onPressed: () => context.push('/kitchen'),
             ),
-          // Yenile
           IconButton(
             tooltip: 'Yenile',
             icon: const Icon(Icons.refresh, color: Colors.white70),
             onPressed: () => ref.invalidate(tablesFutureProvider),
           ),
-          // Çıkış
           IconButton(
             tooltip: 'Çıkış Yap',
             icon: const Icon(Icons.logout, color: Color(0xFFEF4444), size: 22),
@@ -748,14 +743,12 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                   : null,
             );
           }
-          // Mevcut salon ve bölümleri topla
           final dynamicSections = <String>{'Salon', 'Teras', 'Bahçe', 'VIP'};
           for (final t in tables) {
             dynamicSections.add(t.section);
           }
           final allSectionTabs = ['Tümü', ...dynamicSections];
 
-          // Seçili bölüme göre filtrele
           final filteredTables = selectedSection == 'Tümü'
               ? tables
               : tables
@@ -768,7 +761,6 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
 
           return Column(
             children: [
-              // Bölüm / Salon Seçim Sekmeleri (Horizontal Scroll)
               Container(
                 height: 54,
                 padding: const EdgeInsets.symmetric(
@@ -788,7 +780,6 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                     final sectionName = allSectionTabs[index];
                     final isSelected = selectedSection == sectionName;
 
-                    // Bölümdeki masa sayısı ve dolu sayısı
                     final count = sectionName == 'Tümü'
                         ? tables.length
                         : tables
@@ -864,7 +855,6 @@ class _TablesScreenState extends ConsumerState<TablesScreen> {
                 ),
               ),
 
-              // Masalar Grid Görünümü
               Expanded(
                 child: filteredTables.isEmpty
                     ? Center(

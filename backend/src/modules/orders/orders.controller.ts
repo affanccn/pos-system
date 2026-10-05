@@ -5,7 +5,6 @@ import { createAuditLog } from '../../utils/auditLog.js';
 
 const prisma = new PrismaClient();
 
-// 1. Yeni Sipariş Oluşturma
 export async function createOrder(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -230,7 +229,6 @@ export async function requestTableBill(req: Request, res: Response): Promise<voi
     const io = getIO();
     io.to(`business:${businessId}:waiters`).emit('table:updated', { tableId, status: 'BILL_REQUESTED' });
     
-    // Notification for waiter/manager
     io.to(`business:${businessId}:waiters`).emit('notification', {
       type: 'BILL_READY',
       title: 'Hesap İsteği',
@@ -270,7 +268,7 @@ export async function closeOrderAndTable(req: Request, res: Response): Promise<v
     await createAuditLog({
       businessId: businessId!,
       userId: (req.user as any)?.userId || (req.user as any)?.id,
-      action: 'ORDER_CANCEL', // Assuming manual close is cancellation/forced finish
+      action: 'ORDER_CANCEL',
       entity: 'Order',
       entityId: table.currentOrderId,
       description: 'Masa ve sipariş manuel olarak kapatıldı'
@@ -351,19 +349,16 @@ export async function mergeTables(req: Request, res: Response): Promise<void> {
     }
 
     await prisma.$transaction(async (tx) => {
-      // 1. Move all items from fromOrder to toOrder
       await tx.orderItem.updateMany({
         where: { orderId: fromOrder.id },
         data: { orderId: toOrder.id }
       });
 
-      // 2. Move all payments
       await tx.payment.updateMany({
         where: { orderId: fromOrder.id },
         data: { orderId: toOrder.id }
       });
 
-      // 3. Update toOrder totals
       await tx.order.update({
         where: { id: toOrder.id },
         data: {
@@ -373,7 +368,6 @@ export async function mergeTables(req: Request, res: Response): Promise<void> {
         }
       });
 
-      // 4. Mark fromOrder as MERGED/CANCELLED and fromTable as AVAILABLE
       await tx.order.update({
         where: { id: fromOrder.id },
         data: { 
@@ -500,7 +494,6 @@ export async function voidOrderItem(req: Request, res: Response): Promise<void> 
   }
 }
 
-// Keep makePayment empty because we moved to processOrderPayment
 export async function makePayment(req: Request, res: Response): Promise<void> {
   res.status(400).json({ success: false, error: 'Lütfen processOrderPayment metodunu kullanın.' });
 }
@@ -608,7 +601,6 @@ export async function readyAllOrderItems(req: Request, res: Response): Promise<v
   }
 }
 
-// --- AŞAMA 6: YENİ ÖDEME VE HESAP İŞLEMLERİ ---
 
 export async function processOrderPayment(req: Request, res: Response): Promise<void> {
   try {
@@ -662,7 +654,6 @@ export async function processOrderPayment(req: Request, res: Response): Promise<
     let isFullyPaid = false;
 
     await prisma.$transaction(async (tx: any) => {
-      // Ödeme kaydını oluştur
       await tx.payment.create({
         data: {
           businessId,
@@ -675,7 +666,6 @@ export async function processOrderPayment(req: Request, res: Response): Promise<
         },
       });
 
-      // Siparişteki paidAmount'u güncelle
       const totalPaidAfterThis = order.paidAmountCents + amountCents;
       const totalDiscount = order.discountAmountCents;
 
@@ -689,7 +679,6 @@ export async function processOrderPayment(req: Request, res: Response): Promise<
           },
         });
         
-        // Masa durumunu güncelle (Masa ID varsa)
         if (order.tableId) {
           await tx.restaurantTable.update({
             where: { id: order.tableId },
@@ -703,7 +692,6 @@ export async function processOrderPayment(req: Request, res: Response): Promise<
         });
       }
 
-      // Eğer kısmi ödeme (ürün bazlı) geldiyse order item'ların ödenmiş adedini güncelle
       if (paidItems && paidItems.length > 0) {
         for (const pItem of paidItems) {
           const oi = order.items.find(i => i.id === pItem.orderItemId);
@@ -790,12 +778,10 @@ export async function makeItemComplimentary(req: Request, res: Response): Promis
     }
 
     await prisma.$transaction(async (tx: any) => {
-      // Ürünü ikram yap
       await tx.orderItem.update({
         where: { id: orderItemId },
         data: { status: 'COMPLIMENTARY' }
       });
-      // Sipariş toplamını güncelle
       await tx.order.update({
         where: { id: item.orderId },
         data: { totalAmountCents: (item as any).order.totalAmountCents - item.totalPriceCents }
@@ -861,7 +847,6 @@ export async function transferOrderItems(req: Request, res: Response): Promise<v
     let toOrderId = toTable?.currentOrderId;
 
     await prisma.$transaction(async (tx) => {
-      // 1. Hedef sipariş yoksa oluştur
       let toOrderAmountCents = 0;
       if (!toOrderId) {
         const toOrder = await tx.order.create({
@@ -887,7 +872,6 @@ export async function transferOrderItems(req: Request, res: Response): Promise<v
 
       let totalTransferredAmount = 0;
 
-      // 2. İtemleri Taşı veya Böl
       for (const reqItem of items) {
         const originalItem = fromOrder.items.find(i => i.id === reqItem.orderItemId);
         if (!originalItem) continue;
@@ -895,7 +879,6 @@ export async function transferOrderItems(req: Request, res: Response): Promise<v
 
         const transferQty = Math.min(reqItem.quantity, originalItem.quantity);
 
-        // Modifiers dahil toplam birim fiyat
         const unitModifierPrice = originalItem.quantity > 0 
           ? (originalItem.totalPriceCents - (originalItem.unitPriceCents * originalItem.quantity)) / originalItem.quantity
           : 0;
@@ -904,13 +887,11 @@ export async function transferOrderItems(req: Request, res: Response): Promise<v
         totalTransferredAmount += transferredTotalPrice;
 
         if (transferQty === originalItem.quantity) {
-          // Tamamını taşı
           await tx.orderItem.update({
             where: { id: originalItem.id },
             data: { orderId: toOrderId }
           });
         } else {
-          // Böl ve yeni oluştur
           const remainingQty = originalItem.quantity - transferQty;
           const remainingTotalPrice = (originalItem.unitPriceCents + unitModifierPrice) * remainingQty;
           
@@ -950,7 +931,6 @@ export async function transferOrderItems(req: Request, res: Response): Promise<v
         }
       }
 
-      // 3. Sipariş toplamlarını güncelle
       await tx.order.update({
         where: { id: fromOrder.id },
         data: { totalAmountCents: fromOrder.totalAmountCents - totalTransferredAmount }
@@ -971,7 +951,7 @@ export async function transferOrderItems(req: Request, res: Response): Promise<v
          });
          await tx.order.update({
            where: { id: fromOrder.id },
-           data: { status: 'CANCELLED' } // Boş kaldığı için iptal edildi diyoruz.
+           data: { status: 'CANCELLED' }
          });
       }
     });

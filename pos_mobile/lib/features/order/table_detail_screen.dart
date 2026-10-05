@@ -10,7 +10,6 @@ import 'package:go_router/go_router.dart';
 import '../../core/auth/permissions.dart';
 import '../../core/widgets/app_states.dart';
 
-// Belirli bir masanın aktif siparişini çeken provider
 final tableActiveOrderProvider = FutureProvider.autoDispose
     .family<Map<String, dynamic>?, String>((ref, tableId) async {
       final apiClient = ref.watch(apiClientProvider);
@@ -34,7 +33,6 @@ class TableDetailScreen extends ConsumerStatefulWidget {
 class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
   bool _isProcessing = false;
 
-  // 1. Hesap İsteme Fonksiyonu
   Future<void> _requestBill() async {
     final userState = ref.read(authProvider).state;
     if (!userState.hasPermission(AppPermissions.orderEdit)) {
@@ -91,7 +89,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     }
   }
 
-  // 2. Parçalı veya Tam Ödeme Alma Fonksiyonu
   Future<void> _executePayment({
     required String orderId,
     required int amountCents,
@@ -119,7 +116,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
               backgroundColor: const Color(0xFF10B981),
             ),
           );
-          Navigator.of(context).pop(); // Hesap bitti, masalar listesine dön
+          Navigator.of(context).pop();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -144,7 +141,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     }
   }
 
-  // 2.5 Masayı Doğrudan Kapat (Sıfır Bakiye)
   Future<void> _closeTable() async {
     setState(() => _isProcessing = true);
     try {
@@ -300,7 +296,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     }
   }
 
-  // 3. Ödeme Modalı (Split Payment BottomSheet)
   void _showPaymentModal({required String orderId, required int totalCents, required int paidCents}) {
     final userState = ref.read(authProvider).state;
     if (!userState.hasPermission(AppPermissions.paymentCreate)) {
@@ -346,7 +341,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Başlık ve Kapat Butonu
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -367,7 +361,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                     const Divider(color: Color(0xFF334155)),
                     const SizedBox(height: 8),
 
-                    // Kalan Tutar Bilgisi
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(
@@ -402,7 +395,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Ödeme Yöntemi Seçimi
                     const Text(
                       'Ödeme Yöntemi',
                       style: TextStyle(
@@ -507,7 +499,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Tutar Girişi
                     const Text(
                       'Tahsil Edilecek Tutar (₺)',
                       style: TextStyle(
@@ -551,7 +542,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Hızlı Bölme Seçenekleri (Kişi Başı Böl)
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -620,7 +610,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Ödeme Onay Butonu
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -686,7 +675,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     );
   }
 
-  // 4. Kalem İptali / Sayı Düzenleme API Çağrısı
   Future<void> _executeVoidItem({
     required String orderItemId,
     required String productName,
@@ -738,7 +726,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     }
   }
 
-  // 5. Kalem İptali Dialog Tetikleyici
   void _showVoidDialog({
     required String orderItemId,
     required String productName,
@@ -954,7 +941,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     );
   }
 
-  // 6. Masa Taşıma / Aktarma Modal Fonksiyonu
   void _showTransferDialog(List<dynamic> orderItems) {
     final userState = ref.read(authProvider).state;
     if (!userState.hasPermission(AppPermissions.tableTransfer)) {
@@ -1344,7 +1330,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
       if (mounted) setState(() => _isProcessing = false);
     }
   }
-  // 7. Gerçek Masa Birleştirme Fonksiyonu
   Future<void> _executeTableMerge(String targetTableId, String targetTableName) async {
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _isProcessing = true);
@@ -1363,7 +1348,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
             backgroundColor: const Color(0xFFF59E0B),
           ),
         );
-        Navigator.pop(context); // Go back to table grid since this table is now empty
+        Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
@@ -1468,7 +1453,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
     });
   }
 
-  // 7. Parçalı Ürün Aktarma Modal Fonksiyonu (Yanlışlıkla Merge denmiş)
   void _showMergeDialog() {
     final userState = ref.read(authProvider).state;
     if (!userState.hasPermission(AppPermissions.tableMerge)) {
@@ -1730,7 +1714,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
           final totalAmountCents = order['totalAmountCents'] as int? ?? 0;
           final orderId = order['id'] as String;
 
-          // Bugüne kadar ödenen toplam tutarı hesapla
           final paidAmountCents = order['paidAmountCents'] as int? ?? 0;
           final remainingAmountCents = totalAmountCents - paidAmountCents;
 
@@ -1742,7 +1725,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
 
           return Column(
             children: [
-              // Üst Özet Kartı (Toplam, Ödenen ve Kalan)
               Container(
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.all(16),
@@ -1848,7 +1830,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                 ),
               ),
 
-              // Kalem Listesi Başlığı
               const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 4),
                 child: Align(
@@ -1973,7 +1954,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                 ),
               ),
 
-              // Alt Butonlar Alanı
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: const BoxDecoration(
@@ -2050,7 +2030,7 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                             child: ElevatedButton.icon(
                               onPressed: _isProcessing ? null : () => _showDiscountDialog(orderId, remainingAmountCents),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF8B5CF6), // Purple
+                                backgroundColor: const Color(0xFF8B5CF6),
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 12,
@@ -2069,7 +2049,6 @@ class _TableDetailScreenState extends ConsumerState<TableDetailScreen> {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      // Ödeme Al (Split / Parçalı veya Tam) Butonu
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(

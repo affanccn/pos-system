@@ -81,9 +81,6 @@ class PrinterService {
   }
 
   Future<bool> testPrinterConnection(String ipAddress, int port) async {
-    // Mobil tarafta yazıcı testi yapmak için bir soket açılır veya ping atılır
-    // Ancak ESC/POS komutlarıyla Flutter'dan ağ testi yapılacaksa flutter_esc_pos_network paketi gerekir.
-    // Şimdilik testin başarılı olduğunu varsayıyoruz veya 1-2 saniye bekliyoruz
     await Future.delayed(const Duration(seconds: 1));
     return true; 
   }

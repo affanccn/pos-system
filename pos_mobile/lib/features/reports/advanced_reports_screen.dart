@@ -108,7 +108,7 @@ class _AdvancedReportsScreenState extends ConsumerState<AdvancedReportsScreen> {
     for (var p in peakHours) {
       if (p['count'] > maxY) maxY = (p['count'] as num).toDouble();
     }
-    maxY = maxY + (maxY * 0.2); // Add 20% padding
+    maxY = maxY + (maxY * 0.2);
     
     return SizedBox(
       height: 200,

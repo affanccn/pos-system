@@ -85,7 +85,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         final isFullyPaid = response.data['data']['isFullyPaid'] ?? false;
         if (isFullyPaid) {
           if (mounted) {
-            context.go('/'); // Ana ekrana don
+            context.go('/');
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Hesap tamamen kapandı.')),
             );
@@ -140,7 +140,6 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       ),
       body: Row(
         children: [
-          // Sol taraf: Adisyon Kalemleri
           Expanded(
             flex: 2,
             child: Container(
@@ -176,7 +175,6 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               ),
             ),
           ),
-          // Sağ taraf: Ödeme Özeti ve Butonlar
           Expanded(
             flex: 1,
             child: Padding(

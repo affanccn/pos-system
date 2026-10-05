@@ -86,7 +86,7 @@ export async function updateReservationStatus(req: Request, res: Response): Prom
 
     const updateData: any = {};
     if (status) updateData.status = status;
-    if (tableId !== undefined) updateData.tableId = tableId; // null could be passed to clear table
+    if (tableId !== undefined) updateData.tableId = tableId;
 
     const reservation = await prisma.reservation.update({
       where: { id: id as string, businessId },

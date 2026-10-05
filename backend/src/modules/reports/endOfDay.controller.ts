@@ -4,21 +4,17 @@ import { prisma } from '../../config/prisma.js';
 function getLogicalDayBounds(dateParam?: string) {
   const targetDate = dateParam ? new Date(dateParam) : new Date();
   
-  // Eğer saat sabah 5'ten önceyse, mantıksal olarak "önceki gün" olarak kabul et
   if (targetDate.getHours() < 5) {
     targetDate.setDate(targetDate.getDate() - 1);
   }
 
-  // İş günü sabah 05:00'te başlar
   const startOfDay = new Date(targetDate);
   startOfDay.setHours(5, 0, 0, 0);
 
-  // İş günü ertesi sabah 04:59:59'da biter
   const endOfDay = new Date(targetDate);
   endOfDay.setDate(endOfDay.getDate() + 1);
   endOfDay.setHours(4, 59, 59, 999);
 
-  // Raporun "tarihi" olarak kullanılacak tarih (saat 00:00)
   const reportDate = new Date(targetDate);
   reportDate.setHours(0, 0, 0, 0);
 
@@ -37,7 +33,6 @@ export async function previewEndOfDay(req: Request, res: Response): Promise<void
 
     const { startOfDay, endOfDay, reportDate } = getLogicalDayBounds(date);
 
-    // Zaten gün kapanmış mı kontrol et
     const existingReport = await prisma.endOfDayReport.findFirst({
       where: {
         businessId,
@@ -53,7 +48,6 @@ export async function previewEndOfDay(req: Request, res: Response): Promise<void
       return;
     }
 
-    // --- Satış ve Ödemeler ---
     const payments = await prisma.payment.findMany({
       where: { businessId, createdAt: { gte: startOfDay, lte: endOfDay } }
     });
@@ -88,8 +82,6 @@ export async function previewEndOfDay(req: Request, res: Response): Promise<void
     let returnedCents = 0;
 
     for (const o of orders) {
-      // Sadece bu aralıkta güncellenmiş/kapatılmış siparişlerin indirimlerini alıyoruz
-      // (Eğer dünden kalan sipariş bugün kapatıldıysa, indirimler bugünün raporuna yansır)
       if (o.updatedAt >= startOfDay && o.updatedAt <= endOfDay) {
         discountCents += o.discountAmountCents;
       }
@@ -107,7 +99,6 @@ export async function previewEndOfDay(req: Request, res: Response): Promise<void
       }
     }
 
-    // --- Kasa Hareketleri ve Giderler ---
     const expenses = await prisma.expense.findMany({
       where: { businessId, expenseDate: { gte: startOfDay, lte: endOfDay } }
     });
@@ -125,10 +116,8 @@ export async function previewEndOfDay(req: Request, res: Response): Promise<void
       if (cm.type === 'OPENING') openingCashCents += cm.amountCents;
       else if (cm.type === 'CASH_IN') cashInCents += cm.amountCents;
       else if (cm.type === 'CASH_OUT') cashOutCents += cm.amountCents;
-      // EXPENSE tipleri expenses içerisinde var
     }
 
-    // Beklenen kasa = (Açılış) + (Nakit Satışlar) + (Nakit Girişleri) - (Giderler + Nakit Çıkışları)
     const expectedCashCents = openingCashCents + cashCents + cashInCents - (expensesCents + cashOutCents);
 
     res.json({
@@ -145,7 +134,7 @@ export async function previewEndOfDay(req: Request, res: Response): Promise<void
         expensesCents,
         openingCashCents,
         expectedCashCents,
-        actualCashCents: expectedCashCents, // Kullanıcı girecek
+        actualCashCents: expectedCashCents,
         differenceCents: 0,
       }
     });
@@ -170,10 +159,8 @@ export async function closeDay(req: Request, res: Response): Promise<void> {
     const actualCashCents = req.body.actualCashCents;
     const data = req.body.data;
     
-    // Client has the 'reportDate' which is at 00:00:00 for the logical day.
     const { startOfDay, reportDate } = getLogicalDayBounds(reqReportDate);
 
-    // Kontrol et, zaten kapanmış mı?
     const existing = await prisma.endOfDayReport.findFirst({
       where: { businessId, reportDate }
     });
@@ -185,9 +172,7 @@ export async function closeDay(req: Request, res: Response): Promise<void> {
 
     const differenceCents = actualCashCents - data.expectedCashCents;
 
-    // Transaction kullanarak Raporu Kaydet, Audit Log yaz ve Kasa Hareketi ekle
     const report = await prisma.$transaction(async (tx) => {
-      // 1. Z Raporu oluştur
       const newReport = await tx.endOfDayReport.create({
         data: {
           businessId,
@@ -207,7 +192,6 @@ export async function closeDay(req: Request, res: Response): Promise<void> {
         }
       });
 
-      // 2. Kasa kapanış hareketi yaz
       await tx.cashRegisterMovement.create({
         data: {
           businessId,
@@ -218,7 +202,6 @@ export async function closeDay(req: Request, res: Response): Promise<void> {
         }
       });
 
-      // 3. Audit log yaz
       await tx.auditLog.create({
         data: {
           businessId,

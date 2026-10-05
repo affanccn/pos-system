@@ -106,11 +106,9 @@ export async function getAdvancedReport(req: Request, res: Response): Promise<vo
       return;
     }
 
-    // Yalnizca belirtilen araliktaki PAID orderlar ve tum orderlar
     const start = startDate ? getLogicalDayBounds(startDate).startOfDay : getLogicalDayBounds().startOfDay;
     const end = endDate ? getLogicalDayBounds(endDate).endOfDay : getLogicalDayBounds().endOfDay;
     
-    // Yalnizca belirtilen araliktaki PAID orderlar ve tum orderlar
     const orders = await prisma.order.findMany({
       where: {
         businessId,
@@ -131,7 +129,7 @@ export async function getAdvancedReport(req: Request, res: Response): Promise<vo
       }
     });
 
-    let totalRevenue = 0; // Toplam SATIŞ (Ödenenler)
+    let totalRevenue = 0;
     let netSales = 0;
     let cash = 0;
     let card = 0;
@@ -149,7 +147,6 @@ export async function getAdvancedReport(req: Request, res: Response): Promise<vo
     const tableMap = new Map<string, { orders: number, rev: number }>();
 
     for (const o of orders) {
-      // Saat bazinda yogunluk
       const hour = o.createdAt.getHours();
       peakHoursMap.set(hour, (peakHoursMap.get(hour) || 0) + 1);
 
@@ -165,13 +162,11 @@ export async function getAdvancedReport(req: Request, res: Response): Promise<vo
       const waiterName = o.waiter?.fullName || 'Bilinmeyen Garson';
       const waiterData = waiterMap.get(waiterName) || { orders: 0, rev: 0 };
       waiterData.orders += 1;
-      // We'll update waiter rev below
       waiterMap.set(waiterName, waiterData);
 
       const tableName = o.table?.name || 'Bilinmeyen Masa';
       const tableData = tableMap.get(tableName) || { orders: 0, rev: 0 };
       tableData.orders += 1;
-      // We'll update table rev below
       tableMap.set(tableName, tableData);
 
       let orderRevenueInInterval = 0;
@@ -180,7 +175,7 @@ export async function getAdvancedReport(req: Request, res: Response): Promise<vo
         if (p.createdAt >= start && p.createdAt <= end) {
           orderRevenueInInterval += p.amountCents;
           totalRevenue += p.amountCents;
-          netSales += p.amountCents; // Basitlestirilmis net satis hesaplamasi
+          netSales += p.amountCents;
           if (p.method === 'CASH') cash += p.amountCents;
           else if (p.method === 'CARD') card += p.amountCents;
           else if (p.method === 'MIXED') {
@@ -257,8 +252,8 @@ export async function getAdvancedReport(req: Request, res: Response): Promise<vo
         },
         operations: {
           avgOrderTimeMin,
-          avgTableTimeMin: avgOrderTimeMin, // Su anlik ayni
-          kitchenPrepTimeMin: avgOrderTimeMin * 0.8, // Yaklasik
+          avgTableTimeMin: avgOrderTimeMin,
+          kitchenPrepTimeMin: avgOrderTimeMin * 0.8,
           peakHours
         }
       }

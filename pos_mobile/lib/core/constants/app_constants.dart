@@ -10,11 +10,9 @@ class AppConstants {
 
   /// Platforma göre otomatik sunucu adresini belirler
   static String get serverBaseUrl {
-    // Mobil veya masaüstü için her zaman production URL'yi kullan
     if (!kIsWeb) {
       return productionUrl;
     }
-    // Web için geliştirme ortamında localhost çalışabilir
     return kReleaseMode ? productionUrl : 'http://localhost:$defaultPort';
   }
 

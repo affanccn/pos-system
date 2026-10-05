@@ -46,7 +46,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
       }).toList();
 
       if (widget.existingOrderId != null) {
-        // Var olan adisyona ek ürün ekleme
         final response = await apiClient.dio.post(
           '/orders/${widget.existingOrderId}/items',
           data: {
@@ -68,7 +67,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
           }
         }
       } else {
-        // Sıfırdan yeni masa siparişi açma
         final response = await apiClient.dio.post(
           '/orders',
           data: {
@@ -105,7 +103,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     }
   }
 
-  // Kaleme Not/Açıklama Ekleme Dialogu
   void _showItemNoteDialog(int index, CartItem item) {
     final noteController = TextEditingController(text: item.note ?? '');
 
@@ -292,7 +289,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
     );
   }
 
-  // Ürün Seçim / Ekstra Malzeme & Açıklama Modalı
   void _showModifierModal(BuildContext context, Product product, WidgetRef ref) {
     showModalBottomSheet(
       context: context,
@@ -362,7 +358,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Modifier Grupları (Varsa)
                             if (product.modifierGroups.isNotEmpty)
                               ...product.modifierGroups.map((group) {
                                 int groupSelectedCount = 0;
@@ -430,7 +425,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                                 );
                               }),
 
-                            // Sipariş Özel Notu / Açıklama Kısmı
                             const Padding(
                               padding: EdgeInsets.symmetric(vertical: 8.0),
                               child: Text(
@@ -566,7 +560,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
 
           return Column(
             children: [
-              // Kategori Yatay Sekmeleri
               Container(
                 height: 50,
                 color: const Color(0xFF1E293B),
@@ -600,7 +593,6 @@ class _OrderScreenState extends ConsumerState<OrderScreen> {
                 ),
               ),
 
-              // Ürünler Grid Görünümü
               Expanded(
                 child: activeCategory.products.isEmpty
                     ? const Center(

@@ -4,11 +4,9 @@ import 'package:flutter_riverpod/legacy.dart';
 import '../../data/models/catalog_model.dart';
 import '../auth/auth_controller.dart';
 
-// Kategorileri ve menü ürünlerini getiren provider
 final catalogProvider = FutureProvider.autoDispose<List<Category>>((ref) async {
   final apiClient = ref.watch(apiClientProvider);
   try {
-    // Doğru endpoint: /catalog
     final response = await apiClient.dio.get('/catalog');
     final rawData = response.data;
 
@@ -28,7 +26,6 @@ final catalogProvider = FutureProvider.autoDispose<List<Category>>((ref) async {
   }
 });
 
-// Masaya ait anlık sepet kalemi
 class CartItem {
   final Product product;
   int quantity;
@@ -52,7 +49,6 @@ class CartItem {
 
   double get total => unitPrice * quantity;
 
-  // Aynı ürünün aynı modifier'larla sepete eklenip eklenmediğini kontrol etmek için
   bool isSameAs(Product p, List<ProductModifierItem> mods) {
     if (p.id != product.id) return false;
     if (mods.length != modifiers.length) return false;
@@ -67,7 +63,6 @@ class CartItem {
   }
 }
 
-// Sepet Durum Yönetimi
 class CartNotifier extends ChangeNotifier {
   List<CartItem> _items = [];
 

@@ -21,19 +21,16 @@ export const ordersRouter = Router();
 
 ordersRouter.use(authMiddleware);
 
-// 1. Statik ve Genel Rotalar
 ordersRouter.post('/transfer', requirePermission(PERMISSIONS.TABLE_TRANSFER), transferTable);
 ordersRouter.post('/transfer-items', requirePermission(PERMISSIONS.TABLE_TRANSFER), transferOrderItems);
 ordersRouter.post('/merge', requirePermission(PERMISSIONS.TABLE_MERGE), mergeTables);
 ordersRouter.get('/kitchen', requirePermission(PERMISSIONS.KITCHEN_VIEW), getKitchenOrders);
 
-// 2. Masa Bazlı İşlemler
 ordersRouter.get('/table/:tableId', requirePermission(PERMISSIONS.TABLE_VIEW), getActiveOrderByTable);
 ordersRouter.post('/table/:tableId/bill-request', requirePermission(PERMISSIONS.ORDER_EDIT), requestTableBill);
 ordersRouter.post('/table/:tableId/close', requirePermission(PERMISSIONS.PAYMENT_CREATE), closeOrderAndTable);
 ordersRouter.post('/table/:tableId/payment', requirePermission(PERMISSIONS.PAYMENT_CREATE), makePayment);
 
-// 3. Sipariş ve Kalem Bazlı İşlemler
 ordersRouter.post('/', requirePermission(PERMISSIONS.ORDER_CREATE), createOrder);
 ordersRouter.post('/:orderId/items', requirePermission(PERMISSIONS.ORDER_EDIT), addItemsToOrder);
 ordersRouter.post('/:orderId/payment', requirePermission(PERMISSIONS.PAYMENT_CREATE), processOrderPayment);

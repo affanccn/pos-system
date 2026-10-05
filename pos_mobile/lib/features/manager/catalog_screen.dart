@@ -43,7 +43,6 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     );
   }
 
-  // Add modifier item dialog
   void _showAddModifierItemDialog(ProductModifierGroup group) {
     final nameCtrl = TextEditingController();
     final priceCtrl = TextEditingController();

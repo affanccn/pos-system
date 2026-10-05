@@ -130,7 +130,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
     );
   }
 
-  // ─── ÖZET TAB ───
   Widget _buildSummaryTab() {
     final summary = _data!['summary'] as Map<String, dynamic>;
     final categories = (_data!['categoryProfits'] as List<dynamic>?) ?? [];
@@ -141,7 +140,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Genel Özet Kartları
           GridView.count(
             crossAxisCount: 2,
             crossAxisSpacing: 10,
@@ -157,7 +155,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
             ],
           ),
           const SizedBox(height: 8),
-          // Alt satır: Ürün sayıları
           Row(
             children: [
               Expanded(child: _buildMiniCard('Toplam Ürün', '${summary['productCount'] ?? 0}', Icons.inventory_2, Colors.white70)),
@@ -167,7 +164,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
           ),
           const SizedBox(height: 24),
 
-          // Kategori Kârlılık Pie Chart
           if (categories.isNotEmpty) ...[
             const Text('Kategori Bazlı Kârlılık', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
@@ -200,7 +196,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
             const SizedBox(height: 24),
           ],
 
-          // Düşük Marjlı Ürünler
           if (lowMargin.isNotEmpty) ...[
             const Text('⚠ Düşük Marjlı Ürünler', style: TextStyle(color: Color(0xFFF59E0B), fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
@@ -211,7 +206,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
     );
   }
 
-  // ─── ÜRÜNLER TAB ───
   Widget _buildProductsTab() {
     final products = (_data!['products'] as List<dynamic>?) ?? [];
     if (products.isEmpty) {
@@ -288,7 +282,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
     );
   }
 
-  // ─── KATEGORİLER TAB ───
   Widget _buildCategoriesTab() {
     final categories = (_data!['categoryProfits'] as List<dynamic>?) ?? [];
     if (categories.isEmpty) {
@@ -300,7 +293,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Bar Chart
           const Text('Kategori Kâr Karşılaştırması', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
           SizedBox(
@@ -367,7 +359,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
           ),
           const SizedBox(height: 24),
 
-          // Kategori listesi
           ...categories.map((c) {
             final margin = (c['grossMarginPercent'] ?? 0).toDouble();
             final marginColor = margin >= 60 ? const Color(0xFF10B981) : margin >= 40 ? const Color(0xFFF59E0B) : const Color(0xFFEF4444);
@@ -412,7 +403,6 @@ class _ProfitabilityScreenState extends ConsumerState<ProfitabilityScreen> with 
     );
   }
 
-  // ─── HELPER WİDGETLER ───
 
   static const _pieColors = [
     Color(0xFF38BDF8), Color(0xFF10B981), Color(0xFFF59E0B), Color(0xFFEF4444),

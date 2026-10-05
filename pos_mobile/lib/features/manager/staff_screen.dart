@@ -17,13 +17,13 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
   Color _getRoleColor(String role) {
     switch (role.toUpperCase()) {
       case 'OWNER':
-        return const Color(0xFF8B5CF6); // Mor
+        return const Color(0xFF8B5CF6);
       case 'MANAGER':
-        return const Color(0xFF38BDF8); // Açık Mavi
+        return const Color(0xFF38BDF8);
       case 'WAITER':
-        return const Color(0xFF10B981); // Yeşil
+        return const Color(0xFF10B981);
       case 'KITCHEN':
-        return const Color(0xFFF59E0B); // Kehribar/Turuncu
+        return const Color(0xFFF59E0B);
       default:
         return const Color(0xFF94A3B8);
     }
@@ -118,7 +118,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
     );
   }
 
-  // 1. Yeni Personel Ekleme Modalı
   void _showAddStaffModal() {
     final nameController = TextEditingController();
     final emailController = TextEditingController();
@@ -169,7 +168,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     const Divider(color: Color(0xFF334155)),
                     const SizedBox(height: 12),
 
-                    // Ad Soyad
                     const Text('Ad Soyad *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
                     TextField(
@@ -185,7 +183,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Rol Seçimi
                     const Text('Görevi / Rolü *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
                     Container(
@@ -214,7 +211,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // 4 Haneli PIN Kodu
                     const Text('4 Haneli Giriş PIN Kodu *', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
                     TextField(
@@ -234,7 +230,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // E-posta (Opsiyonel)
                     const Text('E-posta (İsteğe Bağlı)', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
                     TextField(
@@ -253,7 +248,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     _buildPermissionsSelector(selectedPermissions, setModalState),
                     const SizedBox(height: 24),
 
-                    // Kaydet Butonu
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -326,7 +320,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
     );
   }
 
-  // 2. PIN Güncelleme Dialogu
   void _showChangePinDialog(StaffUser staff) {
     final pinController = TextEditingController();
     bool isSaving = false;
@@ -459,7 +452,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     const Divider(color: Color(0xFF334155)),
                     const SizedBox(height: 12),
 
-                    // Ad Soyad
                     const Text('Ad Soyad', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
                     TextField(
@@ -473,7 +465,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Rol Seçimi
                     const Text('Görevi / Rolü', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
                     Container(
@@ -502,7 +493,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Aktif / Pasif Durumu
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -516,7 +506,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // E-posta
                     const Text('E-posta', style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
                     TextField(
@@ -532,7 +521,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                     _buildPermissionsSelector(selectedPermissions, setModalState),
                     const SizedBox(height: 24),
 
-                    // Kaydet Butonu
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -591,7 +579,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
     );
   }
 
-  // 4. Personel Silme Onayı
   void _confirmDeleteStaff(StaffUser staff) {
     showDialog(
       context: context,
@@ -683,7 +670,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
 
           return Column(
             children: [
-              // Özet İstatistik Barı
               Container(
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
@@ -702,7 +688,6 @@ class _StaffScreenState extends ConsumerState<StaffScreen> {
                 ),
               ),
 
-              // Personel Listesi
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

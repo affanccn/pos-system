@@ -16,7 +16,6 @@ export async function loginWithPin(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // 1. Önce işletmeyi bul
     const business = await prisma.business.findUnique({
       where: { slug: businessSlug, isActive: true },
     });
@@ -29,12 +28,10 @@ export async function loginWithPin(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // 2. İşletmeye bağlı aktif personelleri getir
     const users = await prisma.user.findMany({
       where: { businessId: business.id, isActive: true },
     });
 
-    // 3. Girilen PIN kodunu personellerin hash'li PIN'leriyle eşleştir
     let matchedUser = null;
     for (const u of users) {
       const isMatch = await bcrypt.compare(pinCode, u.pinCodeHash);
@@ -52,10 +49,8 @@ export async function loginWithPin(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // 4. Role ve kullanıcıya ait yetkileri hesapla
     const permissions = getPermissionsForUser(matchedUser.role, matchedUser.customPermissions);
 
-    // 5. JWT Token üret (yetkiler token içine de gömülür)
     const token = signToken({
       userId: matchedUser.id,
       businessId: business.id,
@@ -64,7 +59,6 @@ export async function loginWithPin(req: Request, res: Response): Promise<void> {
       permissions,
     });
 
-    // 6. Mobil uygulamanın ihtiyaç duyacağı kullanıcı profilini ve yetkilerini dön
     res.json({
       success: true,
       data: {
@@ -93,7 +87,6 @@ export async function loginWithPin(req: Request, res: Response): Promise<void> {
   }
 }
 
-// Token doğrulama ve mevcut kullanıcı profilini getirme rotası
 export async function getProfile(req: Request, res: Response): Promise<void> {
   if (!req.user) {
     res.status(401).json({ success: false, error: 'Oturum bulunamadı.' });

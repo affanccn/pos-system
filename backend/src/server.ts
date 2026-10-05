@@ -26,16 +26,14 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors({
-  origin: '*', // Tüm originlere izin ver (geliştirme aşaması için)
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 }));
 
-// Gerçek zamanlı soket sunucusunu başlat
 initSocketServer(httpServer);
 
-// Sağlık testi
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     status: 'online',
@@ -45,7 +43,6 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
-// Modül Rotaları
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/tables', tablesRouter);
 app.use('/api/v1/catalog', catalogRouter);

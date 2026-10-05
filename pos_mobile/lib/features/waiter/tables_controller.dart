@@ -12,7 +12,6 @@ final tablesFutureProvider = FutureProvider.autoDispose<List<RestaurantTable>>((
     final response = await apiClient.dio.get('/tables');
     final rawData = response.data;
     
-    // Backend standardına göre veriyi listeye çevir (data dizisi veya doğrudan liste)
     final List<dynamic> list = rawData is List ? rawData : (rawData['data'] ?? []);
     
     return list.map((item) => RestaurantTable.fromJson(item as Map<String, dynamic>)).toList();
@@ -90,7 +89,6 @@ class TableOperationsController {
     await apiClient.dio.post('/tables/reorder', data: {
       'items': items,
     });
-    // Optimistic UI kullandığımız için invalidate etmiyoruz, gerekirse edebiliriz.
   }
 }
 

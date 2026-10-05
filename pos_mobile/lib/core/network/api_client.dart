@@ -20,7 +20,6 @@ class ApiClient {
           ),
         ) {
     dio.options.responseDecoder = (responseBytes, options, responseBody) {
-      // Force UTF-8 decoding if backend doesn't send charset=utf-8
       return utf8.decode(responseBytes, allowMalformed: true);
     };
 

@@ -1,7 +1,6 @@
 ﻿import type { Request, Response, NextFunction } from 'express';
 import { verifyToken, type TokenPayload } from '../utils/jwt.js';
 
-// Express Request nesnesine kullanıcı oturum bilgisini ekliyoruz
 declare global {
   namespace Express {
     interface Request {
@@ -25,7 +24,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction):
 
   try {
     const decoded = verifyToken(token);
-    req.user = decoded; // Artık controller katmanında req.user.businessId ve permissions kullanılabilir!
+    req.user = decoded;
     next();
   } catch (error) {
     res.status(401).json({
@@ -79,7 +78,6 @@ export function requirePermission(permission: string | string[]) {
       return;
     }
 
-    // OWNER her zaman tüm yetkilere sahiptir
     if (req.user.role.toUpperCase() === 'OWNER') {
       return next();
     }

@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import { prisma } from '../../config/prisma.js';
 import { Role } from '@prisma/client';
 
-// 1. Tüm Personelleri Listele
 export async function getStaffList(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -37,7 +36,6 @@ export async function getStaffList(req: Request, res: Response): Promise<void> {
   }
 }
 
-// 2. Yeni Personel Oluştur
 export async function createStaff(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -64,7 +62,6 @@ export async function createStaff(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // İşletmede bu PIN koduna sahip başka personel var mı kontrol et
     const existingUsers = await prisma.user.findMany({
       where: { businessId, isActive: true },
     });
@@ -114,7 +111,6 @@ export async function createStaff(req: Request, res: Response): Promise<void> {
   }
 }
 
-// 3. Personel Bilgilerini Güncelle
 export async function updateStaff(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -141,7 +137,6 @@ export async function updateStaff(req: Request, res: Response): Promise<void> {
     if (typeof email === 'string') updateData.email = email.trim() || null;
     if (Array.isArray(customPermissions)) updateData.customPermissions = customPermissions;
     if (typeof isActive === 'boolean') {
-      // Kendini pasife alamaz
       if (req.user?.userId === id && !isActive) {
         res.status(400).json({ success: false, error: 'Kendi hesabınızı pasife alamazsınız.' });
         return;
@@ -174,7 +169,6 @@ export async function updateStaff(req: Request, res: Response): Promise<void> {
   }
 }
 
-// 4. Personel PIN Kodu Güncelle
 export async function updateStaffPin(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -200,7 +194,6 @@ export async function updateStaffPin(req: Request, res: Response): Promise<void>
       return;
     }
 
-    // PIN çakışması kontrolü
     const otherUsers = await prisma.user.findMany({
       where: { businessId, isActive: true, NOT: { id } },
     });
@@ -233,7 +226,6 @@ export async function updateStaffPin(req: Request, res: Response): Promise<void>
   }
 }
 
-// 5. Personel Silme / Pasifleştirme
 export async function deleteStaff(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -258,7 +250,6 @@ export async function deleteStaff(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // Geçmiş sipariş veya tahsilat kaydı varsa silmek veri bütünlüğünü bozar -> Pasife al
     const ordersCount = await prisma.order.count({ where: { waiterId: id } });
     const paymentsCount = await prisma.payment.count({ where: { cashierId: id } });
 
@@ -274,7 +265,6 @@ export async function deleteStaff(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // Kayıt yoksa tamamen silebiliriz
     await prisma.user.delete({ where: { id } });
     res.json({
       success: true,

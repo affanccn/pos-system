@@ -4,7 +4,6 @@ import { TableStatus } from '@prisma/client';
 import { getIO } from '../../realtime/socket.js';
 import { createAuditLog } from '../../utils/auditLog.js';
 
-// 1. İşletmeye ait tüm masaları getir (Garson & Yönetici)
 export async function getTables(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -67,7 +66,6 @@ export async function getTables(req: Request, res: Response): Promise<void> {
   }
 }
 
-// 2. Yeni masa ekle (OWNER ve MANAGER)
 export async function createTable(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -85,7 +83,6 @@ export async function createTable(req: Request, res: Response): Promise<void> {
 
     const trimmedName = name.trim();
 
-    // Aynı isimde aktif masa var mı kontrol et
     const existing = await prisma.restaurantTable.findFirst({
       where: { businessId, name: trimmedName, isActive: true },
     });
@@ -126,7 +123,6 @@ export async function createTable(req: Request, res: Response): Promise<void> {
   }
 }
 
-// 3. Masa bilgilerini güncelle (OWNER ve MANAGER)
 export async function updateTable(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -185,7 +181,6 @@ export async function updateTable(req: Request, res: Response): Promise<void> {
   }
 }
 
-// 4. Masa sil / pasife al (OWNER ve MANAGER)
 export async function deleteTable(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -236,7 +231,6 @@ export async function deleteTable(req: Request, res: Response): Promise<void> {
   }
 }
 
-// 5. Masa durumunu güncelle (AVAILABLE / OCCUPIED / BILL_REQUESTED)
 export async function updateTableStatus(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -282,7 +276,6 @@ export async function updateTableStatus(req: Request, res: Response): Promise<vo
   }
 }
 
-// 6. Masa Transferi
 export async function transferTable(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -319,17 +312,14 @@ export async function transferTable(req: Request, res: Response): Promise<void> 
     const orderId = fromTable.currentOrderId;
 
     await prisma.$transaction([
-      // Siparişi yeni masaya bağla
       prisma.order.update({
         where: { id: orderId },
         data: { tableId: toTable.id },
       }),
-      // Kaynak masayı boşalt
       prisma.restaurantTable.update({
         where: { id: fromTable.id },
         data: { currentOrderId: null, status: 'AVAILABLE' },
       }),
-      // Hedef masayı doldur
       prisma.restaurantTable.update({
         where: { id: toTable.id },
         data: { currentOrderId: orderId, status: fromTable.status },
@@ -349,7 +339,6 @@ export async function transferTable(req: Request, res: Response): Promise<void> 
   }
 }
 
-// 7. Masaları Birleştir
 export async function mergeTables(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -408,7 +397,6 @@ export async function mergeTables(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    // fromOrder'daki tüm item'ları ve ödemeleri toOrder'a geçir
     await prisma.$transaction([
       prisma.orderItem.updateMany({
         where: { orderId: fromOrder.id },
@@ -430,7 +418,6 @@ export async function mergeTables(req: Request, res: Response): Promise<void> {
         where: { id: fromTable.id },
         data: { currentOrderId: null, status: 'AVAILABLE' },
       }),
-      // Kaynak siparişi sil
       prisma.order.delete({
         where: { id: fromOrder.id },
       }),
@@ -460,7 +447,6 @@ export async function mergeTables(req: Request, res: Response): Promise<void> {
   }
 }
 
-// 8. Masaları Yeniden Sırala
 export async function reorderTables(req: Request, res: Response): Promise<void> {
   try {
     const businessId = req.user?.businessId;
@@ -497,11 +483,8 @@ export async function reorderTables(req: Request, res: Response): Promise<void> 
   }
 }
 
-// 9. Garson Çağır (Müşteri vb.)
 export async function callWaiter(req: Request, res: Response): Promise<void> {
   try {
-    // Note: In a real customer app this might not have req.user, 
-    // but for now we assume it has a valid token or a specific table token.
     const businessId = req.user?.businessId || req.body.businessId; 
     const { id } = req.params;
 

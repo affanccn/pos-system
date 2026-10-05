@@ -1,6 +1,4 @@
-// Granular Yetki Listesi
 export const PERMISSIONS = {
-  // Masa Yetkileri
   TABLE_VIEW: 'table.view',
   TABLE_CREATE: 'table.create',
   TABLE_EDIT: 'table.edit',
@@ -9,7 +7,6 @@ export const PERMISSIONS = {
   TABLE_MERGE: 'table.merge',
   TABLE_SPLIT: 'table.split',
 
-  // Sipariş Yetkileri
   ORDER_CREATE: 'order.create',
   ORDER_EDIT: 'order.edit',
   ORDER_CANCEL: 'order.cancel',
@@ -17,38 +14,31 @@ export const PERMISSIONS = {
   ORDER_DISCOUNT: 'order.discount',
   ORDER_COMPLIMENTARY: 'order.complimentary',
 
-  // Ödeme Yetkileri
   PAYMENT_CREATE: 'payment.create',
   PAYMENT_REFUND: 'payment.refund',
   PAYMENT_SPLIT: 'payment.split',
 
-  // Ürün & Menü Yetkileri
   PRODUCT_VIEW: 'product.view',
   PRODUCT_CREATE: 'product.create',
   PRODUCT_EDIT: 'product.edit',
   PRODUCT_DELETE: 'product.delete',
   PRODUCT_PRICE_EDIT: 'product.price_edit',
 
-  // Stok Yetkileri
   STOCK_VIEW: 'stock.view',
   STOCK_CREATE: 'stock.create',
   STOCK_ADJUST: 'stock.adjust',
 
-  // Rapor Yetkileri
   REPORT_VIEW: 'report.view',
   REPORT_FINANCIAL: 'report.financial',
 
-  // Personel Yetkileri
   STAFF_VIEW: 'staff.view',
   STAFF_CREATE: 'staff.create',
   STAFF_EDIT: 'staff.edit',
   STAFF_DELETE: 'staff.delete',
 
-  // Yönetim & Ayarlar
   SETTINGS_VIEW: 'settings.view',
   SETTINGS_EDIT: 'settings.edit',
 
-  // Mutfak / KDS
   KITCHEN_VIEW: 'kitchen.view',
   KITCHEN_MANAGE: 'kitchen.manage',
 } as const;
@@ -56,9 +46,8 @@ export const PERMISSIONS = {
 export type PermissionKey = keyof typeof PERMISSIONS;
 export type PermissionValue = (typeof PERMISSIONS)[PermissionKey];
 
-// Rol Bazlı Varsayılan Yetki Matrisi
 export const ROLE_DEFAULT_PERMISSIONS: Record<string, string[]> = {
-  OWNER: Object.values(PERMISSIONS), // Patron: Tüm yetkiler
+  OWNER: Object.values(PERMISSIONS),
 
   MANAGER: [
     PERMISSIONS.TABLE_VIEW,
@@ -129,6 +118,5 @@ export function getPermissionsForUser(role: string, customPermissions?: string[]
   if (!customPermissions || customPermissions.length === 0) {
     return basePermissions;
   }
-  // Eğer özel yetki atanmışsa (en az 1 tane), varsayılanları ezer ve sadece özel yetkileri kullanır.
   return customPermissions;
 }

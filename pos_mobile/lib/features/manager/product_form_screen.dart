@@ -111,7 +111,6 @@ class _ProductFormScreenState extends ConsumerState<ProductFormScreen> {
                         costCents: costCents,
                         stockItem: selected,
                       ));
-                      // Update product total cost
                       double totalCost = 0;
                       for (var item in _recipeItems) {
                         totalCost += item.costCents / 100;

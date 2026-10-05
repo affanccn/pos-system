@@ -100,7 +100,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                   const SizedBox(height: 32),
 
-                  // PIN Dots
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(4, (index) {
@@ -142,7 +141,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   const SizedBox(height: 8),
 
-                  // Numpad 1-9
                   Row(children: [_buildKey('1'), _buildKey('2'), _buildKey('3')]),
                   Row(children: [_buildKey('4'), _buildKey('5'), _buildKey('6')]),
                   Row(children: [_buildKey('7'), _buildKey('8'), _buildKey('9')]),

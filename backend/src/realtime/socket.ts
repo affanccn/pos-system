@@ -11,12 +11,11 @@ let ioInstance: Server | null = null;
 export function initSocketServer(server: HttpServer): Server {
   const io = new Server(server, {
     cors: {
-      origin: '*', // Mobil uygulamaların erişimi için serbest bırakılır
+      origin: '*',
       methods: ['GET', 'POST'],
     },
   });
 
-  // Handshake Token Doğrulaması (Güvenlik Guard)
   io.use((socket: AuthenticatedSocket, next) => {
     const token = socket.handshake.auth?.token || socket.handshake.headers?.authorization?.replace('Bearer ', '');
 
@@ -33,7 +32,6 @@ export function initSocketServer(server: HttpServer): Server {
     }
   });
 
-  // Bağlantı Başarılı Olduğunda Odalara Dağıtma (Room Isolation)
   io.on('connection', (socket: AuthenticatedSocket) => {
     const user = socket.user;
     if (!user) return;
@@ -41,7 +39,6 @@ export function initSocketServer(server: HttpServer): Server {
     const businessRoom = `business:${user.businessId}`;
     socket.join(businessRoom);
 
-    // Rol bazlı özel kanallara kayıt
     if (user.role === 'KITCHEN' || user.role === 'OWNER' || user.role === 'MANAGER') {
       socket.join(`${businessRoom}:kitchen`);
     }
@@ -61,7 +58,6 @@ export function initSocketServer(server: HttpServer): Server {
   return io;
 }
 
-// Servis katmanından event fırlatıcı yardımcı fonksiyon
 export function getIO(): Server {
   if (!ioInstance) {
     throw new Error('Socket.io henüz başlatılmadı!');
